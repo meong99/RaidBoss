@@ -28,6 +28,6 @@ public:
  *	----------- Member Variables
  */
 private:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Search", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Raid Boss | PatrolLocation", meta = (AllowPrivateAccess = true))
 		float	SearchRadius = 2000.f;
 };

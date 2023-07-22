@@ -8,8 +8,6 @@ UCLASS(Blueprintable)
 class RAIDBOSS_API URaidBossConsumableItem : public URaidBossItemBase
 {
 	GENERATED_BODY()
-public:
-	URaidBossConsumableItem();
 /*
 *	----------- Overrided
 */
@@ -30,4 +28,7 @@ public:
 /*
 *	----------- Member Variables
 */
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Consumable Item")
+	TArray<FGameplayEffectExecutionDefinition> ItemExecutions;
 };

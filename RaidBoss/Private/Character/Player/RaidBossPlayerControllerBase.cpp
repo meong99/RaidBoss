@@ -1,16 +1,13 @@
 #include "Character/Player/RaidBossPlayerControllerBase.h"
 #include "Blueprint/UserWidget.h"
-#include "Widget/RaidBossUserWidget.h"
 #include "InputMappingContext.h"
+#include "Character/Player/RaidBossPlayerBase.h"
 #include "Management/RaidBossSkillSystem.h"
-#include "UI/RaidBossInventorySystem.h"
+#include "Management/RaidBossInventorySystem.h"
 #include "Management/RaidBossSkillSystem.h"
 
 ARaidBossPlayerControllerBase::ARaidBossPlayerControllerBase()
 {
-	InventorySystem	= CreateDefaultSubobject<URaidBossInventorySystem>(FName("Inventory System"));
-	SkillSystem		= CreateDefaultSubobject<URaidBossSkillSystem>(FName("Skill System"));
-	
 	static ConstructorHelpers::FObjectFinder<UInputMappingContext>DEFAULT_CONTEXT(TEXT(
 		"/Script/EnhancedInput.InputMappingContext'/Game/Input/IM_PlayerControl.IM_PlayerControl'"));
 	static ConstructorHelpers::FObjectFinder<UInputAction>IA_DefaultAttack(TEXT(
@@ -62,52 +59,20 @@ ARaidBossPlayerControllerBase::ARaidBossPlayerControllerBase()
 		InputActions.DashAction = IA_Dash.Object;
 }
 
-void ARaidBossPlayerControllerBase::BeginPlay()
+ARaidBossPlayerBase* ARaidBossPlayerControllerBase::GetRaidBossPlayerBase() const
 {
-	Super::BeginPlay();
-	
-	CreatePlayerWidget();
-	AddDefaultWidgetToViewport();
+	return Cast<ARaidBossPlayerBase>(GetPawn());
 }
 
-void ARaidBossPlayerControllerBase::CreatePlayerWidget()
+URaidBossAbilitySystemComponent* ARaidBossPlayerControllerBase::GetRaidBossAbilitySystemComponent() const
 {
-	if (IsValid(PlayerStateWidgetClass) == true)
-		PlayerStateWidget = CreateWidget<URaidBossUserWidget>(this, PlayerStateWidgetClass, "PlayerStateWidgetClass");
-	if (IsValid(CrossHairWidgetClass) == true)
-		CrossHairWidget = CreateWidget<URaidBossUserWidget>(this, CrossHairWidgetClass, "CrossHairWidget");
-	if (IsValid(QuickSlotWidgetClass) == true)
-		QuickSlotWidget = CreateWidget<URaidBossUserWidget>(this, QuickSlotWidgetClass, "QuickSlotWidget");
-	if (IsValid(SkillWidgetClass) == true)
-		SkillWidget = CreateWidget<URaidBossUserWidget>(this, SkillWidgetClass, "SkillWidget");
-	if (IsValid(EquipWidgetClass) == true)
-		EquipWidget = CreateWidget<URaidBossUserWidget>(this, EquipWidgetClass, "EquipWidget");
-}
+	URaidBossAbilitySystemComponent*	AbilitySystemComponent;
+	ARaidBossPlayerBase*				PlayerBase;
 
-void ARaidBossPlayerControllerBase::AddDefaultWidgetToViewport() const
-{
-	if (IsValid(PlayerStateWidget))
-		PlayerStateWidget->AddToViewport();
+	PlayerBase = GetRaidBossPlayerBase();
+	AbilitySystemComponent = PlayerBase ? PlayerBase->GetRaidBossAbilitySystemComponent() : nullptr;
 
-	if (IsValid(CrossHairWidget))
-		CrossHairWidget->AddToViewport();
-}
-
-void ARaidBossPlayerControllerBase::RemoveDefaultWidgetFromViewport() const
-{
-	if (IsValid(PlayerStateWidget))
-		PlayerStateWidget->RemoveFromParent();
-
-	if (IsValid(QuickSlotWidget))
-		QuickSlotWidget->RemoveFromParent();
-
-	if (IsValid(CrossHairWidget))
-		CrossHairWidget->RemoveFromParent();
-}
-
-TArray<TSubclassOf<URaidBossSkillBase>> ARaidBossPlayerControllerBase::GetSkillClasses() const
-{
-	return SkillClasses;
+	return AbilitySystemComponent;
 }
 
 TSubclassOf<UGameplayEffect> ARaidBossPlayerControllerBase::GetCharacterStatusEffect() const
@@ -118,31 +83,6 @@ TSubclassOf<UGameplayEffect> ARaidBossPlayerControllerBase::GetCharacterStatusEf
 const FRaidBossInputAction& ARaidBossPlayerControllerBase::GetInputAction() const
 {
 	return InputActions;
-}
-
-URaidBossUserWidget* ARaidBossPlayerControllerBase::GetPlayerStateWidget() const
-{
-	return PlayerStateWidget;
-}
-
-URaidBossUserWidget* ARaidBossPlayerControllerBase::GetCrossHairWidget() const
-{
-	return CrossHairWidget;
-}
-
-URaidBossUserWidget* ARaidBossPlayerControllerBase::GetQuickSlotWidget() const
-{
-	return QuickSlotWidget;
-}
-
-URaidBossUserWidget* ARaidBossPlayerControllerBase::GetSkillWidget() const
-{
-	return SkillWidget;
-}
-
-URaidBossUserWidget* ARaidBossPlayerControllerBase::GetEquipWidget() const
-{
-	return EquipWidget;
 }
 
 void ARaidBossPlayerControllerBase::ToggleInventoryWidget() const

@@ -35,6 +35,6 @@ protected:
 *	----------- Member Variables
 */
 protected:
-	UPROPERTY(BlueprintReadOnly, Category="Ability")
+	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Enermy Base")
 	TArray<URaidBossSkillBase*>	SkillObjects;
 };

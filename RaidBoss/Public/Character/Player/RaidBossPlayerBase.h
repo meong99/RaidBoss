@@ -33,7 +33,7 @@ protected:
 protected:
 	void	AddMappingSystem();
 	void	BindInputAction(UEnhancedInputComponent* EnhancedInputComponent);
-	void	CreateSkillObjects();
+	// void	CreateSkillObjects();
 	// void	CreateItemObjects();
 	void	ApplyCharacterStatusEffect();
 	
@@ -43,14 +43,9 @@ protected:
 protected:
 	virtual void	Jump() override;
 	virtual void	StopJumping() override;
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Player Base")
 	void			MoveCharacter(const FInputActionValue& Value);
-	void			MoveForward(float Value);
-	void			MoveRight(float Value);
 	void			LookCharacter(const FInputActionValue& Value);
-	// void			ToggleItemWidget(const FInputActionValue& Value);
-	void			ToggleSkillWidget(const FInputActionValue& Value);
-	void			ToggleEquipWidget(const FInputActionValue& Value);
 	void			Interaction(const FInputActionValue& Value);
 	void			ActiveAbilityByInput(const FInputActionValue& Value, ERaidBossAbilityInputID InputID);
 	
@@ -58,26 +53,24 @@ protected:
  *	----------- Access
  */
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Player Base")
 	TArray<ARaidBossInteractionBase*>	GetInteractionableActors() const;
 	ARaidBossPlayerControllerBase*		GetRiadBossPlayerController() const;
 	float								GetGold() const;
 	
-	const TMap<EEquipType, URaidBossEquipmentItem*>&	GetEquippedItems() const;
-
 /*
  *	----------- Member Variables
  */
 public:
-	UPROPERTY(VisibleAnywhere, Category = "Camera")
+	UPROPERTY(VisibleAnywhere, Category = "Raid Boss | Player Base")
 	TObjectPtr<USpringArmComponent>		CameraBoom;
-	UPROPERTY(VisibleAnywhere, Category = "Camera")
+	UPROPERTY(VisibleAnywhere, Category = "Raid Boss | Player Base")
 	TObjectPtr<UCameraComponent>		FollowCamera;
 	
 protected:
-	UPROPERTY(BlueprintReadOnly, Category="Ability")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Player Base")
 	TArray<URaidBossSkillBase*>	SkillObjects;
-	UPROPERTY(BlueprintReadOnly, Category="Belongings")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Player Base")
 	float						Gold = 0;
 	
 	UPROPERTY()

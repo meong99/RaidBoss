@@ -16,7 +16,6 @@ bool URaidBossAbilitySystemComponent::GiveAbilityWithoutDuplication(TSubclassOf<
 
 		OutSpecHandle = GiveAbility(Spec);
 	}
-	
 	return false;
 }
 

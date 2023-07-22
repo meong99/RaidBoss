@@ -28,9 +28,9 @@ protected:
 public:	
 	virtual void	OnInteration(AActor* Caller);
 	virtual void	EndInteraction();
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintImplementableEvent, Category="Raid Boss | Interation Base")
 	void			OnInterationForBlueprint(AActor* Caller);
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintImplementableEvent, Category="Raid Boss | Interation Base")
 	void			EndInteractionForBlueprin();
 	
 /*

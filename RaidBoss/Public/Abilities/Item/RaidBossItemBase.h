@@ -17,7 +17,7 @@ enum class EITemCategory : uint8
 };
 
 USTRUCT(BlueprintType)
-struct FItemInfo
+struct FItemAbilityInformation
 {
 	GENERATED_BODY()
 
@@ -26,8 +26,6 @@ public:
 		EITemCategory					ItemCategory;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 		FName							ItemName;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-		int32							Amount;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 		TObjectPtr<UTexture2D>			ItemTexture;
 };
@@ -57,6 +55,8 @@ public:
  *	----------- Member Variables
  */
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FItemInfo	ITemInfo;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Item Base")
+	FItemAbilityInformation			ITemInfo;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Item Base")
+	TSubclassOf<UGameplayEffect>	ItemEffect;
 };

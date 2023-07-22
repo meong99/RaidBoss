@@ -39,17 +39,17 @@ protected:
  *	----------- Access
  */
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill Base")
 	const FRaidBossSkillInfo&	GetSkillInfo() const;
 	
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill Base")
 	void	IncreaseSkillLevel();
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill Base")
 	void	DecreaseSkillLevel();
 /*
  *	----------- Member Variables
  */
 protected:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category="Raid Boss | Skill Base")
 	FRaidBossSkillInfo					SkillInfo;
 };

@@ -8,15 +8,12 @@
 #include "Abilities/RaidBossAbilitySystemComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "Blueprint/UserWidget.h"
 #include "Character/Player/RaidBossPlayerControllerBase.h"
 #include "Math/UnrealMathUtility.h"
 #include "Abilities/Skill/RaidBossSkillBase.h"
 #include "Global/RaidBossInteractionBase.h"
 #include "Abilities/RaidBossCharacterStatusAttributeSet.h"
 #include "Abilities/Item/RaidBossEquipmentItem.h"
-#include "UI/RaidBossInventorySystem.h"
-#include "Widget/RaidBossUserWidget.h"
 
 ARaidBossPlayerBase::ARaidBossPlayerBase()
 {
@@ -52,8 +49,7 @@ void ARaidBossPlayerBase::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	
-	CreateSkillObjects();
-	// CreateItemObjects();
+	// CreateSkillObjects();
 	ApplyCharacterStatusEffect();
 }
 
@@ -62,8 +58,6 @@ void ARaidBossPlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	AddMappingSystem();
-	PlayerInputComponent->BindAxis("MoveForward", this, &ARaidBossPlayerBase::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &ARaidBossPlayerBase::MoveRight);
 	BindInputAction(Cast<UEnhancedInputComponent>(PlayerInputComponent));
 }
 
@@ -87,20 +81,15 @@ void ARaidBossPlayerBase::BindInputAction(UEnhancedInputComponent* EnhancedInput
 	const auto	PlayerController = GetRiadBossPlayerController();
 	if (IsValid(PlayerController) == false || IsValid(EnhancedInputComponent) == false)
 		return;
-	//
-	// EnhancedInputComponent->BindAction(PlayerController->GetInputAction().MoveAction,
-	// 	ETriggerEvent::Triggered,	this, &ARaidBossPlayerBase::MoveCharacter);
-	//
+	
+	EnhancedInputComponent->BindAction(PlayerController->GetInputAction().MoveAction,
+		ETriggerEvent::Triggered,	this, &ARaidBossPlayerBase::MoveCharacter);
 	EnhancedInputComponent->BindAction(PlayerController->GetInputAction().LookAction,
 		ETriggerEvent::Triggered,	this, &ARaidBossPlayerBase::LookCharacter);
 	EnhancedInputComponent->BindAction(PlayerController->GetInputAction().JumpAction,
 		ETriggerEvent::Started,		this, &ARaidBossPlayerBase::Jump);
 	EnhancedInputComponent->BindAction(PlayerController->GetInputAction().JumpAction,
 		ETriggerEvent::Completed,	this, &ARaidBossPlayerBase::StopJumping);
-	EnhancedInputComponent->BindAction(PlayerController->GetInputAction().SkillWidgetAction,
-		ETriggerEvent::Started,		this, &ARaidBossPlayerBase::ToggleSkillWidget);
-	EnhancedInputComponent->BindAction(PlayerController->GetInputAction().EquipWidgetAction,
-		ETriggerEvent::Started,		this, &ARaidBossPlayerBase::ToggleEquipWidget);
 	EnhancedInputComponent->BindAction(PlayerController->GetInputAction().InteractionAction,
 		ETriggerEvent::Started,		this, &ARaidBossPlayerBase::Interaction);
 	
@@ -116,32 +105,28 @@ void ARaidBossPlayerBase::BindInputAction(UEnhancedInputComponent* EnhancedInput
 		ETriggerEvent::Started,		this, &ARaidBossPlayerBase::ActiveAbilityByInput, ERaidBossAbilityInputID::Dash);
 }
 
-void ARaidBossPlayerBase::CreateSkillObjects()
-{
-	ARaidBossPlayerControllerBase*			PlayerController;
-	TArray<TSubclassOf<URaidBossSkillBase>> SkillClasses;
-	URaidBossUserWidget*					SkillWidget;
-	URaidBossSkillBase*						SkillCDO;
-	URaidBossSkillBase*						SkillObject;
-	FGameplayAbilitySpecHandle				SpecHandle;
-	
-	PlayerController = GetRiadBossPlayerController();
-	if (PlayerController && AbilitySystemComponent)
-	{
-		SkillClasses = PlayerController->GetSkillClasses();
-		for (auto SkillClass : SkillClasses)
-		{
-			SkillCDO = Cast<URaidBossSkillBase>(SkillClass->GetDefaultObject());
-			AbilitySystemComponent->GiveAbilityWithoutDuplication(SkillClass, SpecHandle, static_cast<int32>(SkillCDO->AbilityInputID));
-
-			SkillObject = Cast<URaidBossSkillBase>(AbilitySystemComponent->GetAbilityByClass(SkillClass));
-			if (SkillObject) SkillObjects.Add(SkillObject);
-			
-			SkillWidget = PlayerController->GetSkillWidget();
-			if (SkillWidget) SkillWidget->AddAbility(SkillObject);
-		}
-	}
-}
+//
+// void ARaidBossPlayerBase::CreateSkillObjects()
+// {
+// 	ARaidBossPlayerControllerBase*			PlayerController;
+// 	TArray<TSubclassOf<URaidBossSkillBase>> SkillClasses;
+// 	URaidBossSkillBase*						SkillCDO;
+// 	URaidBossSkillBase*						SkillObject;
+// 	FGameplayAbilitySpecHandle				SpecHandle;
+// 	
+// 	PlayerController = GetRiadBossPlayerController();
+// 	if (PlayerController && AbilitySystemComponent)
+// 	{
+// 		for (auto SkillClass : SkillClasses)
+// 		{
+// 			SkillCDO = Cast<URaidBossSkillBase>(SkillClass->GetDefaultObject());
+// 			AbilitySystemComponent->GiveAbilityWithoutDuplication(SkillClass, SpecHandle, static_cast<int32>(SkillCDO->AbilityInputID));
+//
+// 			SkillObject = Cast<URaidBossSkillBase>(AbilitySystemComponent->GetAbilityByClass(SkillClass));
+// 			if (SkillObject) SkillObjects.Add(SkillObject);
+// 		}
+// 	}
+// }
 //
 // void ARaidBossPlayerBase::CreateItemObjects()
 // {
@@ -208,70 +193,10 @@ void ARaidBossPlayerBase::MoveCharacter(const FInputActionValue& Value)
 	}
 }
 
-void ARaidBossPlayerBase::MoveForward(float Value)
-{
-	FVector Direction = FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::X);
-	AddMovementInput(Direction, Value);
-}
-
-void ARaidBossPlayerBase::MoveRight(float Value)
-{
-	FVector Direction = FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::Y);
-	AddMovementInput(Direction, Value);
-}
-
 void ARaidBossPlayerBase::LookCharacter(const FInputActionValue& Value)
 {
 	AddControllerYawInput(Value.Get<FVector2D>().X * 0.4);
 	AddControllerPitchInput(Value.Get<FVector2D>().Y * 0.4);
-}
-//
-// void ARaidBossPlayerBase::ToggleItemWidget(const FInputActionValue& Value)
-// {
-// 	ARaidBossPlayerControllerBase*	MyController = GetRiadBossPlayerController();
-// 	if (IsValid(MyController) == false)
-// 		return;
-//
-// 	URaidBossUserWidget* InventoryWidget = MyController->GetInventoryWidget();
-// 	if (InventoryWidget == nullptr)
-// 		return;
-//
-// 	if (InventoryWidget->IsInViewport() == false)
-// 		InventoryWidget->AddToViewport();
-// 	else
-// 		InventoryWidget->RemoveFromParent();
-// }
-
-void ARaidBossPlayerBase::ToggleSkillWidget(const FInputActionValue& Value)
-{
-	ARaidBossPlayerControllerBase*	MyController = GetRiadBossPlayerController();
-	if (IsValid(MyController) == false)
-		return;
-
-	URaidBossUserWidget* SkillWidget = MyController->GetSkillWidget();
-	if (SkillWidget == nullptr)
-		return;
-
-	if (SkillWidget->IsInViewport() == false)
-		SkillWidget->AddToViewport();
-	else
-		SkillWidget->RemoveFromParent();
-}
-
-void ARaidBossPlayerBase::ToggleEquipWidget(const FInputActionValue& Value)
-{
-	ARaidBossPlayerControllerBase*	MyController = GetRiadBossPlayerController();
-	if (IsValid(MyController) == false)
-		return;
-
-	URaidBossUserWidget* EquipWidget = MyController->GetEquipWidget();
-	if (EquipWidget == nullptr)
-		return;
-
-	if (EquipWidget->IsInViewport() == false)
-		EquipWidget->AddToViewport();
-	else
-		EquipWidget->RemoveFromParent();
 }
 
 void ARaidBossPlayerBase::Interaction(const FInputActionValue& Value)
@@ -303,11 +228,6 @@ TArray<ARaidBossInteractionBase*> ARaidBossPlayerBase::GetInteractionableActors(
 float ARaidBossPlayerBase::GetGold() const
 {
 	return Gold;
-}
-
-const TMap<EEquipType, URaidBossEquipmentItem*>& ARaidBossPlayerBase::GetEquippedItems() const
-{
-	return URaidBossEquipmentItem::GetEquippedItems();
 }
 
 ARaidBossPlayerControllerBase* ARaidBossPlayerBase::GetRiadBossPlayerController() const

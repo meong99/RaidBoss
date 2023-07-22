@@ -44,7 +44,7 @@ public:
 private:
 	UPROPERTY()
 	TObjectPtr<UAbilityTask_PlayMontageAndWait>	PlayMontageAndWait;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category="Raid Boss")
 	float	DashRange = 500;
 	FVector	DashDestination;
 };

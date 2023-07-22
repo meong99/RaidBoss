@@ -54,7 +54,7 @@ protected:
 	float	Range = 1000;
 	float	IncreaseRate = 20;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category="Raid Boss")
 	TObjectPtr<UParticleSystem>					Particle;
 	UPROPERTY()
 	TObjectPtr<UAbilityTask_WaitGameplayEvent>	WaitGameplayEvent;

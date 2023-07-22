@@ -2,10 +2,9 @@
 #include "Abilities/RaidBossAbilitySystemComponent.h"
 #include "Character/RaidBossCharacterBase.h"
 
-TMap<EEquipType, URaidBossEquipmentItem*> URaidBossEquipmentItem::EquippedItems;
-
 URaidBossEquipmentItem::URaidBossEquipmentItem()
 {
+	bRetriggerInstancedAbility = true;
 }
 
 void URaidBossEquipmentItem::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -15,37 +14,25 @@ void URaidBossEquipmentItem::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	if (CommitAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo) == true)
 	{
-		if (IsEquipped() == true)
-		{
-			UnEquipItem();
-		}
-		else
-		{
-			EquipItem();
-		}
+		EquipItem();
 	}
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
+}
+
+void URaidBossEquipmentItem::CancelAbility(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+	bool bReplicateCancelAbility)
+{
+	UnEquipItem();
+	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
 }
 
 bool URaidBossEquipmentItem::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
-	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
-	const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
+                                                const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
+                                                const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
 {
 	bool bCanActivate = Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
 	
 	return (bCanActivate);
-}
-
-bool URaidBossEquipmentItem::IsEquipped() const
-{
-	bool	bIsEquipped = true;
-	
-	if (EquippedItems.Find(EquipType) == nullptr)
-	{
-		bIsEquipped = false;
-	}
-	
-	return bIsEquipped;
 }
 
 int32 URaidBossEquipmentItem::GetEquipType() const
@@ -53,41 +40,32 @@ int32 URaidBossEquipmentItem::GetEquipType() const
 	return static_cast<int32>(EquipType);
 }
 
-const TMap<EEquipType, URaidBossEquipmentItem*>& URaidBossEquipmentItem::GetEquippedItems()
-{
-	return EquippedItems;
-}
-
 void URaidBossEquipmentItem::EquipItem()
 {
-	for (auto Element : Effects)
-	{
-		UGameplayEffect*	Effect = Element.GetDefaultObject();
-		FActiveGameplayEffectHandle Handle = ApplyGameplayEffectToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, Effect, 1);
-		EffectHandleArray.Add(Handle);
-	}
+	FGameplayAbilitySpec*	Spec;
+	UGameplayEffect*		EffectToApply;
 	
-	EquippedItems.FindOrAdd(EquipType, this);
+	Spec = GetCurrentAbilitySpec();
+	EffectToApply = ItemEffect.GetDefaultObject();
+	
+	
+	if (Spec && EffectToApply)
+	{
+		EffectToApply->Modifiers = ItemModifiers;
+		Spec->GameplayEffectHandle = ApplyGameplayEffectToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectToApply, 1);
+	}
 }
 
 void URaidBossEquipmentItem::UnEquipItem()
 {
-	URaidBossEquipmentItem* EquippedItem = *EquippedItems.Find(EquipType);
-	if (IsValid(EquippedItem) == true)
-	{
-		EquippedItem->RemoveAppliedItemEffect();
-	}
+	URaidBossAbilitySystemComponent*	AbilitySystemComponent;
+	FGameplayAbilitySpec*				Spec;
 	
-	EquippedItems.Remove(EquipType);
-}
-
-void URaidBossEquipmentItem::RemoveAppliedItemEffect()
-{
-	for (auto Element : EffectHandleArray)
+	Spec = GetCurrentAbilitySpec();
+	AbilitySystemComponent = Cast<URaidBossAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
+	
+	if (Spec && AbilitySystemComponent)
 	{
-		URaidBossAbilitySystemComponent* OwnerAbilityComponent = GetOwnerAbilityComponent();
-
-		if (IsValid(OwnerAbilityComponent) == true)
-			OwnerAbilityComponent->RemoveActiveGameplayEffect(Element);
+		AbilitySystemComponent->RemoveActiveGameplayEffect(Spec->GameplayEffectHandle);
 	}
 }

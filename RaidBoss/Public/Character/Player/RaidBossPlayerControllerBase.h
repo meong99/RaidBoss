@@ -4,13 +4,12 @@
 #include "GameFramework/PlayerController.h"
 #include "RaidBossPlayerControllerBase.generated.h"
 
+class URaidBossAbilitySystemComponent;
+class ARaidBossPlayerBase;
 class URaidBossInventorySystem;
 class URaidBossSkillSystem;
 class URaidBossAbilityBase;
 class UGameplayEffect;
-class URaidBossItemBase;
-class URaidBossSkillBase;
-class URaidBossUserWidget;
 class UInputMappingContext;
 class UInputAction;
 
@@ -54,9 +53,6 @@ public:
 /*
  *	----------- Overrided
  */
-protected:
-	virtual void BeginPlay() override;
-	
 /*
  *	----------- Binded by Delegate
  */
@@ -64,69 +60,34 @@ protected:
 /*
  *	----------- Other Method
  */
-protected:
-	void	CreatePlayerWidget();
-	void	AddDefaultWidgetToViewport() const;
-	void	RemoveDefaultWidgetFromViewport() const;
 	
 /*
  *	----------- Access
  */
 public:
-	TArray<TSubclassOf<URaidBossSkillBase>>		GetSkillClasses() const;
-	TSubclassOf<UGameplayEffect>				GetCharacterStatusEffect() const;
-
-	const FRaidBossInputAction&	GetInputAction() const;
+	ARaidBossPlayerBase*				GetRaidBossPlayerBase() const;
+	URaidBossAbilitySystemComponent*	GetRaidBossAbilitySystemComponent() const;
+	TSubclassOf<UGameplayEffect>		GetCharacterStatusEffect() const;
+	const FRaidBossInputAction&			GetInputAction() const;
 	
-	URaidBossUserWidget*	GetPlayerStateWidget() const;
-	URaidBossUserWidget*	GetCrossHairWidget() const;
-	URaidBossUserWidget*	GetQuickSlotWidget() const;
-	URaidBossUserWidget*	GetSkillWidget() const;
-	URaidBossUserWidget*	GetEquipWidget() const;
-
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
 	void	ToggleInventoryWidget() const;
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
 	void	ToggleSkillWidget() const;
 /*
  *	----------- Member Variables
  */
 protected:
-	UPROPERTY(BlueprintReadOnly, Category="UI")
+	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Player Controller")
 	TObjectPtr<URaidBossInventorySystem>	InventorySystem;
-	UPROPERTY(BlueprintReadOnly, Category="UI")
+	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Player Controller")
 	TObjectPtr<URaidBossSkillSystem>		SkillSystem;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Ability")
+	UPROPERTY(EditDefaultsOnly, Category="Raid Boss | Player Controller")
 	TArray<TSubclassOf<URaidBossAbilityBase>>	DefaultAbilities;
-	UPROPERTY(EditDefaultsOnly, Category="Ability")
-	TArray<TSubclassOf<URaidBossSkillBase>>		SkillClasses;
-	UPROPERTY(EditDefaultsOnly, Category = "Ability")
+	UPROPERTY(EditDefaultsOnly, Category="Raid Boss | Player Controller")
 	TSubclassOf<UGameplayEffect>				CharacterStatusEffect;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="InputAction")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Raid Boss | Player Controller")
 	FRaidBossInputAction	InputActions;
-
-	
-	UPROPERTY(BlueprintReadOnly, Category = "Widget")
-    TObjectPtr<URaidBossUserWidget>	PlayerStateWidget;
-    UPROPERTY(BlueprintReadOnly, Category = "Widget")
-    TObjectPtr<URaidBossUserWidget>	CrossHairWidget;
-    UPROPERTY(BlueprintReadOnly, Category = "Widget")
-    TObjectPtr<URaidBossUserWidget>	QuickSlotWidget;
-    UPROPERTY(BlueprintReadOnly, Category = "Widget")
-    TObjectPtr<URaidBossUserWidget>	SkillWidget;
-    UPROPERTY(BlueprintReadOnly, Category = "Widget")
-    TObjectPtr<URaidBossUserWidget>	EquipWidget;
-private:
-    UPROPERTY(EditDefaultsOnly, Category = "Widget")
-    TSubclassOf<URaidBossUserWidget>	PlayerStateWidgetClass;
-    UPROPERTY(EditDefaultsOnly, Category = "Widget")
-    TSubclassOf<URaidBossUserWidget>	CrossHairWidgetClass;
-    UPROPERTY(EditDefaultsOnly, Category = "Widget")
-    TSubclassOf<URaidBossUserWidget>	QuickSlotWidgetClass;
-    UPROPERTY(EditDefaultsOnly, Category = "Widget")
-    TSubclassOf<URaidBossUserWidget>	SkillWidgetClass;
-    UPROPERTY(EditDefaultsOnly, Category = "Widget")
-    TSubclassOf<URaidBossUserWidget>	EquipWidgetClass;
 };

@@ -50,22 +50,22 @@ public:
  *	----------- Member Variables
  */
 public:
-	UPROPERTY(BlueprintReadOnly, Category = "CharacterState")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
 		FGameplayAttributeData	Health;
-	UPROPERTY(BlueprintReadOnly, Category = "CharacterState")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
 		FGameplayAttributeData	MaxHealth;
-	UPROPERTY(BlueprintReadOnly, Category = "CharacterState")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
 		FGameplayAttributeData	Mana;
-	UPROPERTY(BlueprintReadOnly, Category = "CharacterState")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
 		FGameplayAttributeData	MaxMana;
-	UPROPERTY(BlueprintReadOnly, Category = "Damage")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
 		FGameplayAttributeData	AttackPower;
-	UPROPERTY(BlueprintReadOnly, Category = "Damage")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
 		FGameplayAttributeData	AttackRange;
-	UPROPERTY(BlueprintReadOnly, Category = "Damage")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
 		FGameplayAttributeData	DefensePower;
-	UPROPERTY(BlueprintReadOnly, Category = "Damage")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
 		FGameplayAttributeData	AdditialnalAttackPower;
-	UPROPERTY(BlueprintReadOnly, Category = "MoveSpeed")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
 		FGameplayAttributeData	MoveSpeed;
 };

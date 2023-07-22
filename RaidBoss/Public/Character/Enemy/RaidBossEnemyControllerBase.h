@@ -55,7 +55,7 @@ public:
  *	----------- Access
  */
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Enermy Controller")
 	ARaidBossEnemyBase*	GetControlledCharacter() const;
 	
 	TArray<TSubclassOf<URaidBossSkillBase>>		GetSkillClasses() const;
@@ -63,16 +63,16 @@ public:
  *	----------- Member Variables
  */
 protected:
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "AI", meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Enermy Controller", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UBehaviorTree>			BehaviourTree;
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "AI", meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Enermy Controller", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UBehaviorTreeComponent>	BehaviourTreeComponent;
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "AI Perception", meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Enermy Controller", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UAISenseConfig_Sight>	Sight;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Ability")
+	UPROPERTY(EditDefaultsOnly, Category = "Raid Boss | Enermy Controller")
 	TArray<TSubclassOf<URaidBossSkillBase>>		EnemySkillClasses;
-	UPROPERTY(EditDefaultsOnly, Category = "Ability")
+	UPROPERTY(EditDefaultsOnly, Category = "Raid Boss | Enermy Controller")
 	TSubclassOf<UGameplayEffect>				CharacterStatusEffect;
 	
 	FTimerHandle	TimerHandle;

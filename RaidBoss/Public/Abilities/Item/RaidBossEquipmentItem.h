@@ -7,12 +7,12 @@
 UENUM(BlueprintType)
 enum class EEquipType : uint8
 {
-	Hat UMETA(DisplayName = "Hat"),
+	Helmet UMETA(DisplayName = "Hat"),
 	Weapon UMETA(DisplayName = "Weapon"),
-	Top UMETA(DisplayName = "Top"),
-	Bottom UMETA(DisplayName = "Bottom"),
-	Shoes UMETA(DisplayName = "Shoes"),
-	None UMETA(DisplayName = "None"),
+	ArmorTop UMETA(DisplayName = "Top"),
+	ArmorBottom UMETA(DisplayName = "Bottom"),
+	ArmorShoes UMETA(DisplayName = "Shoes"),
+	Size UMETA(DisplayName = "Size"),
 };
 
 UCLASS(Blueprintable)
@@ -25,10 +25,13 @@ public:
 *	----------- Overrided
 */
 public:
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-			const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 			const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const override;
+protected:
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+			const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+			const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
 /*
 *	----------- Binded by Delegate
 */
@@ -38,25 +41,20 @@ public:
 protected:
 	void	EquipItem();
 	void	UnEquipItem();
-	void	RemoveAppliedItemEffect();
 /*
 *	----------- Access
 */
 public:
-	bool	IsEquipped() const;
 	int32	GetEquipType() const;
-	static	const TMap<EEquipType, URaidBossEquipmentItem*>&	GetEquippedItems();
 /*
 *	----------- Static Variables
 */
-protected:
-	static TMap<EEquipType, URaidBossEquipmentItem*>	EquippedItems;
 /*
 *	----------- Member Variables
 */
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	EEquipType EquipType = EEquipType::None;
-
-	TArray<FActiveGameplayEffectHandle>	EffectHandleArray;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Equipment Item")
+	EEquipType EquipType = EEquipType::Size;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Equipment Item")
+	TArray<FGameplayModifierInfo>				ItemModifiers;
 };

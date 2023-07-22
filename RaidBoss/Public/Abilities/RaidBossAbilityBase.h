@@ -43,14 +43,14 @@ protected:
  *	----------- Member Variables
  */
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ability")
-	ERaidBossAbilityInputID					AbilityInputID = ERaidBossAbilityInputID::None;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability")
-	TObjectPtr<UTexture2D>					AbilityTexture;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effect")
-	TArray<TSubclassOf<UGameplayEffect>>	Effects;
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<ARaidBossCharacterBase>		OwnerCharacter;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Raid Boss | Ability base")
+	ERaidBossAbilityInputID					AbilityInputID = ERaidBossAbilityInputID::None;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Ability base")
+	TObjectPtr<UTexture2D>					AbilityTexture;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Ability base")
+	TArray<TSubclassOf<UGameplayEffect>>	Effects;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Ability base")
 	TArray<TObjectPtr<UAnimMontage>>		Montages;
 };

@@ -42,44 +42,44 @@ protected:
  */
 public:
 
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintImplementableEvent, Category = "Raid Boss | Character Base")
 	void			OnDeath();
 protected:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
 	virtual void	ClearAllMember();
 	
 /*
  *	----------- Access
  */
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
 	virtual UAbilitySystemComponent*		GetAbilitySystemComponent() const override;
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
 	URaidBossAbilitySystemComponent*		GetRaidBossAbilitySystemComponent() const;
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
 	const URaidBossCharacterStatusAttributeSet*	GetCharacterStatusAttributeSet() const;
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
 	double									GetExperience() const;
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
 	double									GetMaxExperience() const;
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
 	int										GetSkillPoint() const;
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
 	bool									IsCharacterStateTurnOn(ECharacterState CharacterState);
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
 	float									GetHealth() const;
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
 	float									GetAttackPower() const;
 	
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
 	void			TurnOnCharacterStateBitMap(ECharacterState CharacterState);
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
 	void			TurnOffCharacterStateBitMap(ECharacterState CharacterState);
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
 	void			IncreaseSkillPoint();
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
 	void			DecreaseSkillPoint();
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
 	virtual void	GiveExperience(double Exp);
 	virtual void	CharacterLevelUp(float IncrementNum);
 
@@ -87,7 +87,7 @@ public:
  *	----------- Member Variables
  */
 protected:
-	UPROPERTY(VisibleDefaultsOnly, Category = "Ability")
+	UPROPERTY(VisibleDefaultsOnly, Category = "Raid Boss | Character Base")
 	TObjectPtr<URaidBossAbilitySystemComponent>		AbilitySystemComponent;
 	UPROPERTY()
 	const URaidBossCharacterStatusAttributeSet*		CharacterStatusAttributeSet;

@@ -25,10 +25,10 @@ public:
 	void			EndAbilityCallback();
 
 protected:
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category="Raid Boss")
 		TArray<TObjectPtr<ARaidBossEnemyBase>>		EnermyArr;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss")
 		TObjectPtr<UParticleSystem>	Particle;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Raid Boss")
 		float	Range = 300;
 };

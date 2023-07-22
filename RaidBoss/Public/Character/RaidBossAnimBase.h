@@ -33,7 +33,7 @@ public:
  *	----------- Access
  */
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Anim Base")
 	ARaidBossCharacterBase*	GetOwningCharacter() const;
 	bool					IsInAir() const { return bIsInAir; }
 	bool					IsAccelorating() const { return bIsAccelorating; }
@@ -51,26 +51,26 @@ public:
  */
 protected:
 
-	UPROPERTY(BlueprintReadOnly, Category = "Update")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base")
 		bool		bIsInAir;
-	UPROPERTY(BlueprintReadOnly, Category = "Update")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base")
 		bool		bIsAccelorating;
-	UPROPERTY(BlueprintReadOnly, Category = "Update")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base")
 		bool		bIsFocusing;
-	UPROPERTY(BlueprintReadOnly, Category = "Update")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base")
 		float		Speed;
-	UPROPERTY(BlueprintReadOnly, Category = "Update")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base")
 		float		MoveForward;
-	UPROPERTY(BlueprintReadOnly, Category = "Update")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base")
 		float		MoveRight;
-	UPROPERTY(BlueprintReadOnly, Category = "Update")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base")
 		float		Roll;
-	UPROPERTY(BlueprintReadOnly, Category = "Update")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base")
 		float		Pitch;
-	UPROPERTY(BlueprintReadOnly, Category = "Update")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base")
 		float		Yaw;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Anim Base")
 	TObjectPtr<UAnimMontage>	DeathMontage;
 };
 
