@@ -144,6 +144,11 @@ void URaidBossSlotWidget::SetIndex(int32 InIndex)
 	Index = InIndex;
 }
 
+void URaidBossSlotWidget::SetItemAmount(FString Amount)
+{
+	ItemAmount = Amount;
+}
+
 void URaidBossSlotWidget::SetSlotType(ESlotType InSlotType)
 {
 	SlotType = InSlotType;

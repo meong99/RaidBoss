@@ -13,6 +13,7 @@ enum class EEquipType : uint8
 	ArmorBottom UMETA(DisplayName = "Bottom"),
 	ArmorShoes UMETA(DisplayName = "Shoes"),
 	Size UMETA(DisplayName = "Size"),
+	None UMETA(DisplayName = "None"),
 };
 
 UCLASS(Blueprintable)

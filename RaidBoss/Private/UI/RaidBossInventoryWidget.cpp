@@ -36,7 +36,7 @@ void URaidBossInventoryWidget::CreateInventorySlot()
 	if (WeakInventorySystem == nullptr || IsValid(InventorySlotClass) == false)
 		return;
 
-	MaximumItemCount = WeakInventorySystem->GetMaximumItemCount();
+	MaximumItemCount = WeakInventorySystem->GetMaximumItemAmount();
 	
 	for (int i = 0; i < MaximumItemCount; i++)
 	{
@@ -150,24 +150,27 @@ void URaidBossInventoryWidget::ClickedMiscellaneousButton()
 
 void URaidBossInventoryWidget::UpdateInventorySlot()
 {
-	URaidBossItemBase*	Item;
-	int32				Count;
-	UTexture2D*			Texture;
+	const URaidBossItemBase*	ItemCDO;
+	int32						MaximumAmount;
+	int32						ItemAmount;
+	UTexture2D*					Texture;
 
 	if (WeakInventorySystem == nullptr)
 		return;
 
 	ResetInventorySlotImage();
 
-	Count = WeakInventorySystem->GetMaximumItemCount();
-	for (int i = 0; i < Count; i++)
+	MaximumAmount = WeakInventorySystem->GetMaximumItemAmount();
+	for (int i = 0; i < MaximumAmount; i++)
 	{
-		Item = WeakInventorySystem->GetItem(ShownInventory, i);
+		ItemCDO = WeakInventorySystem->GetItemCDO(ShownInventory, i);
+		ItemAmount = WeakInventorySystem->GetItemAmount(ShownInventory, i);
 		
-		if (Item != nullptr)
+		if (ItemCDO != nullptr)
 		{
-			Texture = Item->GetItemTexture();
+			Texture = ItemCDO->GetItemTexture();
 			InventorySlots[i]->SetTexture(Texture);
+			InventorySlots[i]->SetItemAmount(FString::FromInt(ItemAmount));
 		}
 	}
 }
@@ -211,7 +214,7 @@ EITemCategory URaidBossInventoryWidget::GetShownInventory() const
 const URaidBossEquipmentItem* URaidBossInventoryWidget::GetEquipmentItem(int32 Index) const
 {
 	if (WeakInventorySystem != nullptr)
-		return Cast<URaidBossEquipmentItem>(WeakInventorySystem->GetItem(EITemCategory::Equip, Index));
+		return WeakInventorySystem->GetEquipmentItem(Index);
 
 	return nullptr;
 }

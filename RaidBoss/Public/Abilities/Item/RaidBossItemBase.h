@@ -34,8 +34,6 @@ UCLASS(Blueprintable)
 class RAIDBOSS_API URaidBossItemBase : public URaidBossAbilityBase
 {
 	GENERATED_BODY()
-public:
-	URaidBossItemBase();
 /*
 *	----------- Overrided
 */

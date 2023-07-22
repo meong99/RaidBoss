@@ -3,13 +3,12 @@
 #include "Abilities/Item/RaidBossEquipmentItem.h"
 #include "Abilities/Item/RaidBossConsumableItem.h"
 #include "Character/Player/RaidBossPlayerControllerBase.h"
-#include "UI/RaidBossEquipmentWidget.h"
 #include "UI/RaidBossInventoryWidget.h"
 
 URaidBossInventorySystem::URaidBossInventorySystem(const FObjectInitializer& Initializer)
 {
-	EquipItemInfo.SetNum(MaximumItemCount);
-	ConsumableItemInfo.SetNum(MaximumItemCount);
+	EquipItemInfo.SetNum(MaximumItemAmount);
+	ConsumableItemInfo.SetNum(MaximumItemAmount);
 }
 
 void URaidBossInventorySystem::ToggleInventoryWidget()
@@ -36,40 +35,12 @@ void URaidBossInventorySystem::ToggleInventoryWidget()
 		PlayerController->SetShowMouseCursor(false);
 	}
 }
-//
-// void URaidBossInventorySystem::AddNewItem(URaidBossItemBase* NewItem)
-// {
-// 	if (NewItem && NewItem->GetItemCategory() == EITemCategory::Equip && EquipItemObjects.Num() <= MaximumItemCount)
-// 	{
-// 		for (int32 i = 0; i < EquipItemObjects.Num(); i++)
-// 		{
-// 			if (EquipItemObjects[i] == nullptr)
-// 			{
-// 				EquipItemObjects[i] = Cast<URaidBossEquipmentItem>(NewItem);
-// 				break;
-// 			}
-// 		}
-// 	}
-// 	else if (NewItem && NewItem->GetItemCategory() == EITemCategory::Consumable && ConsumableItemObjects.Num() <= MaximumItemCount)
-// 	{
-// 		for (int32 i = 0; i < ConsumableItemObjects.Num(); i++)
-// 		{
-// 			if (ConsumableItemObjects[i] == nullptr)
-// 			{
-// 				ConsumableItemObjects[i] = Cast<URaidBossConsumableItem>(NewItem);
-// 				break;
-// 			}
-// 		}
-// 	}
-// 	InventoryWidget->UpdateInventorySlot();
-// }
 
-void URaidBossInventorySystem::AddNewItem(const TSubclassOf<URaidBossItemBase>& NewItem)
+void URaidBossInventorySystem::AddNewItem(TSubclassOf<URaidBossItemBase> NewItem)
 {
 	URaidBossItemBase* ItemCDO;
 	
-	// ItemCDO = NewItem ? Cast<URaidBossItemBase>(NewItem->GetDefaultObject()) : nullptr;
-	ItemCDO = Cast<URaidBossItemBase>(NewItem->GetDefaultObject());
+	ItemCDO = NewItem ? Cast<URaidBossItemBase>(NewItem->GetDefaultObject()) : nullptr;
 	
 	if (ItemCDO == nullptr || IsInventoryFull(ItemCDO->GetItemCategory()))
 		return;
@@ -80,16 +51,31 @@ void URaidBossInventorySystem::AddNewItem(const TSubclassOf<URaidBossItemBase>& 
 		case EITemCategory::Consumable	: AddNewConsumableItem(ItemCDO);	break;
 		default: break;
 	}
+
+	if (InventoryWidget)
+		InventoryWidget->UpdateInventorySlot();
 }
 
 void URaidBossInventorySystem::RemoveItem(EITemCategory ItemCategory, int32 Index)
 {
 	switch (ItemCategory)
 	{
-		case EITemCategory::Equip		: EquipItemInfo[Index].Reset;			break;
-		case EITemCategory::Consumable	: ConsumableItemInfo[Index].Reset();	break;
+		case EITemCategory::Equip :
+		{
+			EquipItemInfo[Index].Reset();
+			DecreaseCurrentItemCount(EITemCategory::Equip);
+			break;
+		}
+		case EITemCategory::Consumable :
+		{
+			ConsumableItemInfo[Index].Reset();
+			DecreaseCurrentItemCount(EITemCategory::Consumable);
+			break;
+		}
 		default: break;
 	}
+	if (InventoryWidget)
+		InventoryWidget->UpdateInventorySlot();
 }
 
 void URaidBossInventorySystem::CallEquipItem(int32 Index)
@@ -99,7 +85,7 @@ void URaidBossInventorySystem::CallEquipItem(int32 Index)
 
 void URaidBossInventorySystem::CallUnEquipItem(int32 Index)
 {
-	URaidBossEquipmentItem*	UnEquippedItem;
+	TSubclassOf<URaidBossItemBase>	UnEquippedItem;
 	
 	UnEquippedItem = UnEquipItem(Index);
 
@@ -109,75 +95,79 @@ void URaidBossInventorySystem::CallUnEquipItem(int32 Index)
 void URaidBossInventorySystem::EquipItem(int32 Index)
 {
 	URaidBossAbilitySystemComponent*	AbilitySystemComponent;
-	URaidBossEquipmentItem*				EquipmentItem;
-	URaidBossEquipmentItem*				AddToInventory;
+	FItemInfomation*					EquipmentItem;
+	TSubclassOf<URaidBossItemBase>		AddToInventory;
+	URaidBossEquipmentItem*				ItemCDO;
 	FGameplayAbilitySpec				Spec;
 	FGameplayAbilitySpecHandle			SpecHandle;
+	int32								EquipType;
 	
-	AbilitySystemComponent = GetRaidBossAbilitySystemComponent();
-	EquipmentItem = Cast<URaidBossEquipmentItem>(GetItem(EITemCategory::Equip, Index));
+	AbilitySystemComponent	= GetRaidBossAbilitySystemComponent();
+	EquipmentItem			= GetItemInfo(EITemCategory::Equip, Index);
+	ItemCDO					= Cast<URaidBossEquipmentItem>(EquipmentItem->GetItemCDO());
+	EquipType				= ItemCDO ? ItemCDO->GetEquipType() : static_cast<int32>(EEquipType::None);
 	
-	AddToInventory = UnEquipItem(EquipmentItem->GetEquipType());
+	AddToInventory = UnEquipItem(EquipType);
 	
-	if (AbilitySystemComponent && EquipmentItem && InventoryWidget)
+	if (AbilitySystemComponent && EquipmentItem && ItemCDO && InventoryWidget)
 	{
-		Spec = AbilitySystemComponent->BuildAbilitySpecFromClass(EquipmentItem->GetClass());
+		Spec = AbilitySystemComponent->BuildAbilitySpecFromClass(EquipmentItem->ItemClass);
 		SpecHandle = AbilitySystemComponent->GiveAbility(Spec);
 		AbilitySystemComponent->TryActivateAbility(SpecHandle);
 		
-		RemoveItem(EITemCategory::Equip, Index);
-		EquippedItems.Add(EquipmentItem->GetEquipType(), EquipmentItem);
+		EquippedItemInfo.Add(ItemCDO->GetEquipType(), EquipmentItem->ItemClass);
+		DecreaseItemAmount(EITemCategory::Equip, Index);
 		InventoryWidget->UpdateInventorySlot();
 		InventoryWidget->UpdateEquipmentSlot();
 	}
-
+	
 	AddNewItem(AddToInventory);
 }
 
-URaidBossEquipmentItem* URaidBossInventorySystem::UnEquipItem(int32 Index)
+TSubclassOf<URaidBossItemBase> URaidBossInventorySystem::UnEquipItem(int32 Index)
 {
 	URaidBossAbilitySystemComponent*	AbilitySystemComponent;
-	URaidBossEquipmentItem*				EquipmentItem;
+	TSubclassOf<URaidBossItemBase>		ItemClass;
 	FGameplayAbilitySpec*				Spec;
 	
 	AbilitySystemComponent = GetRaidBossAbilitySystemComponent();
-	EquipmentItem = EquippedItems.FindRef(Index);
+	ItemClass = EquippedItemInfo.FindRef(Index);
 	
-	if (AbilitySystemComponent && EquipmentItem && InventoryWidget)
+	if (AbilitySystemComponent && ItemClass && InventoryWidget)
 	{
-		Spec = AbilitySystemComponent->FindAbilitySpecFromClass(EquipmentItem->GetClass());
+		Spec = AbilitySystemComponent->FindAbilitySpecFromClass(ItemClass);
 		if (Spec)
 		{
 			AbilitySystemComponent->CancelAbilityHandle(Spec->Handle);
 			AbilitySystemComponent->ClearAbility(Spec->Handle);
 		}
 		
-		EquippedItems.Remove(Index);
+		EquippedItemInfo.Remove(Index);
 		InventoryWidget->UpdateInventorySlot();
 		InventoryWidget->UpdateEquipmentSlot();
 	}
 
-	return EquipmentItem;
+	return ItemClass;
 }
 
 void URaidBossInventorySystem::UseConsumableItem(int32 Index)
 {
 	URaidBossAbilitySystemComponent*	AbilitySystemComponent;
-	URaidBossConsumableItem*			ConsumableItem;
+	FItemInfomation*					ItemInfo;
 	FGameplayAbilitySpec				Spec;
 	FGameplayAbilitySpecHandle			SpecHandle;
 	
 	AbilitySystemComponent = GetRaidBossAbilitySystemComponent();
-	ConsumableItem = Cast<URaidBossConsumableItem>(GetItem(EITemCategory::Consumable, Index));
+	ItemInfo = GetItemInfo(EITemCategory::Consumable, Index);
 	
-	if (AbilitySystemComponent && ConsumableItem && InventoryWidget)
+	if (AbilitySystemComponent && ItemInfo && InventoryWidget)
 	{
-		Spec = AbilitySystemComponent->BuildAbilitySpecFromClass(ConsumableItem->GetClass());
+		Spec = AbilitySystemComponent->BuildAbilitySpecFromClass(ItemInfo->ItemClass);
 		SpecHandle = AbilitySystemComponent->GiveAbility(Spec);
 		AbilitySystemComponent->TryActivateAbility(SpecHandle);
 		AbilitySystemComponent->ClearAbility(SpecHandle);
 		
-		DecreaseItemCount(EITemCategory::Consumable, Index);
+		DecreaseItemAmount(EITemCategory::Consumable, Index);
 		InventoryWidget->UpdateInventorySlot();
 	}
 }
@@ -186,8 +176,8 @@ void URaidBossInventorySystem::ChangeItemOrder(int32 Index1, int32 Index2, EITem
 {
 	switch (ItemCategory)
 	{
-	case EITemCategory::Equip		: SwapItems(EquipItemObjects, Index1, Index2);		break;
-	case EITemCategory::Consumable	: SwapItems(ConsumableItemObjects, Index1, Index2);	break;
+	case EITemCategory::Equip		: SwapItems(EquipItemInfo, Index1, Index2);		break;
+	case EITemCategory::Consumable	: SwapItems(ConsumableItemInfo, Index1, Index2);	break;
 	default: break;
 	}
 
@@ -201,13 +191,12 @@ void URaidBossInventorySystem::AddNewEquipItem(URaidBossItemBase* ItemCDO)
 	
 	for (int32 i = 0; i < EquipItemInfo.Num(); i++)
 	{
-		if (EquipItemInfo[i].IsEmpty())
+		if (EquipItemInfo[i].IsEmpty() && EmptyIndex == INDEX_NONE)
 		{
 			EmptyIndex = i;
 		}
 		else if (EquipItemInfo[i].ItemClass == ItemCDO->GetClass())
 		{
-			EquipItemInfo[i].ItemClass = ItemCDO->GetClass();
 			EquipItemInfo[i].Amount++;
 			
 			return;
@@ -217,6 +206,7 @@ void URaidBossInventorySystem::AddNewEquipItem(URaidBossItemBase* ItemCDO)
 	{
 		EquipItemInfo[EmptyIndex].ItemClass = ItemCDO->GetClass();
 		EquipItemInfo[EmptyIndex].Amount++;
+		IncreaseCurrentItemCount(EITemCategory::Equip);
 	}
 }
 
@@ -226,13 +216,12 @@ void URaidBossInventorySystem::AddNewConsumableItem(URaidBossItemBase* ItemCDO)
 	
 	for (int32 i = 0; i < ConsumableItemInfo.Num(); i++)
 	{
-		if (ConsumableItemInfo[i].IsEmpty())
+		if (ConsumableItemInfo[i].IsEmpty() && EmptyIndex == INDEX_NONE)
 		{
 			EmptyIndex = i;
 		}
 		else if (ConsumableItemInfo[i].ItemClass == ItemCDO->GetClass())
 		{
-			ConsumableItemInfo[i].ItemClass = ItemCDO->GetClass();
 			ConsumableItemInfo[i].Amount++;
 			
 			return;
@@ -242,81 +231,111 @@ void URaidBossInventorySystem::AddNewConsumableItem(URaidBossItemBase* ItemCDO)
 	{
 		ConsumableItemInfo[EmptyIndex].ItemClass = ItemCDO->GetClass();
 		ConsumableItemInfo[EmptyIndex].Amount++;
+		IncreaseCurrentItemCount(EITemCategory::Consumable);
 	}
 }
 
-void URaidBossInventorySystem::SwapItems(TArray<URaidBossItemBase*>& Items, int32 Index1, int32 Index2)
+void URaidBossInventorySystem::SwapItems(TArray<FItemInfomation>& Items, int32 Index1, int32 Index2)
 {
-	URaidBossItemBase*	TmpItem;
+	FItemInfomation*	TmpItem;
 	
 	if (Items.IsValidIndex(Index1) && Items.IsValidIndex(Index2))
 	{
-		TmpItem = Items[Index1];
+		TmpItem = &Items[Index1];
 		Items[Index1] = Items[Index2];
-		Items[Index2] = TmpItem;
+		Items[Index2] = *TmpItem;
 	}
 }
 
-void URaidBossInventorySystem::IncreaseItemCount(EITemCategory ItemCategory, int32 Index)
+void URaidBossInventorySystem::IncreaseItemAmount(EITemCategory ItemCategory, int32 Index)
 {
-	URaidBossItemBase*	Item;
-	int32				Amount;
 	bool				bIsValidItemIndex;
-	bool				DoCheckObject;
 
-	DoCheckObject = true;
-	bIsValidItemIndex = IsValidItemIndex(ItemCategory, Index, DoCheckObject);
+	bIsValidItemIndex = IsValidItemIndex(ItemCategory, Index);
 	
 	if (ItemCategory == EITemCategory::Equip && bIsValidItemIndex)
 	{
-		Item = EquipItemObjects[Index];
-		Amount = Item->GetItemAmount();
-
-		Item->SetItemAmount(Amount + 1);
+		EquipItemInfo[Index].Amount++;
 	}
 	else if (ItemCategory == EITemCategory::Consumable && bIsValidItemIndex)
 	{
-		Item = ConsumableItemObjects[Index];
-		Amount = Item->GetItemAmount();
-
-		Item->SetItemAmount(Amount + 1);
+		ConsumableItemInfo[Index].Amount++;
 	}
 }
 
-void URaidBossInventorySystem::DecreaseItemCount(EITemCategory ItemCategory, int32 Index)
+void URaidBossInventorySystem::DecreaseItemAmount(EITemCategory ItemCategory, int32 Index)
 {
-	URaidBossItemBase*	Item;
-	int32				Amount;
-	bool				bIsValidItemIndex;
-	bool				DoCheckObject;
+	bool	bIsValidItemIndex;
 
-	DoCheckObject = true;
-	bIsValidItemIndex = IsValidItemIndex(ItemCategory, Index, DoCheckObject);
+	bIsValidItemIndex = IsValidItemIndex(ItemCategory, Index);
 	
 	if (ItemCategory == EITemCategory::Equip && bIsValidItemIndex)
 	{
-		Item = EquipItemObjects[Index];
-		Amount = Item->GetItemAmount();
-
-		Amount > 1 ? Item->SetItemAmount(Amount - 1) : RemoveItem(ItemCategory, Index);
+		if (EquipItemInfo[Index].Amount > 1)
+		{
+			EquipItemInfo[Index].Amount--;
+		}
+		else
+		{
+			RemoveItem(EITemCategory::Equip, Index);
+		}
 	}
 	else if (ItemCategory == EITemCategory::Consumable && bIsValidItemIndex)
 	{
-		Item = ConsumableItemObjects[Index];
-		Amount = Item->GetItemAmount();
-
-		Amount > 1 ? Item->SetItemAmount(Amount - 1) : RemoveItem(ItemCategory, Index);
+		if (ConsumableItemInfo[Index].Amount > 1)
+		{
+			ConsumableItemInfo[Index].Amount--;
+		}
+		else
+		{
+			RemoveItem(EITemCategory::Consumable, Index);
+		}
 	}
 }
 
-bool URaidBossInventorySystem::IsValidItemIndex(EITemCategory ItemCategory, int32 Index, bool DoCheckObject)
+void URaidBossInventorySystem::IncreaseCurrentItemCount(EITemCategory ItemCategory)
+{
+	switch (ItemCategory)
+	{
+		case EITemCategory::Consumable	: CurrentConsumableItemCount++; break;
+		case EITemCategory::Equip		: CurrentEquipItemCount++;		break;
+		default: break;
+	}
+
+	if (CurrentConsumableItemCount > MaximumItemAmount)
+		CurrentConsumableItemCount = MaximumItemAmount;
+	else if (CurrentEquipItemCount > MaximumItemAmount)
+		CurrentEquipItemCount = MaximumItemAmount;
+}
+
+void URaidBossInventorySystem::DecreaseCurrentItemCount(EITemCategory ItemCategory)
+{
+	switch (ItemCategory)
+    {
+    	case EITemCategory::Consumable	: CurrentConsumableItemCount--; break;
+    	case EITemCategory::Equip		: CurrentEquipItemCount--;		break;
+    	default: break;
+    }
+
+    if (CurrentConsumableItemCount < 0)
+    	CurrentConsumableItemCount = 0;
+    else if (CurrentEquipItemCount < 0)
+    	CurrentEquipItemCount = 0;
+}
+
+bool URaidBossInventorySystem::IsValidItemIndex(EITemCategory ItemCategory, int32 Index) const
 {
 	bool bIsValidItemIndex;
 
 	if (ItemCategory == EITemCategory::Equip)
-		bIsValidItemIndex = (EquipItemObjects.IsValidIndex(Index) && EquipItemObjects[Index] != nullptr);
+	{
+		bIsValidItemIndex = (EquipItemInfo.IsValidIndex(Index) && EquipItemInfo[Index].IsEmpty() == false);
+	}
 	else if (ItemCategory == EITemCategory::Consumable)
-		bIsValidItemIndex = (ConsumableItemObjects.IsValidIndex(Index) && ConsumableItemObjects[Index] != nullptr);
+	{
+		bIsValidItemIndex = (ConsumableItemInfo.IsValidIndex(Index) && ConsumableItemInfo[Index].IsEmpty() == false);
+		
+	}
 	else
 		bIsValidItemIndex = false;
 
@@ -329,8 +348,8 @@ bool URaidBossInventorySystem::IsInventoryFull(EITemCategory ItemCategory)
 	
 	switch (ItemCategory)
 	{
-		case EITemCategory::Equip		: bIsInventoryFull = (EquipItemInfo.Num() >= MaximumItemCount);		break;
-		case EITemCategory::Consumable	: bIsInventoryFull = (ConsumableItemInfo.Num() >= MaximumItemCount);	break;
+		case EITemCategory::Equip		: bIsInventoryFull = (CurrentEquipItemCount >= MaximumItemAmount);		break;
+		case EITemCategory::Consumable	: bIsInventoryFull = (CurrentConsumableItemCount >= MaximumItemAmount);	break;
 			
 		default : bIsInventoryFull = true; break;
 	}
@@ -338,14 +357,54 @@ bool URaidBossInventorySystem::IsInventoryFull(EITemCategory ItemCategory)
 	return bIsInventoryFull;
 }
 
-int32 URaidBossInventorySystem::GetMaximumItemCount() const
+int32 URaidBossInventorySystem::GetMaximumItemAmount() const
 {
-	return MaximumItemCount;
+	return MaximumItemAmount;
+}
+
+int32 URaidBossInventorySystem::GetItemAmount(EITemCategory ItemCategory, int32 Index) const
+{
+	int32	ItemAmount = 0;
+	
+	switch (ItemCategory)
+	{
+		case EITemCategory::Consumable	: ItemAmount = ConsumableItemInfo[Index].Amount;	break;
+		case EITemCategory::Equip		: ItemAmount = EquipItemInfo[Index].Amount;			break;
+		default: break;
+	}
+
+	return ItemAmount;
 }
 
 ARaidBossPlayerControllerBase* URaidBossInventorySystem::GetRaidBossPlayerControllerBase() const
 {
 	return Cast<ARaidBossPlayerControllerBase>(GetOuter());
+}
+
+const URaidBossEquipmentItem* URaidBossInventorySystem::GetEquipmentItem(int32 Index) const
+{
+	const URaidBossEquipmentItem*	EquipmentItem;
+	FItemInfomation					CopyItemInfo;
+
+	CopyItemInfo = EquipItemInfo[Index];
+	EquipmentItem = Cast<const URaidBossEquipmentItem>(CopyItemInfo.GetItemCDO());
+
+	return EquipmentItem;
+}
+
+const URaidBossItemBase* URaidBossInventorySystem::GetItemCDO(EITemCategory ItemCategory, int32 Index) const
+{
+	FItemInfomation	CopyItemInfo;
+	bool			bIsValidItemIndex;
+
+	bIsValidItemIndex = IsValidItemIndex(ItemCategory, Index);
+	
+	if (ItemCategory == EITemCategory::Equip && bIsValidItemIndex)
+		CopyItemInfo = EquipItemInfo[Index];
+	else if (ItemCategory == EITemCategory::Consumable && bIsValidItemIndex)
+		CopyItemInfo = ConsumableItemInfo[Index];
+
+	return CopyItemInfo.GetItemCDO();
 }
 
 URaidBossAbilitySystemComponent* URaidBossInventorySystem::GetRaidBossAbilitySystemComponent() const
@@ -359,28 +418,34 @@ URaidBossAbilitySystemComponent* URaidBossInventorySystem::GetRaidBossAbilitySys
 	return AbilitySystemComponent;
 }
 
-URaidBossItemBase* URaidBossInventorySystem::GetItem(EITemCategory ItemCategory, int32 Index)
+FItemInfomation* URaidBossInventorySystem::GetItemInfo(EITemCategory ItemCategory, int32 Index)
 {
-	URaidBossItemBase*	ItemObject;
+	FItemInfomation*	ItemInfo;
 	bool				bIsValidItemIndex;
-	bool				DoCheckObject;
 
-	DoCheckObject = true;
-	bIsValidItemIndex = IsValidItemIndex(ItemCategory, Index, DoCheckObject);
-
+	ItemInfo = nullptr;
+	bIsValidItemIndex = IsValidItemIndex(ItemCategory, Index);
+	
 	if (ItemCategory == EITemCategory::Equip && bIsValidItemIndex)
-		ItemObject = EquipItemObjects[Index];
+		ItemInfo = &EquipItemInfo[Index];
 	else if (ItemCategory == EITemCategory::Consumable && bIsValidItemIndex)
-		ItemObject = ConsumableItemObjects[Index];
-	else
-		ItemObject = nullptr;
+		ItemInfo = &ConsumableItemInfo[Index];
 
-	return ItemObject;
+	return ItemInfo;
 }
 
-const URaidBossEquipmentItem* URaidBossInventorySystem::GetEquippedItem(int32 Index)
+const URaidBossEquipmentItem* URaidBossInventorySystem::GetEquippedItem(int32 Index) const
 {
-	return EquippedItems.FindRef(Index);
+	const URaidBossEquipmentItem*	EquippedItem;
+	TSubclassOf<URaidBossItemBase>	ItemClass;
+	
+	EquippedItem = nullptr;
+	ItemClass = EquippedItemInfo.FindRef(Index);
+
+	if (ItemClass)
+		EquippedItem = Cast<const URaidBossEquipmentItem>(ItemClass->GetDefaultObject());
+	
+	return EquippedItem;
 }
 
 void URaidBossInventorySystem::SetInventoryWidget(URaidBossInventoryWidget* InInventoryWidget)

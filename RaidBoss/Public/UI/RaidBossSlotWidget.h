@@ -46,6 +46,7 @@ public:
 	void	SetWeakOwnerWidget(IN UUserWidget* InWeakOwnerWidget);
 	void	SetTexture(IN UTexture2D* InTexture);
 	void	SetIndex(int32 InIndex);
+	void	SetItemAmount(FString Amount);
 	void	SetSlotType(ESlotType InSlotType);
 /*
 *	----------- Member Variables
@@ -57,6 +58,8 @@ protected:
 	ESlotType					SlotType = ESlotType::None;
 	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Slot Widget")
 	int32						Index = 0;
+	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Slot Widget")
+	FString						ItemAmount;
 
 	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Slot Widget", meta=(BindWidget))
 	TObjectPtr<UImage>		BindImage;
