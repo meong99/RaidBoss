@@ -1,6 +1,8 @@
 #include "Abilities/Effect/RaidBossChangeCharacterStatus.h"
 #include "Abilities/RaidBossCharacterStatusAttributeSet.h"
 
+TMap<FGameplayEffectAttributeCaptureDefinition, float> URaidBossChangeCharacterStatus::ExecutedValueFromSpec;
+
 struct FStatusStatics
 {
 	DECLARE_ATTRIBUTE_CAPTUREDEF(Health);
@@ -44,6 +46,9 @@ void URaidBossChangeCharacterStatus::Execute_Implementation(
 {
 	Super::Execute_Implementation(ExecutionParams, OutExecutionOutput);
 
+	ExecutedValueFromSpec.Reset();
+	SaveAggregatorFromExecutedSpec(ExecutionParams);
+	
 	CheckAndApplyMaxHealth(ExecutionParams, OutExecutionOutput);
 	CheckAndApplyHealth(ExecutionParams, OutExecutionOutput);
 	CheckAndApplyMaxMana(ExecutionParams, OutExecutionOutput);
@@ -52,16 +57,34 @@ void URaidBossChangeCharacterStatus::Execute_Implementation(
 	CheckAndApplyDefencePower(ExecutionParams, OutExecutionOutput);
 }
 
-void URaidBossChangeCharacterStatus::SetProperty(FGameplayEffectCustomExecutionOutput& OutExecutionOutput,
-	const FGameplayAttribute& InAttribute, TEnumAsByte<EGameplayModOp::Type> ModifierOp,float Magnitude) const
+void URaidBossChangeCharacterStatus::SaveAggregatorFromExecutedSpec(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const
 {
-	OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(InAttribute, ModifierOp, Magnitude));
+	const FGameplayEffectSpec&					OwningSpec = ExecutionParams.GetOwningSpec();
+	const UGameplayEffect*						EffectDef = OwningSpec.Def;
+	TArray<FGameplayEffectExecutionDefinition>	ExecutionFromDef;
+	
+	if (EffectDef)
+		ExecutionFromDef = EffectDef->Executions;
+	
+	for (auto CurExecDef : ExecutionFromDef)
+	{
+		for (auto CurScopedMod : CurExecDef.CalculationModifiers)
+		{
+			float	ExcutedValue;
+			bool	bIscalculationSuccessed = CurScopedMod.ModifierMagnitude.AttemptCalculateMagnitude(ExecutionParams.GetOwningSpec(), ExcutedValue);
+
+			if (bIscalculationSuccessed)
+			{
+				ExecutedValueFromSpec.Add(CurScopedMod.CapturedAttribute, ExcutedValue);
+			}
+		}
+	}
 }
 
 void URaidBossChangeCharacterStatus::CheckAndApplyHealth(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
 {
 	float BaseValue = GetBaseHealth(ExecutionParams);
-	float BonusValue = GetBonusHealth(ExecutionParams);
+	float BonusValue = GetBonusHealthFromExecutedSpec(StatusStatic().HealthDef);
 	float MaxHealth = GetBaseMaxHealth(ExecutionParams);
 
 	if (BaseValue + BonusValue < 0)
@@ -83,7 +106,7 @@ void URaidBossChangeCharacterStatus::CheckAndApplyHealth(const FGameplayEffectCu
 
 void URaidBossChangeCharacterStatus::CheckAndApplyMaxHealth(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
 {
-	float BonusValue = GetBonusMaxHealth(ExecutionParams);
+	float BonusValue = GetBonusMaxManaFromExecutedSpec(StatusStatic().MaxManaDef);
 
 	bool WillChange = (BonusValue != 0);
 	
@@ -95,8 +118,19 @@ void URaidBossChangeCharacterStatus::CheckAndApplyMaxHealth(const FGameplayEffec
 
 void URaidBossChangeCharacterStatus::CheckAndApplyMana(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
 {
-	float BonusValue = GetBonusMana(ExecutionParams);
-
+	float BaseValue = GetBaseMana(ExecutionParams);
+	float BonusValue = GetBonusManaFromExecutedSpec(StatusStatic().ManaDef);
+	float MaxMana = GetBaseMaxMana(ExecutionParams);
+	
+	if (BaseValue + BonusValue < 0)
+	{
+		BonusValue -= (BaseValue - BonusValue);
+	}
+	else if (BaseValue + BonusValue > MaxMana)
+	{
+		BonusValue -= (BaseValue + BonusValue - MaxMana);
+	}
+	
 	bool WillChange = (BonusValue != 0);
 	
 	if (WillChange)
@@ -107,7 +141,7 @@ void URaidBossChangeCharacterStatus::CheckAndApplyMana(const FGameplayEffectCust
 
 void URaidBossChangeCharacterStatus::CheckAndApplyMaxMana(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
 {
-	float BonusValue = GetBonusMaxMana(ExecutionParams);
+	float BonusValue = GetBonusMaxManaFromExecutedSpec(StatusStatic().MaxManaDef);
 
 	bool WillChange = (BonusValue != 0);
 	
@@ -119,7 +153,7 @@ void URaidBossChangeCharacterStatus::CheckAndApplyMaxMana(const FGameplayEffectC
 
 void URaidBossChangeCharacterStatus::CheckAndApplyAttackPower(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
 {
-	float BonusValue = GetBonusAttackPower(ExecutionParams);
+	float BonusValue = GetBonusAttackPowerFromExecutedSpec(StatusStatic().AttackPowerDef);
 
 	bool WillChange = (BonusValue != 0);
 	
@@ -131,7 +165,7 @@ void URaidBossChangeCharacterStatus::CheckAndApplyAttackPower(const FGameplayEff
 
 void URaidBossChangeCharacterStatus::CheckAndApplyDefencePower(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
 {
-	float BonusValue = GetBonusDefensePower(ExecutionParams);
+	float BonusValue = GetBonusDefensePowerFromExecutedSpec(StatusStatic().DefensePowerDef);
 
 	bool WillChange = (BonusValue != 0);
 	
@@ -141,14 +175,94 @@ void URaidBossChangeCharacterStatus::CheckAndApplyDefencePower(const FGameplayEf
 	}
 }
 
-float URaidBossChangeCharacterStatus::GetBonusHealth(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const
+void URaidBossChangeCharacterStatus::SetProperty(FGameplayEffectCustomExecutionOutput& OutExecutionOutput,
+	const FGameplayAttribute& InAttribute, TEnumAsByte<EGameplayModOp::Type> ModifierOp,float Magnitude) const
 {
-	FAggregatorEvaluateParameters EvaluateParameters;
-	float OutValue = 0;
+	OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(InAttribute, ModifierOp, Magnitude));
+}
 
-	ExecutionParams.AttemptCalculateCapturedAttributeBonusMagnitude(StatusStatic().HealthDef, EvaluateParameters, OutValue);
+float URaidBossChangeCharacterStatus::GetBonusHealthFromExecutedSpec(
+	const FGameplayEffectAttributeCaptureDefinition& InCaptureDef) const
+{
+	float	BonusValue = 0;
+	float*	FindedValue = ExecutedValueFromSpec.Find(InCaptureDef);
 	
-	return OutValue;
+	if (FindedValue)
+	{
+		BonusValue = *FindedValue;
+	}
+	
+	return BonusValue;
+}
+
+float URaidBossChangeCharacterStatus::GetBonusMaxHealthFromExecutedSpec(
+	const FGameplayEffectAttributeCaptureDefinition& InCaptureDef) const
+{
+	float	BonusValue = 0;
+	float*	FindedValue = ExecutedValueFromSpec.Find(InCaptureDef);
+	
+	if (FindedValue)
+	{
+		BonusValue = *FindedValue;
+	}
+	
+	return BonusValue;
+}
+
+float URaidBossChangeCharacterStatus::GetBonusManaFromExecutedSpec(
+	const FGameplayEffectAttributeCaptureDefinition& InCaptureDef) const
+{
+	float	BonusValue = 0;
+	float*	FindedValue = ExecutedValueFromSpec.Find(InCaptureDef);
+	
+	if (FindedValue)
+	{
+		BonusValue = *FindedValue;
+	}
+	
+	return BonusValue;
+}
+
+float URaidBossChangeCharacterStatus::GetBonusMaxManaFromExecutedSpec(
+	const FGameplayEffectAttributeCaptureDefinition& InCaptureDef) const
+{
+	float	BonusValue = 0;
+	float*	FindedValue = ExecutedValueFromSpec.Find(InCaptureDef);
+	
+	if (FindedValue)
+	{
+		BonusValue = *FindedValue;
+	}
+	
+	return BonusValue;
+}
+
+float URaidBossChangeCharacterStatus::GetBonusAttackPowerFromExecutedSpec(
+	const FGameplayEffectAttributeCaptureDefinition& InCaptureDef) const
+{
+	float	BonusValue = 0;
+	float*	FindedValue = ExecutedValueFromSpec.Find(InCaptureDef);
+	
+	if (FindedValue)
+	{
+		BonusValue = *FindedValue;
+	}
+	
+	return BonusValue;
+}
+
+float URaidBossChangeCharacterStatus::GetBonusDefensePowerFromExecutedSpec(
+	const FGameplayEffectAttributeCaptureDefinition& InCaptureDef) const
+{
+	float	BonusValue = 0;
+	float*	FindedValue = ExecutedValueFromSpec.Find(InCaptureDef);
+	
+	if (FindedValue)
+	{
+		BonusValue = *FindedValue;
+	}
+	
+	return BonusValue;
 }
 
 float URaidBossChangeCharacterStatus::GetBaseHealth(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const
@@ -156,17 +270,7 @@ float URaidBossChangeCharacterStatus::GetBaseHealth(const FGameplayEffectCustomE
 	float OutValue = 0;
 
 	ExecutionParams.AttemptCalculateCapturedAttributeBaseValue(StatusStatic().HealthDef, OutValue);
-	
-	return OutValue;
-}
 
-float URaidBossChangeCharacterStatus::GetBonusMaxHealth(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const
-{
-	FAggregatorEvaluateParameters EvaluateParameters;
-	float OutValue = 0;
-
-	ExecutionParams.AttemptCalculateCapturedAttributeBonusMagnitude(StatusStatic().MaxHealthDef, EvaluateParameters, OutValue);
-	
 	return OutValue;
 }
 
@@ -175,16 +279,6 @@ float URaidBossChangeCharacterStatus::GetBaseMaxHealth(const FGameplayEffectCust
 	float OutValue = 0;
 
 	ExecutionParams.AttemptCalculateCapturedAttributeBaseValue(StatusStatic().MaxHealthDef, OutValue);
-	
-	return OutValue;
-}
-
-float URaidBossChangeCharacterStatus::GetBonusMana(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const
-{
-	float OutValue = 0;
-
-	FAggregatorEvaluateParameters EvaluateParameters;
-	ExecutionParams.AttemptCalculateCapturedAttributeBonusMagnitude(StatusStatic().ManaDef, EvaluateParameters, OutValue);
 	
 	return OutValue;
 }
@@ -198,31 +292,11 @@ float URaidBossChangeCharacterStatus::GetBaseMana(const FGameplayEffectCustomExe
 	return OutValue;
 }
 
-float URaidBossChangeCharacterStatus::GetBonusMaxMana(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const
-{
-	float OutValue = 0;
-
-	FAggregatorEvaluateParameters EvaluateParameters;
-	ExecutionParams.AttemptCalculateCapturedAttributeBonusMagnitude(StatusStatic().MaxManaDef, EvaluateParameters, OutValue);
-	
-	return OutValue;
-}
-
 float URaidBossChangeCharacterStatus::GetBaseMaxMana(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const
 {
 	float OutValue = 0;
 
 	ExecutionParams.AttemptCalculateCapturedAttributeBaseValue(StatusStatic().MaxManaDef, OutValue);
-	
-	return OutValue;
-}
-
-float URaidBossChangeCharacterStatus::GetBonusAttackPower(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const
-{
-	float OutValue = 0;
-
-	FAggregatorEvaluateParameters EvaluateParameters;
-	ExecutionParams.AttemptCalculateCapturedAttributeBonusMagnitude(StatusStatic().AttackPowerDef, EvaluateParameters, OutValue);
 	
 	return OutValue;
 }
@@ -236,22 +310,73 @@ float URaidBossChangeCharacterStatus::GetBaseAttackPower(const FGameplayEffectCu
 	return OutValue;
 }
 
-float URaidBossChangeCharacterStatus::GetBonusDefensePower(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const
-{
-	float OutValue = 0;
-
-	FAggregatorEvaluateParameters EvaluateParameters;
-	ExecutionParams.AttemptCalculateCapturedAttributeBonusMagnitude(StatusStatic().DefensePowerDef, EvaluateParameters, OutValue);
-	
-	return OutValue;
-}
-
 float URaidBossChangeCharacterStatus::GetBaseDefensePower(
 	const FGameplayEffectCustomExecutionParameters& ExecutionParams) const
 {
 	float OutValue = 0;
 
 	ExecutionParams.AttemptCalculateCapturedAttributeBaseValue(StatusStatic().DefensePowerDef, OutValue);
+	
+	return OutValue;
+}
+
+float URaidBossChangeCharacterStatus::GetBonusHealthAllEcecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const
+{
+	FAggregatorEvaluateParameters EvaluateParameters;
+	float OutValue = 0;
+
+	ExecutionParams.AttemptCalculateCapturedAttributeBonusMagnitude(StatusStatic().HealthDef, EvaluateParameters, OutValue);
+	
+	return OutValue;
+}
+
+float URaidBossChangeCharacterStatus::GetBonusMaxHealthAllEcecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const
+{
+	FAggregatorEvaluateParameters EvaluateParameters;
+	float OutValue = 0;
+
+	ExecutionParams.AttemptCalculateCapturedAttributeBonusMagnitude(StatusStatic().MaxHealthDef, EvaluateParameters, OutValue);
+	
+	return OutValue;
+}
+
+float URaidBossChangeCharacterStatus::GetBonusManaAllEcecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const
+{
+	float OutValue = 0;
+
+	FAggregatorEvaluateParameters EvaluateParameters;
+	ExecutionParams.AttemptCalculateCapturedAttributeBonusMagnitude(StatusStatic().ManaDef, EvaluateParameters, OutValue);
+	
+	return OutValue;
+}
+
+float URaidBossChangeCharacterStatus::GetBonusMaxManaAllEcecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const
+{
+	float OutValue = 0;
+
+	FAggregatorEvaluateParameters EvaluateParameters;
+	ExecutionParams.AttemptCalculateCapturedAttributeBonusMagnitude(StatusStatic().MaxManaDef, EvaluateParameters, OutValue);
+	
+	return OutValue;
+}
+
+float URaidBossChangeCharacterStatus::GetBonusAttackPowerAllEcecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const
+{
+	FAggregatorEvaluateParameters	EvaluateParameters;
+	float							OutValue;
+	
+	OutValue = 0;
+	ExecutionParams.AttemptCalculateCapturedAttributeBonusMagnitude(StatusStatic().AttackPowerDef, EvaluateParameters, OutValue);
+
+	return OutValue;
+}
+
+float URaidBossChangeCharacterStatus::GetBonusDefensePowerAllEcecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const
+{
+	float OutValue = 0;
+
+	FAggregatorEvaluateParameters EvaluateParameters;
+	ExecutionParams.AttemptCalculateCapturedAttributeBonusMagnitude(StatusStatic().DefensePowerDef, EvaluateParameters, OutValue);
 	
 	return OutValue;
 }

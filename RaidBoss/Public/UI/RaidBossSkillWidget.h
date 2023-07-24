@@ -27,7 +27,8 @@ class RAIDBOSS_API URaidBossSkillWidget : public UUserWidget
 */
 public:
 	void	InitializeSkillWidget(IN URaidBossSkillSystem* InWeakSkillSystem);
-protected:
+	
+private:
 	void					CreateSlots();
 	URaidBossSlotWidget*	CreateNewSlot();
 /*

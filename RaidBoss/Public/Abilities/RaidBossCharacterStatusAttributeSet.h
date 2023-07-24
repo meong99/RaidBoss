@@ -44,6 +44,7 @@ public:
 	ATTRIBUTE_ACCESSORS(URaidBossCharacterStatusAttributeSet, AttackRange)
 	ATTRIBUTE_ACCESSORS(URaidBossCharacterStatusAttributeSet, DefensePower)
 	ATTRIBUTE_ACCESSORS(URaidBossCharacterStatusAttributeSet, AdditialnalAttackPower)
+	ATTRIBUTE_ACCESSORS(URaidBossCharacterStatusAttributeSet, AdditialnalDefencePower)
 	ATTRIBUTE_ACCESSORS(URaidBossCharacterStatusAttributeSet, MoveSpeed)
 	
 /*
@@ -51,21 +52,23 @@ public:
  */
 public:
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
-		FGameplayAttributeData	Health;
+	FGameplayAttributeData	Health;
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
-		FGameplayAttributeData	MaxHealth;
+	FGameplayAttributeData	MaxHealth;
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
-		FGameplayAttributeData	Mana;
+	FGameplayAttributeData	Mana;
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
-		FGameplayAttributeData	MaxMana;
+	FGameplayAttributeData	MaxMana;
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
-		FGameplayAttributeData	AttackPower;
+	FGameplayAttributeData	AttackPower;
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
-		FGameplayAttributeData	AttackRange;
+	FGameplayAttributeData	AttackRange;
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
-		FGameplayAttributeData	DefensePower;
+	FGameplayAttributeData	DefensePower;
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
-		FGameplayAttributeData	AdditialnalAttackPower;
+	FGameplayAttributeData	AdditialnalAttackPower;
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
-		FGameplayAttributeData	MoveSpeed;
+	FGameplayAttributeData	AdditialnalDefencePower;
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
+	FGameplayAttributeData	MoveSpeed;
 };

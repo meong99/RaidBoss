@@ -55,6 +55,6 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Item Base")
 	FItemAbilityInformation			ITemInfo;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Item Base")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Consumable Item")
 	TSubclassOf<UGameplayEffect>	ItemEffect;
 };

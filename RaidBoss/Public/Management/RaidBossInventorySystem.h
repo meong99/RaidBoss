@@ -60,22 +60,21 @@ public:
 	void	ChangeItemOrder(int32 Index1, int32 Index2, EITemCategory ItemCategory);
 	
 private:
-	TSubclassOf<URaidBossItemBase>		UnEquipItem(int32 Index);
-	void								EquipItem(int32 Index);
-	void								AddNewEquipItem(URaidBossItemBase* ItemCDO);
-	void								AddNewConsumableItem(URaidBossItemBase* ItemCDO);
-	void								SwapItems(TArray<FItemInfomation>& Items, int32 Index1, int32 Index2);
-	void								IncreaseItemAmount(EITemCategory ItemCategory, int32 Index);
-	void								DecreaseItemAmount(EITemCategory ItemCategory, int32 Index);
-	void								IncreaseCurrentItemCount(EITemCategory ItemCategory);
-	void								DecreaseCurrentItemCount(EITemCategory ItemCategory);
-	bool								IsValidItemIndex(EITemCategory ItemCategory, int32 Index) const;
-	bool								IsInventoryFull(EITemCategory ItemCategory);
+	TSubclassOf<URaidBossItemBase>	UnEquipItem(int32 Index);
+	void							EquipItem(int32 Index);
+	void							AddNewEquipItem(URaidBossItemBase* ItemCDO);
+	void							AddNewConsumableItem(URaidBossItemBase* ItemCDO);
+	void							SwapItems(TArray<FItemInfomation>& Items, int32 Index1, int32 Index2);
+	void							IncreaseItemAmount(EITemCategory ItemCategory, int32 Index);
+	void							DecreaseItemAmount(EITemCategory ItemCategory, int32 Index);
+	void							IncreaseCurrentItemCount(EITemCategory ItemCategory);
+	void							DecreaseCurrentItemCount(EITemCategory ItemCategory);
+	bool							IsValidItemIndex(EITemCategory ItemCategory, int32 Index) const;
+	bool							IsInventoryFull(EITemCategory ItemCategory);
 /*
 *	----------- Access(Get, Set, Check)
 */
 public:
-	ARaidBossPlayerControllerBase*		GetRaidBossPlayerControllerBase() const;
 	const URaidBossEquipmentItem*		GetEquipmentItem(int32 Index) const;
 	const URaidBossItemBase*			GetItemCDO(EITemCategory ItemCategory, int32 Index) const;
 	const URaidBossEquipmentItem*		GetEquippedItem(int32 Index) const;
@@ -86,8 +85,9 @@ public:
 	void	SetInventoryWidget(URaidBossInventoryWidget* InInventoryWidget);
 
 private:
-	FItemInfomation*					GetItemInfo(EITemCategory ItemCategory, int32 Index);
+	ARaidBossPlayerControllerBase*		GetRaidBossPlayerControllerBase() const;
 	URaidBossAbilitySystemComponent*	GetRaidBossAbilitySystemComponent() const;
+	FItemInfomation*					GetItemInfo(EITemCategory ItemCategory, int32 Index);
 /*
 *	----------- Member Variables
 */
@@ -100,7 +100,7 @@ protected:
 private:
 	TArray<FItemInfomation>						EquipItemInfo;
 	TArray<FItemInfomation>						ConsumableItemInfo;
-	TMap<int32, TSubclassOf<URaidBossItemBase>>	EquippedItemInfo;
+	TMap<int32, TSubclassOf<URaidBossItemBase>>	EquippedItems;
 
 	int32	CurrentEquipItemCount = 0;
 	int32	CurrentConsumableItemCount = 0;

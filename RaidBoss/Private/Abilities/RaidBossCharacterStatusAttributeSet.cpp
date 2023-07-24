@@ -12,6 +12,7 @@ URaidBossCharacterStatusAttributeSet::URaidBossCharacterStatusAttributeSet()
 	, AttackRange(0.0f)
 	, DefensePower(1.0f)
 	, AdditialnalAttackPower(0.0f)
+	, AdditialnalDefencePower(0.0f)
 	, MoveSpeed(0.0f)
 {
 }

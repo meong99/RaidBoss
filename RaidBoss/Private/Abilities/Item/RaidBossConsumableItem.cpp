@@ -8,18 +8,16 @@ void URaidBossConsumableItem::ActivateAbility(const FGameplayAbilitySpecHandle H
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	FGameplayAbilitySpec*	Spec;
-	UGameplayEffect*		EffectToApply;
+	FGameplayAbilitySpec*		AbilitySpec;
+
+	AbilitySpec = GetCurrentAbilitySpec();
+	FGameplayEffectSpecHandle EffectSpecHandle = CreateEffectSpecHandle();
 	
-	Spec = GetCurrentAbilitySpec();
-	EffectToApply = ItemEffect.GetDefaultObject();
-	
-	if (Spec && EffectToApply && CommitAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo) == true)
+	if (AbilitySpec && CommitAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo) == true)
 	{
-		EffectToApply->Executions = ItemExecutions;
-	
-		Spec->GameplayEffectHandle = ApplyGameplayEffectToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectToApply, 1);
+		AbilitySpec->GameplayEffectHandle = ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle);
 	}
+	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
 }
 
@@ -30,4 +28,32 @@ bool URaidBossConsumableItem::CanActivateAbility(const FGameplayAbilitySpecHandl
 	bool bCanActivate = Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
 	
 	return (bCanActivate);
+}
+
+FGameplayEffectSpecHandle URaidBossConsumableItem::CreateEffectSpecHandle()
+{
+	FGameplayEffectContextHandle	EffectContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
+	FGameplayEffectSpec*			EffectSpec;
+	UGameplayEffect*				Effect;
+	
+	Effect = CraeteNewEffectObject();
+	EffectContextHandle.AddSourceObject(OwnerCharacter);
+	
+	EffectSpec = new FGameplayEffectSpec(Effect, EffectContextHandle);
+
+	return FGameplayEffectSpecHandle(EffectSpec);
+}
+
+UGameplayEffect* URaidBossConsumableItem::CraeteNewEffectObject()
+{
+	UGameplayEffect* Effect;
+
+	Effect = NewObject<UGameplayEffect>(this, ItemEffect);
+	
+	if (Effect)
+	{
+		Effect->Executions = ItemExecutions;
+	}
+
+	return Effect;
 }

@@ -12,18 +12,15 @@ void URaidBossSkillWidget::InitializeSkillWidget(URaidBossSkillSystem* InWeakSki
 
 void URaidBossSkillWidget::CreateSlots()
 {
-	URaidBossSlotWidget*	SkillSlot;
-	URaidBossSkillBase*		Skill;
-	
 	if (WeakSkillSystem != nullptr)
 	{
-		auto Classes = WeakSkillSystem->GetSkillClasses();
+		int32 SkillCount = WeakSkillSystem->GetSkillAmount();
 		
-		for (int i = 0; i < Classes.Num(); i++)
+		for (int i = 0; i < SkillCount; i++)
 		{
-			Skill = Cast<URaidBossSkillBase>(Classes[i]->GetDefaultObject());
+			const URaidBossSkillBase*	Skill = WeakSkillSystem->GetSkillObject(i);
+			URaidBossSlotWidget*		SkillSlot = CreateNewSlot();
 			
-			SkillSlot = CreateNewSlot();
 			SkillSlot->SetIndex(i);
 			SkillSlot->SetTexture(Skill->GetSkillInfo().SkillTexture);
 			SkillSlot->SetSlotType(ESlotType::SkillSlot);

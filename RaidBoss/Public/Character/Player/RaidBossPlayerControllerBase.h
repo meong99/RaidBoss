@@ -19,21 +19,7 @@ struct FRaidBossInputAction
 	GENERATED_BODY()
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "InputAction")
-	TObjectPtr<UInputMappingContext>	DefaultContext;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "InputAction")
 	TObjectPtr<UInputAction>			DefaultAttackAction;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "InputAction")
-	TObjectPtr<UInputAction>			MoveAction;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "InputAction")
-	TObjectPtr<UInputAction>			LookAction;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "InputAction")
-	TObjectPtr<UInputAction>			JumpAction;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "InputAction")
-	TObjectPtr<UInputAction>			SkillWidgetAction;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "InputAction")
-	TObjectPtr<UInputAction>			EquipWidgetAction;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "InputAction")
-	TObjectPtr<UInputAction>			InteractionAction;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "InputAction")
 	TObjectPtr<UInputAction>			QAction;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "InputAction")
@@ -60,7 +46,17 @@ public:
 /*
  *	----------- Other Method
  */
-	
+public:
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
+	void	MoveCharacter(FVector2D Value) const;
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
+	void	LookCharacter(FVector2D Value) const;
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
+	void	JumpCharacter() const;
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
+	void	StopJumpCharacter() const;
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
+	void	Interaction();
 /*
  *	----------- Access
  */
@@ -74,6 +70,7 @@ public:
 	void	ToggleInventoryWidget() const;
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
 	void	ToggleSkillWidget() const;
+	
 /*
  *	----------- Member Variables
  */

@@ -57,23 +57,7 @@ void ARaidBossPlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInput
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	AddMappingSystem();
 	BindInputAction(Cast<UEnhancedInputComponent>(PlayerInputComponent));
-}
-
-void ARaidBossPlayerBase::AddMappingSystem()
-{
-	
-	const auto	PlayerController = GetRiadBossPlayerController();
-	if (IsValid(PlayerController) == true)
-	{
-		UEnhancedInputLocalPlayerSubsystem* SubSystem =
-			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
-		if (IsValid(SubSystem) == true)
-		{
-			SubSystem->AddMappingContext(PlayerController->GetInputAction().DefaultContext, 0);
-		}
-	}
 }
 
 void ARaidBossPlayerBase::BindInputAction(UEnhancedInputComponent* EnhancedInputComponent)
@@ -81,17 +65,6 @@ void ARaidBossPlayerBase::BindInputAction(UEnhancedInputComponent* EnhancedInput
 	const auto	PlayerController = GetRiadBossPlayerController();
 	if (IsValid(PlayerController) == false || IsValid(EnhancedInputComponent) == false)
 		return;
-	
-	EnhancedInputComponent->BindAction(PlayerController->GetInputAction().MoveAction,
-		ETriggerEvent::Triggered,	this, &ARaidBossPlayerBase::MoveCharacter);
-	EnhancedInputComponent->BindAction(PlayerController->GetInputAction().LookAction,
-		ETriggerEvent::Triggered,	this, &ARaidBossPlayerBase::LookCharacter);
-	EnhancedInputComponent->BindAction(PlayerController->GetInputAction().JumpAction,
-		ETriggerEvent::Started,		this, &ARaidBossPlayerBase::Jump);
-	EnhancedInputComponent->BindAction(PlayerController->GetInputAction().JumpAction,
-		ETriggerEvent::Completed,	this, &ARaidBossPlayerBase::StopJumping);
-	EnhancedInputComponent->BindAction(PlayerController->GetInputAction().InteractionAction,
-		ETriggerEvent::Started,		this, &ARaidBossPlayerBase::Interaction);
 	
 	EnhancedInputComponent->BindAction(PlayerController->GetInputAction().DefaultAttackAction,
 		ETriggerEvent::Triggered,	this, &ARaidBossPlayerBase::ActiveAbilityByInput, ERaidBossAbilityInputID::DefaultAttack);
@@ -168,7 +141,7 @@ void ARaidBossPlayerBase::ApplyCharacterStatusEffect()
 	}
 }
 
-void ARaidBossPlayerBase::Jump()
+void ARaidBossPlayerBase::JumpCharacter()
 {
 	if (IsCharacterStateTurnOn(ECharacterState::CanMove))
 	{
@@ -176,30 +149,30 @@ void ARaidBossPlayerBase::Jump()
 	}
 }
 
-void ARaidBossPlayerBase::StopJumping()
+void ARaidBossPlayerBase::StopJumpCharacter()
 {
 	Super::StopJumping();
 }
 
-void ARaidBossPlayerBase::MoveCharacter(const FInputActionValue& Value)
+void ARaidBossPlayerBase::MoveCharacter(const FVector2D& Value)
 {
 	if (IsCharacterStateTurnOn(ECharacterState::CanMove))
 	{
 		FVector Forward = UKismetMathLibrary::GetForwardVector(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
 		FVector Right = UKismetMathLibrary::GetRightVector(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
 
-		AddMovementInput(Forward, Value.Get<FVector2D>().Y);
-		AddMovementInput(Right, Value.Get<FVector2D>().X);
+		AddMovementInput(Forward, Value.Y);
+		AddMovementInput(Right, Value.X);
 	}
 }
 
-void ARaidBossPlayerBase::LookCharacter(const FInputActionValue& Value)
+void ARaidBossPlayerBase::LookCharacter(const FVector2D& Value)
 {
-	AddControllerYawInput(Value.Get<FVector2D>().X * 0.4);
-	AddControllerPitchInput(Value.Get<FVector2D>().Y * 0.4);
+	AddControllerYawInput(Value.X * 0.4);
+	AddControllerPitchInput(Value.Y * 0.4);
 }
 
-void ARaidBossPlayerBase::Interaction(const FInputActionValue& Value)
+void ARaidBossPlayerBase::Interaction()
 {
 	for (const auto& Actor : InteractionableActors)
 	{

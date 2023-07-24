@@ -31,7 +31,6 @@ protected:
  *	----------- Other Method
  */
 protected:
-	void	AddMappingSystem();
 	void	BindInputAction(UEnhancedInputComponent* EnhancedInputComponent);
 	// void	CreateSkillObjects();
 	// void	CreateItemObjects();
@@ -40,13 +39,12 @@ protected:
 /*
  *	----------- Binded by Delegate
  */
-protected:
-	virtual void	Jump() override;
-	virtual void	StopJumping() override;
-	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Player Base")
-	void			MoveCharacter(const FInputActionValue& Value);
-	void			LookCharacter(const FInputActionValue& Value);
-	void			Interaction(const FInputActionValue& Value);
+public:
+	void			MoveCharacter(const FVector2D& Value);
+	void			LookCharacter(const FVector2D& Value);
+	virtual void	JumpCharacter();
+	virtual void	StopJumpCharacter();
+	void			Interaction();
 	void			ActiveAbilityByInput(const FInputActionValue& Value, ERaidBossAbilityInputID InputID);
 	
 /*

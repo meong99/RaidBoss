@@ -172,6 +172,8 @@ void URaidBossInventoryWidget::UpdateInventorySlot()
 			InventorySlots[i]->SetTexture(Texture);
 			InventorySlots[i]->SetItemAmount(FString::FromInt(ItemAmount));
 		}
+		else
+			InventorySlots[i]->SetItemAmount("");
 	}
 }
 

@@ -27,17 +27,20 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill System")
 	void	InitialzeSkillSystem(URaidBossSkillWidget* InSkillWidget);
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill System")
-	void	ToggleSkillWidget();
+	void	ToggleSkillWidget() const;
+	
 protected:
 	void	GiveSkillToAbilityComponent();
 /*
 *	----------- Access(Get, Set, Check)
 */
 public:
-	ARaidBossPlayerControllerBase*			GetRaidBossPlayerControllerBase() const;
-	TArray<TSubclassOf<URaidBossSkillBase>>	GetSkillClasses() const;
-	const URaidBossSkillBase*				GetSkillObject(int32 Index);
+	const URaidBossSkillBase*				GetSkillObject(int32 Index) const;
+	int32									GetSkillAmount() const;
 	int32									GetCurrentSkillPoint() const;
+
+private:
+	ARaidBossPlayerControllerBase*			GetRaidBossPlayerControllerBase() const;
 /*
 *	----------- Member Variables
 */

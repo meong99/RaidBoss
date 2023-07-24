@@ -42,6 +42,10 @@ protected:
 protected:
 	void	EquipItem();
 	void	UnEquipItem();
+	
+	FGameplayEffectSpecHandle	CreateEffectSpecHandle();
+	UGameplayEffect*			CraeteNewEffectObject();
+
 /*
 *	----------- Access
 */
@@ -57,5 +61,5 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Equipment Item")
 	EEquipType EquipType = EEquipType::Size;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Equipment Item")
-	TArray<FGameplayModifierInfo>				ItemModifiers;
+	TArray<FGameplayModifierInfo>	EquipModifiers;
 };

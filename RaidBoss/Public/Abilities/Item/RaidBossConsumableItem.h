@@ -22,6 +22,10 @@ class RAIDBOSS_API URaidBossConsumableItem : public URaidBossItemBase
 /*
 *	----------- Other Method
 */
+private:
+	FGameplayEffectSpecHandle	CreateEffectSpecHandle();
+	UGameplayEffect*			CraeteNewEffectObject();
+
 /*
 *	----------- Access
 */

@@ -36,37 +36,37 @@ protected:
 *	----------- Process Method
 */
 protected:
-	void	DropOnItemSlot(URaidBossSlotWidget* Payload);
-	void	DropOnEquipmentSlot(URaidBossSlotWidget* Payload);
-	bool	IsEquippable(URaidBossSlotWidget* Payload);
+	void	DropOnItemSlot(const URaidBossSlotWidget* Payload);
+	void	DropOnEquipmentSlot(const URaidBossSlotWidget* Payload);
+	bool	IsEquippable(const URaidBossSlotWidget* Payload) const;
 /*
 *	----------- Access(Get, Set, Check)
 */
 public:
 	void	SetWeakOwnerWidget(IN UUserWidget* InWeakOwnerWidget);
 	void	SetTexture(IN UTexture2D* InTexture);
-	void	SetIndex(int32 InIndex);
-	void	SetItemAmount(FString Amount);
-	void	SetSlotType(ESlotType InSlotType);
+	void	SetIndex(IN int32 InIndex);
+	void	SetItemAmount(IN FString Amount);
+	void	SetSlotType(IN ESlotType InSlotType);
 /*
 *	----------- Member Variables
 */
-protected:
-	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Slot Widget")
+private:
+	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))
 	TWeakObjectPtr<UUserWidget>	WeakOwnerWidget;
-	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Slot Widget")
-	ESlotType					SlotType = ESlotType::None;
-	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Slot Widget")
+	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))
 	int32						Index = 0;
-	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Slot Widget")
+	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))
 	FString						ItemAmount;
+	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))
+	TObjectPtr<UTexture2D>		Texture;
 
-	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Slot Widget", meta=(BindWidget))
+	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Slot Widget", meta=(BindWidget, AllowPrivateAccess))
 	TObjectPtr<UImage>		BindImage;
-	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Slot Widget")
-	TObjectPtr<UTexture2D>	Texture;
-	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Slot Widget")
+	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))
+	ESlotType				SlotType = ESlotType::None;
+	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))
 	EDragPivot				DragPivot = EDragPivot::CenterCenter;
-	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Slot Widget")
+	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))
 	FVector2D				DragOffset = FVector2d(0, 0);
 };
