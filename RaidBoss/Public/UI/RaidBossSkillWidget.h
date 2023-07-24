@@ -26,7 +26,13 @@ class RAIDBOSS_API URaidBossSkillWidget : public UUserWidget
 *	----------- Process Method
 */
 public:
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill Widget")
+	int32	IncreaseSkillLevel(int32 Index);
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill Widget")
+	int32	DecreaseSkillLevel(int32 Index);
+	
 	void	InitializeSkillWidget(IN URaidBossSkillSystem* InWeakSkillSystem);
+	void	UseSkill(int32 Index);
 	
 private:
 	void					CreateSlots();
@@ -36,7 +42,7 @@ private:
 */
 public:
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill Widget")
-	const URaidBossSkillBase*	GetSkillObject(int32 Index) const;
+	const URaidBossSkillBase*	GetSkillCDO(int32 Index) const;
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill Widget")
 	int32						GetCurrentSkillPoint() const;
 /*
@@ -45,10 +51,10 @@ public:
 protected:
 	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Skill Widget")
 	TWeakObjectPtr<URaidBossSkillSystem>	WeakSkillSystem;
-	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Skill Widget")
-	TArray<URaidBossSlotWidget*>			SkillSlots;
 	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Skill Widget", meta = (ExposeOnSpawn = true))
 	TSubclassOf<URaidBossSlotWidget>		SlotClass;
+	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Skill Widget")
+	TArray<URaidBossSlotWidget*>			SkillSlots;
 	
 	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Skill Widget", meta=(BindWidget))
 	TObjectPtr<UScrollBox>		ScrollBox;

@@ -10,15 +10,37 @@ void URaidBossSkillWidget::InitializeSkillWidget(URaidBossSkillSystem* InWeakSki
 	CreateSlots();
 }
 
+void URaidBossSkillWidget::UseSkill(int32 Index)
+{
+	if (WeakSkillSystem != nullptr)
+		WeakSkillSystem->UseSkill(Index);
+}
+
+int32 URaidBossSkillWidget::IncreaseSkillLevel(int32 Index)
+{
+	if (WeakSkillSystem != nullptr)
+		return WeakSkillSystem->IncreaseSkillLevel(Index);
+
+	return 0;
+}
+
+int32 URaidBossSkillWidget::DecreaseSkillLevel(int32 Index)
+{
+	if (WeakSkillSystem != nullptr)
+		return WeakSkillSystem->DecreaseSkillLevel(Index);
+
+	return 0;
+}
+
 void URaidBossSkillWidget::CreateSlots()
 {
 	if (WeakSkillSystem != nullptr)
 	{
-		int32 SkillCount = WeakSkillSystem->GetSkillAmount();
+		int32 SkillCount = WeakSkillSystem->GetSkillCount();
 		
 		for (int i = 0; i < SkillCount; i++)
 		{
-			const URaidBossSkillBase*	Skill = WeakSkillSystem->GetSkillObject(i);
+			const URaidBossSkillBase*	Skill = WeakSkillSystem->GetSkillCDO(i);
 			URaidBossSlotWidget*		SkillSlot = CreateNewSlot();
 			
 			SkillSlot->SetIndex(i);
@@ -38,10 +60,10 @@ URaidBossSlotWidget* URaidBossSkillWidget::CreateNewSlot()
 	return SkillSlot;
 }
 
-const URaidBossSkillBase* URaidBossSkillWidget::GetSkillObject(int32 Index) const
+const URaidBossSkillBase* URaidBossSkillWidget::GetSkillCDO(int32 Index) const
 {
 	if (WeakSkillSystem != nullptr)
-		return WeakSkillSystem->GetSkillObject(Index);
+		return WeakSkillSystem->GetSkillCDO(Index);
 	
 	return nullptr;
 }

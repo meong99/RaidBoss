@@ -3,15 +3,14 @@
 #include "UI/RaidBossInventoryWidget.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Components/Image.h"
+#include "UI/RaidBossSkillWidget.h"
 
 bool URaidBossSlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
                                        UDragDropOperation* InOperation)
 {
-	const URaidBossSlotWidget*	Payload;
-	
 	if (InOperation)
 	{
-		Payload = Cast<URaidBossSlotWidget>(InOperation->Payload);
+		const URaidBossSlotWidget* Payload = Cast<URaidBossSlotWidget>(InOperation->Payload);
 
 		switch (SlotType)
 		{
@@ -44,9 +43,7 @@ FReply URaidBossSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 {
 	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 
-	FEventReply ReplyResult;
-	
-	ReplyResult = UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
+	FEventReply ReplyResult = UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
 	
 	return ReplyResult.NativeReply;
 }
@@ -56,17 +53,26 @@ FReply URaidBossSlotWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InGe
 {
 	Super::NativeOnMouseButtonDoubleClick(InGeometry, InMouseEvent);
 	
-	URaidBossInventoryWidget*	InventoryWidget;
-	FEventReply					ReplyResult;
-	bool						bIsVisible;
-	
-	InventoryWidget = Cast<URaidBossInventoryWidget>(WeakOwnerWidget);
-	bIsVisible		= (BindImage->GetVisibility() == ESlateVisibility::SelfHitTestInvisible);
-	
-	if (bIsVisible && InventoryWidget)
+	FEventReply	ReplyResult;
+
+	if (SlotType == ESlotType::ItemSlot || SlotType == ESlotType::EquipmentSlot)
 	{
-		InventoryWidget->UseItem(SlotType, Index);
-		ReplyResult = UWidgetBlueprintLibrary::Handled();
+		
+		URaidBossInventoryWidget*	InventoryWidget = Cast<URaidBossInventoryWidget>(WeakOwnerWidget);
+		bool						bIsVisible		= (BindImage->GetVisibility() == ESlateVisibility::SelfHitTestInvisible);
+		
+		if (bIsVisible && InventoryWidget)
+		{
+			InventoryWidget->UseItem(SlotType, Index);
+			ReplyResult = UWidgetBlueprintLibrary::Handled();
+		}
+	}
+	else if (SlotType == ESlotType::SkillSlot)
+	{
+		URaidBossSkillWidget* SkillWidget = Cast<URaidBossSkillWidget>(WeakOwnerWidget);
+
+		if (SkillWidget)
+			SkillWidget->UseSkill(Index);
 	}
 	
 	return ReplyResult.NativeReply; 
@@ -74,9 +80,7 @@ FReply URaidBossSlotWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InGe
 
 void URaidBossSlotWidget::DropOnItemSlot(const URaidBossSlotWidget* Payload)
 {
-	URaidBossInventoryWidget*	InventoryWidget;
-
-	InventoryWidget= Cast<URaidBossInventoryWidget>(WeakOwnerWidget);
+	URaidBossInventoryWidget* InventoryWidget= Cast<URaidBossInventoryWidget>(WeakOwnerWidget);
 	
 	if (Payload == nullptr || InventoryWidget == nullptr)
 		return;
@@ -91,9 +95,7 @@ void URaidBossSlotWidget::DropOnItemSlot(const URaidBossSlotWidget* Payload)
 
 void URaidBossSlotWidget::DropOnEquipmentSlot(const URaidBossSlotWidget* Payload)
 {
-	URaidBossInventoryWidget*	InventoryWidget;
-	
-	InventoryWidget = Cast<URaidBossInventoryWidget>(WeakOwnerWidget);
+	URaidBossInventoryWidget* InventoryWidget = Cast<URaidBossInventoryWidget>(WeakOwnerWidget);
 	
 	if (Payload == nullptr || InventoryWidget == nullptr)
 		return;
@@ -106,26 +108,21 @@ void URaidBossSlotWidget::DropOnEquipmentSlot(const URaidBossSlotWidget* Payload
 
 bool URaidBossSlotWidget::IsEquippable(const URaidBossSlotWidget* Payload) const
 {
-	const URaidBossInventoryWidget*	InventoryWidget;
-	const URaidBossEquipmentItem*	Item;
-	bool							bIsEquipmentWindow;
-	bool							bIsFromItemSlot;
-	bool							bIsEquippable;
-
-	InventoryWidget		= Cast<URaidBossInventoryWidget>(WeakOwnerWidget);
-	bIsEquipmentWindow	= InventoryWidget->GetShownInventory() == EITemCategory::Equip;
-	bIsFromItemSlot		= Payload->SlotType == ESlotType::ItemSlot;
-	bIsEquippable		= false;
+	const URaidBossInventoryWidget* InventoryWidget	= Cast<URaidBossInventoryWidget>(WeakOwnerWidget);
+	bool							bIsEquippable	= false;
 	
 	if (InventoryWidget)
 	{
-		Item = InventoryWidget->GetEquipmentItem(Payload->Index);
+		const URaidBossEquipmentItem* Item = InventoryWidget->GetEquipmentItem(Payload->Index);
 
 		if (Item && Item->GetEquipType() == Index)
 			bIsEquippable = true;
 	}
+	
+	bool	bIsEquipmentWindow	= (InventoryWidget->GetShownInventory() == EITemCategory::Equip);
+	bool	bIsFromItemSlot		= (Payload->SlotType == ESlotType::ItemSlot);
 
-	return bIsEquipmentWindow && bIsFromItemSlot && bIsEquippable;
+	return (bIsEquipmentWindow && bIsFromItemSlot && bIsEquippable);
 }
 
 void URaidBossSlotWidget::SetWeakOwnerWidget(UUserWidget* InWeakOwnerWidget)

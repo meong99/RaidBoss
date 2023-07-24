@@ -28,6 +28,10 @@ public:
 	void	InitialzeSkillSystem(URaidBossSkillWidget* InSkillWidget);
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill System")
 	void	ToggleSkillWidget() const;
+
+	void	UseSkill(int32 Index);
+	int32	IncreaseSkillLevel(int32 Index);
+	int32	DecreaseSkillLevel(int32 Index);
 	
 protected:
 	void	GiveSkillToAbilityComponent();
@@ -35,18 +39,19 @@ protected:
 *	----------- Access(Get, Set, Check)
 */
 public:
-	const URaidBossSkillBase*				GetSkillObject(int32 Index) const;
-	int32									GetSkillAmount() const;
-	int32									GetCurrentSkillPoint() const;
+	const URaidBossSkillBase*	GetSkillCDO(int32 Index) const;
+	int32						GetSkillCount() const;
+	int32						GetCurrentSkillPoint() const;
 
 private:
-	ARaidBossPlayerControllerBase*			GetRaidBossPlayerControllerBase() const;
+	ARaidBossPlayerControllerBase*		GetRaidBossPlayerControllerBase() const;
+	URaidBossAbilitySystemComponent*	GetRaidBossAbilitySystemComponent() const;
+	URaidBossSkillBase*					GetSkillInstance(int32 Index) const;
+	
 /*
 *	----------- Member Variables
 */
 protected:
-	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Skill System", meta=(ExposeOnSpawn=true))
-	TObjectPtr<URaidBossAbilitySystemComponent>	AbilitySystemComponent;
 	UPROPERTY(EditDefaultsOnly, Category="Raid Boss | Skill System")
 	TArray<TSubclassOf<URaidBossSkillBase>>		SkillClasses;
 	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Skill System")

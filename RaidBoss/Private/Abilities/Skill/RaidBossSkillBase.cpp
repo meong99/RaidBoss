@@ -81,21 +81,28 @@ const FRaidBossSkillInfo& URaidBossSkillBase::GetSkillInfo() const
 	return SkillInfo;
 }
 
-void URaidBossSkillBase::IncreaseSkillLevel()
+bool URaidBossSkillBase::IncreaseSkillLevel()
 {
 	if (IsValid(OwnerCharacter) == true && OwnerCharacter->GetSkillPoint() > 0 &&
 		SkillInfo.SkillLevel + 1 <= SkillInfo.MaximumSkillLevel)
 	{
 		SkillInfo.SkillLevel++;
 		OwnerCharacter->DecreaseSkillPoint();
+
+		return  true;
 	}
+
+	return false;
 }
 
-void URaidBossSkillBase::DecreaseSkillLevel()
+bool URaidBossSkillBase::DecreaseSkillLevel()
 {
 	if (IsValid(OwnerCharacter) == true && SkillInfo.SkillLevel - 1 >= SkillInfo.MinimumSkillLevel)
 	{
 		SkillInfo.SkillLevel--;
 		OwnerCharacter->IncreaseSkillPoint();
+		return  true;
 	}
+	
+	return false;
 }

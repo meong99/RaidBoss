@@ -43,9 +43,9 @@ public:
 	const FRaidBossSkillInfo&	GetSkillInfo() const;
 	
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill Base")
-	void	IncreaseSkillLevel();
+	bool	IncreaseSkillLevel();
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill Base")
-	void	DecreaseSkillLevel();
+	bool	DecreaseSkillLevel();
 /*
  *	----------- Member Variables
  */
