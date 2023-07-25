@@ -3,7 +3,16 @@
 #include "UI/RaidBossInventoryWidget.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Components/Image.h"
+#include "Management/RaidBossInventorySystem.h"
 #include "UI/RaidBossSkillWidget.h"
+
+void URaidBossSlotWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	if (SlotType == ESlotType::ItemSlot || SlotType == ESlotType::EquipmentSlot)
+		BindImage->SetVisibility(ESlateVisibility::Hidden);
+}
 
 bool URaidBossSlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
                                        UDragDropOperation* InOperation)
@@ -16,6 +25,7 @@ bool URaidBossSlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragD
 		{
 			case ESlotType::ItemSlot		: DropOnItemSlot(Payload);	break;
 			case ESlotType::EquipmentSlot	: DropOnEquipmentSlot(Payload); break;
+			case ESlotType::QuickSlot		: DropOnQuickSlot(Payload);
 			default: break;
 		}
 		
@@ -28,7 +38,7 @@ bool URaidBossSlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragD
 void URaidBossSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent,
 	UDragDropOperation*& OutOperation)
 {
-	if (Texture)
+	if (BindImage->GetVisibility() == ESlateVisibility::SelfHitTestInvisible)
 	{
 		BindImage->SetDesiredSizeOverride(FVector2d(50, 50));
 		OutOperation = UWidgetBlueprintLibrary::CreateDragDropOperation(UDragDropOperation::StaticClass());
@@ -74,6 +84,22 @@ FReply URaidBossSlotWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InGe
 		if (SkillWidget)
 			SkillWidget->UseSkill(Index);
 	}
+	else if (SlotType == ESlotType::QuickSlot)
+	{
+		URaidBossInventoryWidget* InventoryWidget = Cast<URaidBossInventoryWidget>(WeakOwnerWidget);
+
+		if (InventoryWidget)
+		{
+			InventoryWidget->UseItem(ESlotType::ItemSlot, Index);
+		}
+		
+		URaidBossSkillWidget* SkillWidget = Cast<URaidBossSkillWidget>(WeakOwnerWidget);
+
+		if (SkillWidget)
+		{
+			SkillWidget->UseSkill(Index);
+		}
+	}
 	
 	return ReplyResult.NativeReply; 
 }
@@ -106,12 +132,24 @@ void URaidBossSlotWidget::DropOnEquipmentSlot(const URaidBossSlotWidget* Payload
 	}
 }
 
+void URaidBossSlotWidget::DropOnQuickSlot(const URaidBossSlotWidget* Payload)
+{
+	if (Payload)
+	{
+		WeakOwnerWidget = Payload->WeakOwnerWidget;
+		Index = Payload->Index;
+
+		BindImage->SetBrush(Payload->BindImage->Brush);
+		BindImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible); 
+	}
+}
+
 bool URaidBossSlotWidget::IsEquippable(const URaidBossSlotWidget* Payload) const
 {
 	const URaidBossInventoryWidget* InventoryWidget	= Cast<URaidBossInventoryWidget>(WeakOwnerWidget);
 	bool							bIsEquippable	= false;
 	
-	if (InventoryWidget)
+	if (InventoryWidget )
 	{
 		const URaidBossEquipmentItem* Item = InventoryWidget->GetEquipmentItem(Payload->Index);
 
@@ -132,8 +170,9 @@ void URaidBossSlotWidget::SetWeakOwnerWidget(UUserWidget* InWeakOwnerWidget)
 
 void URaidBossSlotWidget::SetTexture(UTexture2D* InTexture)
 {
-	Texture = InTexture;
-	if (Texture)
+	BindImage->SetBrushFromTexture(InTexture);
+	
+	if (InTexture)
 		BindImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	else
 		BindImage->SetVisibility(ESlateVisibility::Hidden);

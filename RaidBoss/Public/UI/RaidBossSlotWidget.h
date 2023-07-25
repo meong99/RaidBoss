@@ -14,6 +14,7 @@ enum class ESlotType : uint8
 	ItemSlot UMETA(DisplayName = "ItemSlot"),
 	EquipmentSlot UMETA(DisplayName = "EquipSlot"),
 	SkillSlot UMETA(DisplayName = "SkillSlot"),
+	QuickSlot UMETA(DisplayName = "QuickSlot"),
 	None UMETA(DisplayName = "None"),
 };
 
@@ -25,6 +26,7 @@ class RAIDBOSS_API URaidBossSlotWidget : public UUserWidget
 *	----------- Override
 */
 protected:
+	virtual void	NativeConstruct() override;
 	virtual bool	NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 	virtual void	NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
 	virtual FReply	NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
@@ -38,6 +40,7 @@ protected:
 protected:
 	void	DropOnItemSlot(const URaidBossSlotWidget* Payload);
 	void	DropOnEquipmentSlot(const URaidBossSlotWidget* Payload);
+	void	DropOnQuickSlot(const URaidBossSlotWidget* Payload);
 	bool	IsEquippable(const URaidBossSlotWidget* Payload) const;
 /*
 *	----------- Access(Get, Set, Check)
@@ -58,8 +61,6 @@ private:
 	int32						Index = 0;
 	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))
 	FString						ItemAmount;
-	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))
-	TObjectPtr<UTexture2D>		Texture;
 
 	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Slot Widget", meta=(BindWidget, AllowPrivateAccess))
 	TObjectPtr<UImage>		BindImage;

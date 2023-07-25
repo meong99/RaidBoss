@@ -219,9 +219,9 @@ void URaidBossInventorySystem::SwapItems(TArray<FItemInfomation>& Items, int32 I
 {
 	if (Items.IsValidIndex(Index1) && Items.IsValidIndex(Index2))
 	{
-		FItemInfomation* TmpItem = &Items[Index1];
+		FItemInfomation TmpItem = Items[Index1];
 		Items[Index1] = Items[Index2];
-		Items[Index2] = *TmpItem;
+		Items[Index2] = TmpItem;
 	}
 }
 
