@@ -3,8 +3,23 @@
 #include "UI/RaidBossInventoryWidget.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Components/Image.h"
-#include "Management/RaidBossInventorySystem.h"
 #include "UI/RaidBossSkillWidget.h"
+
+void URaidBossSlotWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+	
+	if (RefPayload)
+	{
+		ItemAmount = RefPayload->ItemAmount;
+		
+		if (ItemAmount == "")
+		{
+			RefPayload = nullptr;
+			SetTexture(nullptr);
+		}
+	}
+}
 
 void URaidBossSlotWidget::NativeConstruct()
 {
@@ -12,6 +27,8 @@ void URaidBossSlotWidget::NativeConstruct()
 
 	if (SlotType == ESlotType::ItemSlot || SlotType == ESlotType::EquipmentSlot)
 		BindImage->SetVisibility(ESlateVisibility::Hidden);
+	else if (SlotType == ESlotType::QuickSlot)
+		UpdateCanTick();
 }
 
 bool URaidBossSlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
@@ -67,14 +84,12 @@ FReply URaidBossSlotWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InGe
 
 	if (SlotType == ESlotType::ItemSlot || SlotType == ESlotType::EquipmentSlot)
 	{
-		
 		URaidBossInventoryWidget*	InventoryWidget = Cast<URaidBossInventoryWidget>(WeakOwnerWidget);
-		bool						bIsVisible		= (BindImage->GetVisibility() == ESlateVisibility::SelfHitTestInvisible);
+		bool						bIsVisible = (BindImage->GetVisibility() == ESlateVisibility::SelfHitTestInvisible);
 		
 		if (bIsVisible && InventoryWidget)
 		{
 			InventoryWidget->UseItem(SlotType, Index);
-			ReplyResult = UWidgetBlueprintLibrary::Handled();
 		}
 	}
 	else if (SlotType == ESlotType::SkillSlot)
@@ -101,6 +116,8 @@ FReply URaidBossSlotWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InGe
 		}
 	}
 	
+	ReplyResult = UWidgetBlueprintLibrary::Handled();
+
 	return ReplyResult.NativeReply; 
 }
 
@@ -134,13 +151,28 @@ void URaidBossSlotWidget::DropOnEquipmentSlot(const URaidBossSlotWidget* Payload
 
 void URaidBossSlotWidget::DropOnQuickSlot(const URaidBossSlotWidget* Payload)
 {
-	if (Payload)
+	URaidBossInventoryWidget*	PayloadInven = Cast<URaidBossInventoryWidget>(Payload->WeakOwnerWidget);
+	URaidBossSkillWidget*		PayloadSkill = Cast<URaidBossSkillWidget>(Payload->WeakOwnerWidget);
+	
+	if (PayloadInven && PayloadInven->GetShownInventory() == EITemCategory::Consumable)
 	{
-		WeakOwnerWidget = Payload->WeakOwnerWidget;
+		WeakOwnerWidget = PayloadInven;
+		RefPayload = Payload;
 		Index = Payload->Index;
+		ItemAmount = Payload->ItemAmount;
+		
+		UTexture2D*	Texture = UWidgetBlueprintLibrary::GetBrushResourceAsTexture2D(Payload->BindImage->Brush);
+		SetTexture(Texture);
+	}
+	else if (PayloadSkill)
+	{
+		WeakOwnerWidget = PayloadSkill;
+		RefPayload = nullptr;
+		Index = Payload->Index;
+		SetItemAmount(0);
 
-		BindImage->SetBrush(Payload->BindImage->Brush);
-		BindImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible); 
+		UTexture2D*	Texture = UWidgetBlueprintLibrary::GetBrushResourceAsTexture2D(Payload->BindImage->Brush);
+		SetTexture(Texture);
 	}
 }
 
@@ -183,9 +215,12 @@ void URaidBossSlotWidget::SetIndex(int32 InIndex)
 	Index = InIndex;
 }
 
-void URaidBossSlotWidget::SetItemAmount(FString Amount)
+void URaidBossSlotWidget::SetItemAmount(int32 Amount)
 {
-	ItemAmount = Amount;
+	if (Amount > 0)
+		ItemAmount = FString::FromInt(Amount);
+	else
+		ItemAmount = "";
 }
 
 void URaidBossSlotWidget::SetSlotType(ESlotType InSlotType)

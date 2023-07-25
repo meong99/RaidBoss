@@ -5,6 +5,7 @@
 #include "Blueprint/DragDropOperation.h"
 #include "RaidBossSlotWidget.generated.h"
 
+struct FItemInfomation;
 class UImage;
 class URaidBossAbilityBase;
 
@@ -25,6 +26,8 @@ class RAIDBOSS_API URaidBossSlotWidget : public UUserWidget
 /*
 *	----------- Override
 */
+public:
+	virtual void	NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 protected:
 	virtual void	NativeConstruct() override;
 	virtual bool	NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
@@ -49,12 +52,14 @@ public:
 	void	SetWeakOwnerWidget(IN UUserWidget* InWeakOwnerWidget);
 	void	SetTexture(IN UTexture2D* InTexture);
 	void	SetIndex(IN int32 InIndex);
-	void	SetItemAmount(IN FString Amount);
+	void	SetItemAmount(IN int32 Amount);
 	void	SetSlotType(IN ESlotType InSlotType);
 /*
 *	----------- Member Variables
 */
 private:
+	TObjectPtr<const URaidBossSlotWidget>	RefPayload;
+	
 	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))
 	TWeakObjectPtr<UUserWidget>	WeakOwnerWidget;
 	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))

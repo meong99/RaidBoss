@@ -88,6 +88,58 @@ void URaidBossInventoryWidget::InitEquipmentSlot()
 	}
 }
 
+void URaidBossInventoryWidget::UpdateInventorySlot()
+{
+	const URaidBossItemBase*	ItemCDO;
+	int32						MaximumAmount;
+	int32						ItemAmount;
+	UTexture2D*					Texture;
+
+	if (WeakInventorySystem == nullptr)
+		return;
+
+	ResetInventorySlotImage();
+
+	MaximumAmount = WeakInventorySystem->GetMaximumItemAmount();
+	for (int i = 0; i < MaximumAmount; i++)
+	{
+		ItemCDO = WeakInventorySystem->GetItemCDO(ShownInventory, i);
+		ItemAmount = WeakInventorySystem->GetItemAmount(ShownInventory, i);
+		
+		if (ItemCDO != nullptr)
+		{
+			Texture = ItemCDO->GetItemTexture();
+			InventorySlots[i]->SetTexture(Texture);
+			InventorySlots[i]->SetItemAmount(ItemAmount);
+		}
+	}
+}
+
+void URaidBossInventoryWidget::UpdateEquipmentSlot()
+{
+	const URaidBossEquipmentItem*	Item;
+	UTexture2D*						Texture2D;
+	int32							EquipTypeSize;
+
+	EquipTypeSize = static_cast<int32>(EEquipType::Size);
+	
+	for (int i = 0; i < EquipTypeSize; i++)
+	{
+		Item = WeakInventorySystem->GetEquippedItem(i);
+		Texture2D = Item ? Item->GetItemTexture() : nullptr;
+		
+		switch (i)
+		{
+		case EEquipType::Helmet		 :	HelmetSlot->SetTexture(Texture2D);		break;
+		case EEquipType::Weapon		 : 	WeaponSlot->SetTexture(Texture2D);		break;
+		case EEquipType::ArmorTop	 : 	ArmorTopSlot->SetTexture(Texture2D);	break;
+		case EEquipType::ArmorBottom : 	ArmorBottomSlot->SetTexture(Texture2D); break;
+		case EEquipType::ArmorShoes	 : 	ArmorShoesSlot->SetTexture(Texture2D);	break;
+		default: break;
+		}
+	}
+}
+
 void URaidBossInventoryWidget::ResetInventorySlotImage()
 {
 	int32 Count;
@@ -97,6 +149,7 @@ void URaidBossInventoryWidget::ResetInventorySlotImage()
 	for (int i = 0; i < Count; i++)
 	{
 		InventorySlots[i]->SetTexture(nullptr);
+		InventorySlots[i]->SetItemAmount(0);
 	}
 }
 
@@ -146,60 +199,6 @@ void URaidBossInventoryWidget::ClickedConsumableButton()
 void URaidBossInventoryWidget::ClickedMiscellaneousButton()
 {
 	SetItemCategory(EITemCategory::Miscellaneous);
-}
-
-void URaidBossInventoryWidget::UpdateInventorySlot()
-{
-	const URaidBossItemBase*	ItemCDO;
-	int32						MaximumAmount;
-	int32						ItemAmount;
-	UTexture2D*					Texture;
-
-	if (WeakInventorySystem == nullptr)
-		return;
-
-	ResetInventorySlotImage();
-
-	MaximumAmount = WeakInventorySystem->GetMaximumItemAmount();
-	for (int i = 0; i < MaximumAmount; i++)
-	{
-		ItemCDO = WeakInventorySystem->GetItemCDO(ShownInventory, i);
-		ItemAmount = WeakInventorySystem->GetItemAmount(ShownInventory, i);
-		
-		if (ItemCDO != nullptr)
-		{
-			Texture = ItemCDO->GetItemTexture();
-			InventorySlots[i]->SetTexture(Texture);
-			InventorySlots[i]->SetItemAmount(FString::FromInt(ItemAmount));
-		}
-		else
-			InventorySlots[i]->SetItemAmount("");
-	}
-}
-
-void URaidBossInventoryWidget::UpdateEquipmentSlot()
-{
-	const URaidBossEquipmentItem*	Item;
-	UTexture2D*						Texture2D;
-	int32							EquipTypeSize;
-
-	EquipTypeSize = static_cast<int32>(EEquipType::Size);
-	
-	for (int i = 0; i < EquipTypeSize; i++)
-	{
-		Item = WeakInventorySystem->GetEquippedItem(i);
-		Texture2D = Item ? Item->GetItemTexture() : nullptr;
-		
-		switch (i)
-		{
-			case EEquipType::Helmet		 :	HelmetSlot->SetTexture(Texture2D);		break;
-			case EEquipType::Weapon		 : 	WeaponSlot->SetTexture(Texture2D);		break;
-			case EEquipType::ArmorTop	 : 	ArmorTopSlot->SetTexture(Texture2D);	break;
-			case EEquipType::ArmorBottom : 	ArmorBottomSlot->SetTexture(Texture2D); break;
-			case EEquipType::ArmorShoes	 : 	ArmorShoesSlot->SetTexture(Texture2D);	break;
-			default: break;
-		}
-	}
 }
 
 void URaidBossInventoryWidget::ChangeItemOrder(int32 Index1, int32 Index2)

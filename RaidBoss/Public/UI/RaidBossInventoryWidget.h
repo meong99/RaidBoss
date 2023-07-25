@@ -40,12 +40,12 @@ public:
 	void	CreateSlot();
 	void	CreateInventorySlot();
 	void	InitEquipmentSlot();
+	void	UpdateInventorySlot();
+	void	UpdateEquipmentSlot();
 	void	ResetInventorySlotImage();
 	void	EquipItem(int32 Index);
 	void	UnEquipItem(int32 Index);
 	void	UseItem(ESlotType SlotType, int32 Index);
-	void	UpdateInventorySlot();
-	void	UpdateEquipmentSlot();
 	void	ChangeItemOrder(int32 Index1, int32 Index2);
 /*
 *	----------- Access(Get, Set, Check)
