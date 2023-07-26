@@ -87,7 +87,7 @@ UGameplayEffect* URaidBossEquipmentItem::CraeteNewEffectObject()
 	
 	if (Effect)
 	{
-		Effect->Modifiers = EquipModifiers;
+		Effect->Modifiers.Add(EquipModifier);
 	}
 
 	return Effect;

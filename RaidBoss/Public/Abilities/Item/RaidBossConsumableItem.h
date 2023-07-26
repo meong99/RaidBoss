@@ -34,5 +34,5 @@ private:
 */
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Consumable Item")
-	TArray<FGameplayEffectExecutionDefinition> ItemExecutions;
+	FGameplayEffectExecutionDefinition ItemExecution;
 };

@@ -52,7 +52,7 @@ UGameplayEffect* URaidBossConsumableItem::CraeteNewEffectObject()
 	
 	if (Effect)
 	{
-		Effect->Executions = ItemExecutions;
+		Effect->Executions.Add(ItemExecution);
 	}
 
 	return Effect;
