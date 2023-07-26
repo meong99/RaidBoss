@@ -82,6 +82,15 @@ FReply URaidBossSlotWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InGe
 	
 	FEventReply	ReplyResult;
 
+	UseQuickSlot();
+	
+	ReplyResult = UWidgetBlueprintLibrary::Handled();
+
+	return ReplyResult.NativeReply; 
+}
+
+void URaidBossSlotWidget::UseQuickSlot()
+{
 	if (SlotType == ESlotType::ItemSlot || SlotType == ESlotType::EquipmentSlot)
 	{
 		URaidBossInventoryWidget*	InventoryWidget = Cast<URaidBossInventoryWidget>(WeakOwnerWidget);
@@ -115,10 +124,6 @@ FReply URaidBossSlotWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InGe
 			SkillWidget->UseSkill(Index);
 		}
 	}
-	
-	ReplyResult = UWidgetBlueprintLibrary::Handled();
-
-	return ReplyResult.NativeReply; 
 }
 
 void URaidBossSlotWidget::DropOnItemSlot(const URaidBossSlotWidget* Payload)

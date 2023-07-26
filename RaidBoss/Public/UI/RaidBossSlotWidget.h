@@ -40,6 +40,9 @@ protected:
 /*
 *	----------- Process Method
 */
+public:
+	UFUNCTION(BlueprintCallable)
+	void	UseQuickSlot();
 protected:
 	void	DropOnItemSlot(const URaidBossSlotWidget* Payload);
 	void	DropOnEquipmentSlot(const URaidBossSlotWidget* Payload);
@@ -62,7 +65,7 @@ private:
 	
 	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))
 	TWeakObjectPtr<UUserWidget>	WeakOwnerWidget;
-	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))
+	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))
 	int32						Index = 0;
 	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))
 	FString						ItemAmount;
