@@ -40,11 +40,14 @@ bool URaidbossSerathQSkill::CanActivateAbility(const FGameplayAbilitySpecHandle 
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
 	const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
 {
-	bool Ret =	IsValid(OwnerCharacter) &&
-				Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags) &&
-				OwnerCharacter->GetCharacterMovement()->IsFalling() == false;
+	bool bCanActivate			= Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags) &&
+								  (SkillInfo.SkillLevel > 0);
+	bool bOwnerCharacterState	= IsValid(OwnerCharacter) &&
+								  OwnerCharacter->GetCharacterMovement()->IsFalling() == false;
 	
-	return Ret;
+	bool bResult = bCanActivate && bOwnerCharacterState;
+	
+	return bResult;
 }
 
 void URaidbossSerathQSkill::EventReceivedCallback(const FGameplayEventData Payload)

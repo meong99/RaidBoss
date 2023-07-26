@@ -13,29 +13,10 @@ class UGameplayEffect;
 class UInputMappingContext;
 class UInputAction;
 
-USTRUCT(BlueprintType)
-struct FRaidBossInputAction
-{
-	GENERATED_BODY()
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "InputAction")
-	TObjectPtr<UInputAction>			DefaultAttackAction;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "InputAction")
-	TObjectPtr<UInputAction>			QAction;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "InputAction")
-	TObjectPtr<UInputAction>			EAction;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "InputAction")
-	TObjectPtr<UInputAction>			RAction;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "InputAction")
-	TObjectPtr<UInputAction>			DashAction;
-};
-
 UCLASS(Abstract)
 class RAIDBOSS_API ARaidBossPlayerControllerBase : public APlayerController
 {
 	GENERATED_BODY()
-public:
-	ARaidBossPlayerControllerBase();
 /*
  *	----------- Overrided
  */
@@ -64,7 +45,6 @@ public:
 	ARaidBossPlayerBase*				GetRaidBossPlayerBase() const;
 	URaidBossAbilitySystemComponent*	GetRaidBossAbilitySystemComponent() const;
 	TSubclassOf<UGameplayEffect>		GetCharacterStatusEffect() const;
-	const FRaidBossInputAction&			GetInputAction() const;
 	
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
 	void	ToggleInventoryWidget() const;
@@ -84,7 +64,4 @@ protected:
 	TArray<TSubclassOf<URaidBossAbilityBase>>	DefaultAbilities;
 	UPROPERTY(EditDefaultsOnly, Category="Raid Boss | Player Controller")
 	TSubclassOf<UGameplayEffect>				CharacterStatusEffect;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Raid Boss | Player Controller")
-	FRaidBossInputAction	InputActions;
 };

@@ -45,16 +45,14 @@ bool URaidBossDash::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
 	const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
 {
-	bool	Result;
-	bool	CanActivate;
-	bool	OwnerCharacterState;
-
-	CanActivate			= Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
-	OwnerCharacterState = IsValid(OwnerCharacter) &&
-						  OwnerCharacter->GetCharacterMovement()->IsFalling() == false;
+	bool bCanActivate			= Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags) &&
+								  (SkillInfo.SkillLevel > 0);
+	bool bOwnerCharacterState	= IsValid(OwnerCharacter) &&
+								  OwnerCharacter->GetCharacterMovement()->IsFalling() == false;
 	
-	Result = CanActivate && OwnerCharacterState;
-	return Result;
+	bool bResult = bCanActivate && bOwnerCharacterState;
+	
+	return bResult;
 }
 
 void URaidBossDash::Tick(float DeltaTime)

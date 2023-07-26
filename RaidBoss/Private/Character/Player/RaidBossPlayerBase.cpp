@@ -49,82 +49,8 @@ void ARaidBossPlayerBase::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	
-	// CreateSkillObjects();
 	ApplyCharacterStatusEffect();
 }
-
-void ARaidBossPlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	BindInputAction(Cast<UEnhancedInputComponent>(PlayerInputComponent));
-}
-
-void ARaidBossPlayerBase::BindInputAction(UEnhancedInputComponent* EnhancedInputComponent)
-{
-	const auto	PlayerController = GetRiadBossPlayerController();
-	if (IsValid(PlayerController) == false || IsValid(EnhancedInputComponent) == false)
-		return;
-	
-	EnhancedInputComponent->BindAction(PlayerController->GetInputAction().DefaultAttackAction,
-		ETriggerEvent::Triggered,	this, &ARaidBossPlayerBase::ActiveAbilityByInput, ERaidBossAbilityInputID::DefaultAttack);
-	EnhancedInputComponent->BindAction(PlayerController->GetInputAction().QAction,
-		ETriggerEvent::Started,		this, &ARaidBossPlayerBase::ActiveAbilityByInput, ERaidBossAbilityInputID::Q);
-	EnhancedInputComponent->BindAction(PlayerController->GetInputAction().EAction,
-		ETriggerEvent::Started,		this, &ARaidBossPlayerBase::ActiveAbilityByInput, ERaidBossAbilityInputID::E);
-	EnhancedInputComponent->BindAction(PlayerController->GetInputAction().RAction,
-		ETriggerEvent::Started,		this, &ARaidBossPlayerBase::ActiveAbilityByInput, ERaidBossAbilityInputID::R);
-	EnhancedInputComponent->BindAction(PlayerController->GetInputAction().DashAction,
-		ETriggerEvent::Started,		this, &ARaidBossPlayerBase::ActiveAbilityByInput, ERaidBossAbilityInputID::Dash);
-}
-
-//
-// void ARaidBossPlayerBase::CreateSkillObjects()
-// {
-// 	ARaidBossPlayerControllerBase*			PlayerController;
-// 	TArray<TSubclassOf<URaidBossSkillBase>> SkillClasses;
-// 	URaidBossSkillBase*						SkillCDO;
-// 	URaidBossSkillBase*						SkillObject;
-// 	FGameplayAbilitySpecHandle				SpecHandle;
-// 	
-// 	PlayerController = GetRiadBossPlayerController();
-// 	if (PlayerController && AbilitySystemComponent)
-// 	{
-// 		for (auto SkillClass : SkillClasses)
-// 		{
-// 			SkillCDO = Cast<URaidBossSkillBase>(SkillClass->GetDefaultObject());
-// 			AbilitySystemComponent->GiveAbilityWithoutDuplication(SkillClass, SpecHandle, static_cast<int32>(SkillCDO->AbilityInputID));
-//
-// 			SkillObject = Cast<URaidBossSkillBase>(AbilitySystemComponent->GetAbilityByClass(SkillClass));
-// 			if (SkillObject) SkillObjects.Add(SkillObject);
-// 		}
-// 	}
-// }
-//
-// void ARaidBossPlayerBase::CreateItemObjects()
-// {
-// 	ARaidBossPlayerControllerBase*			PlayerController;
-// 	TArray<TSubclassOf<URaidBossItemBase>>	ItemClasses;
-// 	URaidBossUserWidget*					ItemWidget;
-// 	URaidBossItemBase*						ItemObject;
-// 	FGameplayAbilitySpecHandle				SpecHandle;
-// 	
-// 	PlayerController = GetRiadBossPlayerController();
-// 	if (PlayerController && AbilitySystemComponent)
-// 	{
-// 		ItemClasses = PlayerController->GetItemClasses();
-// 		for (const auto& ItemClass : ItemClasses)
-// 		{
-// 			AbilitySystemComponent->GiveAbilityWithoutDuplication(ItemClass, SpecHandle);
-// 			
-// 			ItemObject = Cast<URaidBossItemBase>(AbilitySystemComponent->GetAbilityByClass(ItemClass));
-// 			if (ItemObject) ItemObjects.Add(ItemObject);
-//
-// 			ItemWidget = PlayerController->GetInventoryWidget();
-// 			if (ItemWidget) ItemWidget->AddAbility(ItemObject);
-// 		}
-// 	}
-// }
 
 void ARaidBossPlayerBase::ApplyCharacterStatusEffect()
 {
@@ -177,19 +103,6 @@ void ARaidBossPlayerBase::Interaction()
 	for (const auto& Actor : InteractionableActors)
 	{
 		Actor->OnInteration(this);
-	}
-}
-
-void ARaidBossPlayerBase::ActiveAbilityByInput(const FInputActionValue& Value, ERaidBossAbilityInputID InputID)
-{
-	if (IsValid(AbilitySystemComponent) == false)
-		return;
-	
-	URaidBossAbilityBase* Ability = AbilitySystemComponent->GetAbilityByInputID(static_cast<int32>(InputID));
-	
-	if (Ability && Value.Get<bool>() == true)
-	{
-		AbilitySystemComponent->TryActivateAbility(Ability->GetCurrentAbilitySpecHandle());
 	}
 }
 

@@ -54,17 +54,15 @@ bool URaidBossSerathDefaultAttak::CanActivateAbility(const FGameplayAbilitySpecH
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
 	const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
 {
-	bool	Result;
-	bool	CanActivate;
-	bool	OwnerCharacterState;
-
-	CanActivate			= Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
-	OwnerCharacterState = IsValid(OwnerCharacter) &&
-						  OwnerCharacter->IsCharacterStateTurnOn(ECharacterState::CanMove) &&
-						  OwnerCharacter->IsCharacterStateTurnOn(ECharacterState::CanUsingAttack) &&
-						  OwnerCharacter->GetCharacterMovement()->IsFalling() == false;
+	bool CanActivate			= Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags) &&
+								SkillInfo.SkillLevel > 0;
+	bool OwnerCharacterState	= IsValid(OwnerCharacter) &&
+								OwnerCharacter->IsCharacterStateTurnOn(ECharacterState::CanMove) &&
+								OwnerCharacter->IsCharacterStateTurnOn(ECharacterState::CanUsingAttack) &&
+								OwnerCharacter->GetCharacterMovement()->IsFalling() == false;
 	
-	Result = CanActivate && OwnerCharacterState;
+	bool Result = CanActivate && OwnerCharacterState;
+	
 	return Result;
 }
 

@@ -25,15 +25,11 @@ public:
  */
 protected:
 	virtual void	PossessedBy(AController* NewController) override;
-	virtual void	SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 /*
  *	----------- Other Method
  */
 protected:
-	void	BindInputAction(UEnhancedInputComponent* EnhancedInputComponent);
-	// void	CreateSkillObjects();
-	// void	CreateItemObjects();
 	void	ApplyCharacterStatusEffect();
 	
 /*
@@ -45,7 +41,6 @@ public:
 	virtual void	JumpCharacter();
 	virtual void	StopJumpCharacter();
 	void			Interaction();
-	void			ActiveAbilityByInput(const FInputActionValue& Value, ERaidBossAbilityInputID InputID);
 	
 /*
  *	----------- Access
