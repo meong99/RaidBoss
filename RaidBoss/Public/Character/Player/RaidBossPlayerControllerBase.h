@@ -38,19 +38,20 @@ public:
 	void	StopJumpCharacter() const;
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
 	void	Interaction();
-/*
- *	----------- Access
- */
-public:
-	ARaidBossPlayerBase*				GetRaidBossPlayerBase() const;
-	URaidBossAbilitySystemComponent*	GetRaidBossAbilitySystemComponent() const;
-	TSubclassOf<UGameplayEffect>		GetCharacterStatusEffect() const;
-	
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
 	void	ToggleInventoryWidget() const;
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
 	void	ToggleSkillWidget() const;
+/*
+ *	----------- Access
+ */
+public:
+	UFUNCTION(BlueprintCallable)
+	ARaidBossPlayerBase*				GetRaidBossPlayerBase() const;
+	UFUNCTION(BlueprintCallable)
+	URaidBossAbilitySystemComponent*	GetRaidBossAbilitySystemComponent() const;
 	
+	TSubclassOf<UGameplayEffect>		GetCharacterStatusEffect() const;
 /*
  *	----------- Member Variables
  */

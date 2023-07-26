@@ -44,3 +44,15 @@ URaidBossAbilityBase* URaidBossAbilitySystemComponent::GetAbilityByInputID(int32
 
 	return Ret;
 }
+
+bool URaidBossAbilitySystemComponent::TryActivateAbilityByInpuID(int32 InputID)
+{
+	FGameplayAbilitySpec* Spec = FindAbilitySpecFromInputID(InputID);
+	
+	if (Spec)
+	{
+		return TryActivateAbility(Spec->Handle);
+	}
+
+	return false;
+}

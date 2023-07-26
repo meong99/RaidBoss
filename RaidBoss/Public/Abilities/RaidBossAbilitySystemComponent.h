@@ -28,8 +28,12 @@ public:
 /*
 *	----------- Access
 */
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Ability Component")
 	URaidBossAbilityBase*	GetAbilityByClass(TSubclassOf<URaidBossAbilityBase> AbilityClass);
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Ability Component")
 	URaidBossAbilityBase*	GetAbilityByInputID(int32 InputID);
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Ability Component")
+	bool					TryActivateAbilityByInpuID(int32 InputID);
 /*
 *	----------- Member Variables
 */
