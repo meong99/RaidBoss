@@ -27,17 +27,21 @@ void URaidBossSkillSystem::ToggleSkillWidget() const
 		FInputModeGameAndUI InputMode;
 
 		InputMode.SetWidgetToFocus(SkillWidget->TakeWidget());
-		SkillWidget->AddToViewport();
+		SkillWidget->AddToViewportWithTracking();
 		PlayerController->SetInputMode(InputMode);
 		PlayerController->SetShowMouseCursor(true);
 	}
 	else if (PlayerController && SkillWidget)
 	{
-		FInputModeGameOnly InputMode;
+		FInputModeGameOnly	InputMode;
+		int32				RemainingWidgets = 0;
 		
-		SkillWidget->RemoveFromParent();
-		PlayerController->SetInputMode(InputMode);
-		PlayerController->SetShowMouseCursor(false);
+		SkillWidget->RemoveWidget(SkillWidget, RemainingWidgets);
+		if (RemainingWidgets == 0)
+		{
+			PlayerController->SetInputMode(InputMode);
+			PlayerController->SetShowMouseCursor(false);
+		}
 	}
 }
 

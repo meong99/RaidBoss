@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "UI/RaidBossUserWidgetBase.h"
 #include "RaidBossSkillWidget.generated.h"
 
 class URaidBossSkillSystem;
@@ -11,7 +11,7 @@ class URaidBossSlotWidget;
 class URaidBossSkillBase;
 
 UCLASS()
-class RAIDBOSS_API URaidBossSkillWidget : public UUserWidget
+class RAIDBOSS_API URaidBossSkillWidget : public URaidBossUserWidgetBase
 {
 	GENERATED_BODY()
 

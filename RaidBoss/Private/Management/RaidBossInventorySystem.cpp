@@ -17,19 +17,23 @@ void URaidBossInventorySystem::ToggleInventoryWidget()
 	if (PlayerController && InventoryWidget && InventoryWidget->IsInViewport() == false)
 	{
 		FInputModeGameAndUI InputMode;
-
+		
 		InputMode.SetWidgetToFocus(InventoryWidget->TakeWidget());
-		InventoryWidget->AddToViewport();
+		InventoryWidget->AddToViewportWithTracking();
 		PlayerController->SetInputMode(InputMode);
 		PlayerController->SetShowMouseCursor(true);
 	}
 	else if (PlayerController && InventoryWidget)
 	{
-		FInputModeGameOnly InputMode;
+		FInputModeGameOnly	InputMode;
+		int32				RemainingWidgets = 0;
 		
-		InventoryWidget->RemoveFromParent();
-		PlayerController->SetInputMode(InputMode);
-		PlayerController->SetShowMouseCursor(false);
+		InventoryWidget->RemoveWidget(InventoryWidget, RemainingWidgets);
+		if (RemainingWidgets == 0)
+		{
+			PlayerController->SetInputMode(InputMode);
+			PlayerController->SetShowMouseCursor(false);
+		}
 	}
 }
 

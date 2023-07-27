@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "UI/RaidBossUserWidgetBase.h"
 #include "Blueprint/DragDropOperation.h"
 #include "RaidBossSlotWidget.generated.h"
 
@@ -20,7 +20,7 @@ enum class ESlotType : uint8
 };
 
 UCLASS()
-class RAIDBOSS_API URaidBossSlotWidget : public UUserWidget
+class RAIDBOSS_API URaidBossSlotWidget : public URaidBossUserWidgetBase
 {
 	GENERATED_BODY()
 /*

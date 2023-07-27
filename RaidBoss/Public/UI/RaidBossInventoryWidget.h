@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/Item/RaidBossItemBase.h"
-#include "Blueprint/UserWidget.h"
+#include "UI/RaidBossUserWidgetBase.h"
 #include "UI/RaidBossSlotWidget.h"
 #include "RaidBossInventoryWidget.generated.h"
 
@@ -14,7 +14,7 @@ class UScrollBox;
 class UWrapBox;
 
 UCLASS()
-class RAIDBOSS_API URaidBossInventoryWidget : public UUserWidget
+class RAIDBOSS_API URaidBossInventoryWidget : public URaidBossUserWidgetBase
 {
 	GENERATED_BODY()
 
