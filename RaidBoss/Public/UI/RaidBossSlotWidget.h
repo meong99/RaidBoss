@@ -5,7 +5,6 @@
 #include "Blueprint/DragDropOperation.h"
 #include "RaidBossSlotWidget.generated.h"
 
-struct FItemInfomation;
 class UImage;
 class URaidBossAbilityBase;
 
@@ -26,8 +25,6 @@ class RAIDBOSS_API URaidBossSlotWidget : public URaidBossUserWidgetBase
 /*
 *	----------- Override
 */
-public:
-	virtual void	NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 protected:
 	virtual void	NativeConstruct() override;
 	virtual bool	NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
@@ -42,16 +39,23 @@ protected:
 */
 public:
 	UFUNCTION(BlueprintCallable)
-	void	UseQuickSlot();
-protected:
+	void	UseSlot();
+	UFUNCTION(BlueprintCallable)
+	void	ResetThisSlot();
+
+private:
 	void	DropOnItemSlot(const URaidBossSlotWidget* Payload);
 	void	DropOnEquipmentSlot(const URaidBossSlotWidget* Payload);
-	void	DropOnQuickSlot(const URaidBossSlotWidget* Payload);
+	void	DropOnQuickSlot(URaidBossSlotWidget* Payload);
+	
 	bool	IsEquippable(const URaidBossSlotWidget* Payload) const;
 /*
 *	----------- Access(Get, Set, Check)
 */
 public:
+	UTexture2D*	GetTexture() const;
+	int32		GetItemAmount() const;
+	
 	void	SetWeakOwnerWidget(IN UUserWidget* InWeakOwnerWidget);
 	void	SetTexture(IN UTexture2D* InTexture);
 	void	SetIndex(IN int32 InIndex);
@@ -61,10 +65,10 @@ public:
 *	----------- Member Variables
 */
 private:
-	TObjectPtr<const URaidBossSlotWidget>	RefPayload;
-	
 	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))
 	TWeakObjectPtr<UUserWidget>	WeakOwnerWidget;
+	UPROPERTY(EditInstanceOnly, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))
+	TObjectPtr<UTexture2D>		DefaultTexture;
 	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))
 	int32						Index = 0;
 	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))

@@ -1,9 +1,7 @@
 ﻿#include "UI/RaidBossUserWidgetBase.h"
-
-#include "Character/Player/RaidBossPlayerBase.h"
 #include "Character/Player/RaidBossPlayerControllerBase.h"
 
-TSet<URaidBossUserWidgetBase*>	URaidBossUserWidgetBase::WidgetsInViewport;
+TSet<URaidBossUserWidgetBase*>	URaidBossUserWidgetBase::WidgetsInViewport = {};
 
 void URaidBossUserWidgetBase::AddToViewportWithTracking(int32 ZOrder)
 {

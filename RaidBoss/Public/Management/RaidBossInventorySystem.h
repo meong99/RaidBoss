@@ -56,7 +56,7 @@ public:
 	
 	void	CallEquipItem(int32 Index);
 	void	CallUnEquipItem(int32 Index);
-	void	UseConsumableItem(int32 Index);
+	int32	UseConsumableItem(int32 Index);
 	void	ChangeItemOrder(int32 Index1, int32 Index2, EITemCategory ItemCategory);
 	
 private:
@@ -78,6 +78,7 @@ public:
 	const URaidBossEquipmentItem*		GetEquipmentItem(int32 Index) const;
 	const URaidBossItemBase*			GetItemCDO(EITemCategory ItemCategory, int32 Index) const;
 	const URaidBossEquipmentItem*		GetEquippedItem(int32 Index) const;
+	FItemInfomation*					GetItemInfo(EITemCategory ItemCategory, int32 Index);
 	int32								GetMaximumItemAmount() const;
 	int32								GetItemAmount(EITemCategory ItemCategory, int32 Index) const;
 
@@ -87,7 +88,6 @@ public:
 private:
 	ARaidBossPlayerControllerBase*		GetRaidBossPlayerControllerBase() const;
 	URaidBossAbilitySystemComponent*	GetRaidBossAbilitySystemComponent() const;
-	FItemInfomation*					GetItemInfo(EITemCategory ItemCategory, int32 Index);
 /*
 *	----------- Member Variables
 */

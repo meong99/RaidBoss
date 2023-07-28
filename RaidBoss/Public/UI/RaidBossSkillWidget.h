@@ -14,8 +14,6 @@ UCLASS()
 class RAIDBOSS_API URaidBossSkillWidget : public URaidBossUserWidgetBase
 {
 	GENERATED_BODY()
-
-
 /*
 *	----------- Override
 */
@@ -33,6 +31,7 @@ public:
 	
 	void	InitializeSkillWidget(IN URaidBossSkillSystem* InWeakSkillSystem);
 	void	UseSkill(int32 Index);
+	int32	GetSkillLevel(int32 Index);
 	
 private:
 	void					CreateSlots();

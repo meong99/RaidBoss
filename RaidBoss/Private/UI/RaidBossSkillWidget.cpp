@@ -16,6 +16,14 @@ void URaidBossSkillWidget::UseSkill(int32 Index)
 		WeakSkillSystem->UseSkill(Index);
 }
 
+int32 URaidBossSkillWidget::GetSkillLevel(int32 Index)
+{
+	if (WeakSkillSystem != nullptr)
+		return WeakSkillSystem->GetSkillLevel(Index);
+
+	return 0;
+}
+
 int32 URaidBossSkillWidget::IncreaseSkillLevel(int32 Index)
 {
 	if (WeakSkillSystem != nullptr)
@@ -43,9 +51,9 @@ void URaidBossSkillWidget::CreateSlots()
 			const URaidBossSkillBase*	Skill = WeakSkillSystem->GetSkillCDO(i);
 			URaidBossSlotWidget*		SkillSlot = CreateNewSlot();
 			
+			SkillSlot->SetSlotType(ESlotType::SkillSlot);
 			SkillSlot->SetIndex(i);
 			SkillSlot->SetTexture(Skill->GetSkillInfo().SkillTexture);
-			SkillSlot->SetSlotType(ESlotType::SkillSlot);
 			SkillSlot->SetWeakOwnerWidget(this);
 			ScrollBox->AddChild(SkillSlot);
 			SkillSlots.Add(SkillSlot);

@@ -1,4 +1,6 @@
 ﻿#include "UI/RaidBossInventoryWidget.h"
+
+#include "Abilities/Item/RaidBossConsumableItem.h"
 #include "Components/Button.h"
 #include "UI/RaidBossSlotWidget.h"
 #include "Components/WrapBox.h"
@@ -43,9 +45,9 @@ void URaidBossInventoryWidget::CreateInventorySlot()
 		URaidBossSlotWidget* ItemSlot = Cast<URaidBossSlotWidget>(CreateWidget(this, InventorySlotClass));
 		if (ItemSlot)
 		{
+			ItemSlot->SetSlotType(ESlotType::ItemSlot);
 			ItemSlot->SetIndex(i);
 			ItemSlot->SetVisibility(ESlateVisibility::Visible);
-			ItemSlot->SetSlotType(ESlotType::ItemSlot);
 			ItemSlot->SetWeakOwnerWidget(this);
 			ItemSlot->SetPadding(FMargin(5.f));
 			SlotWrapBox->AddChildToWrapBox(ItemSlot);
@@ -57,33 +59,33 @@ void URaidBossInventoryWidget::CreateInventorySlot()
 void URaidBossInventoryWidget::InitEquipmentSlot()
 {
 	{
+		HelmetSlot->SetSlotType(ESlotType::EquipmentSlot);
 		HelmetSlot->SetIndex(static_cast<int32>(EEquipType::Helmet));
 		HelmetSlot->SetVisibility(ESlateVisibility::Visible);
-		HelmetSlot->SetSlotType(ESlotType::EquipmentSlot);
 		HelmetSlot->SetWeakOwnerWidget(this);
 	}
 	{
+		WeaponSlot->SetSlotType(ESlotType::EquipmentSlot);
 		WeaponSlot->SetIndex(static_cast<int32>(EEquipType::Weapon));
 		WeaponSlot->SetVisibility(ESlateVisibility::Visible);
-		WeaponSlot->SetSlotType(ESlotType::EquipmentSlot);
 		WeaponSlot->SetWeakOwnerWidget(this);
 	}
 	{
+		ArmorTopSlot->SetSlotType(ESlotType::EquipmentSlot);
 		ArmorTopSlot->SetIndex(static_cast<int32>(EEquipType::ArmorTop));
 		ArmorTopSlot->SetVisibility(ESlateVisibility::Visible);
-		ArmorTopSlot->SetSlotType(ESlotType::EquipmentSlot);
 		ArmorTopSlot->SetWeakOwnerWidget(this);
 	}
 	{
+		ArmorBottomSlot->SetSlotType(ESlotType::EquipmentSlot);
 		ArmorBottomSlot->SetIndex(static_cast<int32>(EEquipType::ArmorBottom));
 		ArmorBottomSlot->SetVisibility(ESlateVisibility::Visible);
-		ArmorBottomSlot->SetSlotType(ESlotType::EquipmentSlot);
 		ArmorBottomSlot->SetWeakOwnerWidget(this);
 	}
 	{
+		ArmorShoesSlot->SetSlotType(ESlotType::EquipmentSlot);
 		ArmorShoesSlot->SetIndex(static_cast<int32>(EEquipType::ArmorShoes));
 		ArmorShoesSlot->SetVisibility(ESlateVisibility::Visible);
-		ArmorShoesSlot->SetSlotType(ESlotType::EquipmentSlot);
 		ArmorShoesSlot->SetWeakOwnerWidget(this);
 	}
 }
@@ -165,6 +167,11 @@ void URaidBossInventoryWidget::UnEquipItem(int32 Index)
 		WeakInventorySystem->CallUnEquipItem(Index);
 }
 
+void URaidBossInventoryWidget::UseConsumableItem(int32 Index)
+{
+	WeakInventorySystem->UseConsumableItem(Index);
+}
+
 void URaidBossInventoryWidget::UseItem(ESlotType SlotType, int32 Index)
 {
 	if (WeakInventorySystem == nullptr)
@@ -179,6 +186,7 @@ void URaidBossInventoryWidget::UseItem(ESlotType SlotType, int32 Index)
 				WeakInventorySystem->CallEquipItem(Index);
 			else if (ShownInventory == EITemCategory::Consumable)
 				WeakInventorySystem->UseConsumableItem(Index);
+				
 			break;
 		}
 		
@@ -205,6 +213,14 @@ void URaidBossInventoryWidget::ChangeItemOrder(int32 Index1, int32 Index2)
 {
 	if (WeakInventorySystem != nullptr)
 		WeakInventorySystem->ChangeItemOrder(Index1, Index2, ShownInventory);
+}
+
+int32 URaidBossInventoryWidget::GetConsumableItemAmount(int32 Index)
+{
+	if (WeakInventorySystem != nullptr)
+		return WeakInventorySystem->GetItemAmount(EITemCategory::Consumable, Index);
+
+	return 0;
 }
 
 EITemCategory URaidBossInventoryWidget::GetShownInventory() const

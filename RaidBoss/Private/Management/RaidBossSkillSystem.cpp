@@ -57,17 +57,22 @@ void URaidBossSkillSystem::UseSkill(int32 Index)
 	}
 }
 
+int32 URaidBossSkillSystem::GetSkillLevel(int32 Index)
+{
+	URaidBossSkillBase* SkillObject = GetSkillInstance(Index);
+
+	if (SkillObject)
+		return SkillObject->GetSkillInfo().SkillLevel;
+
+	return 0;
+}
+
 int32 URaidBossSkillSystem::IncreaseSkillLevel(int32 Index)
 {
-	URaidBossSkillBase* SkillCDO = nullptr;
-	if (SkillClasses.IsValidIndex(Index))
-		SkillCDO = SkillClasses[Index].GetDefaultObject();
-	
 	URaidBossSkillBase*	SkillInstance = GetSkillInstance(Index);
 	
-	if (SkillCDO && SkillInstance && CurrentSkillPoint > 0)
+	if (SkillInstance && CurrentSkillPoint > 0)
 	{
-		SkillCDO->IncreaseSkillLevel();
 		if (SkillInstance->IncreaseSkillLevel())
 			CurrentSkillPoint--;
 	}
@@ -79,16 +84,10 @@ int32 URaidBossSkillSystem::IncreaseSkillLevel(int32 Index)
 
 int32 URaidBossSkillSystem::DecreaseSkillLevel(int32 Index)
 {
-	URaidBossSkillBase* SkillCDO = nullptr;
-	
-	if (SkillClasses.IsValidIndex(Index))
-		SkillCDO = SkillClasses[Index].GetDefaultObject();
-	
 	URaidBossSkillBase*	SkillInstance = GetSkillInstance(Index);
 
-	if (SkillCDO && SkillInstance && SkillInstance->GetSkillInfo().SkillLevel > 0)
+	if (SkillInstance && SkillInstance->GetSkillInfo().SkillLevel > 0)
 	{
-		SkillCDO->DecreaseSkillLevel();
 		if (SkillInstance->DecreaseSkillLevel())
 			CurrentSkillPoint++;
 	}

@@ -30,6 +30,7 @@ public:
 	void	ToggleSkillWidget() const;
 
 	void	UseSkill(int32 Index);
+	int32	GetSkillLevel(int32 Index);
 	int32	IncreaseSkillLevel(int32 Index);
 	int32	DecreaseSkillLevel(int32 Index);
 	

@@ -45,8 +45,10 @@ public:
 	void	ResetInventorySlotImage();
 	void	EquipItem(int32 Index);
 	void	UnEquipItem(int32 Index);
+	void	UseConsumableItem(int32 Index);
 	void	UseItem(ESlotType SlotType, int32 Index);
 	void	ChangeItemOrder(int32 Index1, int32 Index2);
+	int32	GetConsumableItemAmount(int32 Index);
 /*
 *	----------- Access(Get, Set, Check)
 */
@@ -61,7 +63,6 @@ public:
 /*
 *	----------- Member Variables
 */
-
 protected:
 	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Inventory Widget")
 	TWeakObjectPtr<URaidBossInventorySystem>	WeakInventorySystem;

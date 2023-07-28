@@ -1,5 +1,6 @@
 ﻿#include "Management/RaidBossInventorySystem.h"
 #include "Abilities/RaidBossAbilitySystemComponent.h"
+#include "Abilities/Item/RaidBossConsumableItem.h"
 #include "Abilities/Item/RaidBossEquipmentItem.h"
 #include "Character/Player/RaidBossPlayerControllerBase.h"
 #include "UI/RaidBossInventoryWidget.h"
@@ -90,7 +91,7 @@ void URaidBossInventorySystem::CallUnEquipItem(int32 Index)
 	AddNewItem(UnEquippedItem);
 }
 
-void URaidBossInventorySystem::UseConsumableItem(int32 Index)
+int32 URaidBossInventorySystem::UseConsumableItem(int32 Index)
 {
 	URaidBossAbilitySystemComponent*	AbilitySystemComponent	= GetRaidBossAbilitySystemComponent();
 	FItemInfomation*					ItemInfo				= GetItemInfo(EITemCategory::Consumable, Index);
@@ -105,7 +106,10 @@ void URaidBossInventorySystem::UseConsumableItem(int32 Index)
 		
 		DecreaseItemAmount(EITemCategory::Consumable, Index);
 		InventoryWidget->UpdateInventorySlot();
+		return ItemInfo->Amount;
 	}
+	
+	return 0;
 }
 
 void URaidBossInventorySystem::ChangeItemOrder(int32 Index1, int32 Index2, EITemCategory ItemCategory)
