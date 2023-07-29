@@ -42,6 +42,8 @@ public:
 	void	ToggleInventoryWidget() const;
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
 	void	ToggleSkillWidget() const;
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
+	void	AttemptDropItem(EITemCategory ItemCategory, int32 Index);
 /*
  *	----------- Access
  */

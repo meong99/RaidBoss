@@ -76,3 +76,9 @@ void ARaidBossPlayerControllerBase::ToggleSkillWidget() const
 {
 	SkillSystem->ToggleSkillWidget();
 }
+
+void ARaidBossPlayerControllerBase::AttemptDropItem(EITemCategory ItemCategory, int32 Index)
+{
+	if (InventorySystem)
+		InventorySystem->RemoveItem(ItemCategory, Index);
+}
