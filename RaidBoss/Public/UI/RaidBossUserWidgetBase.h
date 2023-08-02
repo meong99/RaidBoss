@@ -9,6 +9,8 @@ class RAIDBOSS_API URaidBossUserWidgetBase : public UUserWidget
 {
 	GENERATED_BODY()
 
+public:
+	URaidBossUserWidgetBase(const FObjectInitializer& Initializer);
 
 /*
 *	----------- Override

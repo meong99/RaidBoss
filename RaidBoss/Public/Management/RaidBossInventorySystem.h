@@ -21,7 +21,7 @@ struct FItemInfomation
 
 	bool				IsEmpty() const { return (Amount <= 0); }
 	void				Reset() { Amount = 0; ItemClass = nullptr; }
-	URaidBossItemBase*	GetItemCDO()
+	URaidBossItemBase*	GetItemCDO() const
 	{
 		return ItemClass ? Cast<URaidBossItemBase>(ItemClass->GetDefaultObject()) : nullptr;
 	}
@@ -51,13 +51,15 @@ public:
 	void	ToggleInventoryWidget();
 	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Inventory System")
 	void	AddNewItem(TSubclassOf<URaidBossItemBase> NewItem);
-	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Inventory System")
 	void	RemoveItem(EITemCategory ItemCategory, int32 Index);
+	void	DecreaseItemAmount(EITemCategory ItemCategory, int32 Index);
 	
 	void	CallEquipItem(int32 Index);
 	void	CallUnEquipItem(int32 Index);
 	int32	UseConsumableItem(int32 Index);
 	void	ChangeItemOrder(int32 Index1, int32 Index2, EITemCategory ItemCategory);
+	bool	IsInventoryFull(EITemCategory ItemCategory);
+	int32	TakeProductDataForBuying(URaidBossItemBase* Product);
 	
 private:
 	TSubclassOf<URaidBossItemBase>	UnEquipItem(int32 Index);
@@ -66,28 +68,31 @@ private:
 	void							AddNewConsumableItem(URaidBossItemBase* ItemCDO);
 	void							SwapItems(TArray<FItemInfomation>& Items, int32 Index1, int32 Index2);
 	void							IncreaseItemAmount(EITemCategory ItemCategory, int32 Index);
-	void							DecreaseItemAmount(EITemCategory ItemCategory, int32 Index);
 	void							IncreaseCurrentItemCount(EITemCategory ItemCategory);
 	void							DecreaseCurrentItemCount(EITemCategory ItemCategory);
 	bool							IsValidItemIndex(EITemCategory ItemCategory, int32 Index) const;
-	bool							IsInventoryFull(EITemCategory ItemCategory);
 /*
 *	----------- Access(Get, Set, Check)
 */
 public:
-	const URaidBossEquipmentItem*		GetEquipmentItem(int32 Index) const;
-	const URaidBossItemBase*			GetItemCDO(EITemCategory ItemCategory, int32 Index) const;
-	const URaidBossEquipmentItem*		GetEquippedItem(int32 Index) const;
-	FItemInfomation*					GetItemInfo(EITemCategory ItemCategory, int32 Index);
-	int32								GetMaximumItemAmount() const;
-	int32								GetItemAmount(EITemCategory ItemCategory, int32 Index) const;
+	const URaidBossEquipmentItem*	GetEquipmentItem(int32 Index) const;
+	const URaidBossItemBase*		GetItemCDO(EITemCategory ItemCategory, int32 Index) const;
+	const URaidBossEquipmentItem*	GetEquippedItem(int32 Index) const;
+	int32							GetMaximumItemAmount() const;
+	int32							GetItemAmount(EITemCategory ItemCategory, int32 Index) const;
+	const int32&					GetGold() const;
+	const TArray<FItemInfomation>&	GetEquipItems() const;
+	const TArray<FItemInfomation>&	GetConsumableItems() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Inventory System")
 	void	SetInventoryWidget(URaidBossInventoryWidget* InInventoryWidget);
+	
+	void	SetGold(IN int32 InGold);
 
 private:
 	ARaidBossPlayerControllerBase*		GetRaidBossPlayerControllerBase() const;
 	URaidBossAbilitySystemComponent*	GetRaidBossAbilitySystemComponent() const;
+	FItemInfomation*					GetItemInfo(EITemCategory ItemCategory, int32 Index);
 /*
 *	----------- Member Variables
 */
@@ -95,7 +100,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Inventory System")
 	TObjectPtr<URaidBossInventoryWidget>	InventoryWidget;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Inventory System")
-	int32 MaximumItemAmount = 30;
+	int32	MaximumItemAmount = 30;
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Inventory System")
+	int32	Gold = 0;
 
 private:
 	TArray<FItemInfomation>						EquipItemInfo;

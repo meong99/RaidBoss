@@ -23,11 +23,15 @@ struct FItemAbilityInformation
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-		EITemCategory					ItemCategory;
+	EITemCategory			ItemCategory;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-		FName							ItemName;
+	FName					ItemName;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-		TObjectPtr<UTexture2D>			ItemTexture;
+	TObjectPtr<UTexture2D>	ItemTexture;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	int32					BuyingPrice;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	int32					SellingPrice;
 };
 
 UCLASS(Blueprintable)
@@ -46,6 +50,7 @@ class RAIDBOSS_API URaidBossItemBase : public URaidBossAbilityBase
 public:
 	const TObjectPtr<UTexture2D>	GetItemTexture() const;
 	EITemCategory					GetItemCategory() const;
+	FItemAbilityInformation			GetItemInfo() const;
 /*
  *	----------- Access
  */

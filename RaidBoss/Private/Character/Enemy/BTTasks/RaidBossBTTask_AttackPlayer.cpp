@@ -3,6 +3,7 @@
 #include "Character/Enemy/RaidBossEnemyControllerBase.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Abilities/RaidBossAbilitySystemComponent.h"
+#include "Global/RaidBoss.h"
 
 URaidBossBTTask_AttackPlayer::URaidBossBTTask_AttackPlayer()
 {
