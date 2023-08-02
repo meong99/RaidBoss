@@ -9,3 +9,8 @@ EITemCategory URaidBossItemBase::GetItemCategory() const
 {
 	return ITemInfo.ItemCategory;
 }
+
+FItemAbilityInformation URaidBossItemBase::GetItemInfo() const
+{
+	return ITemInfo;
+}

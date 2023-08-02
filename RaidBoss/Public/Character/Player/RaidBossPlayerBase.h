@@ -48,7 +48,8 @@ public:
 public:
 	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Player Base")
 	TArray<ARaidBossInteractionBase*>	GetInteractionableActors() const;
-	ARaidBossPlayerControllerBase*		GetRiadBossPlayerController() const;
+	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Player Base")
+	ARaidBossPlayerControllerBase*		GetRaidBossPlayerController() const;
 	float								GetGold() const;
 	
 /*

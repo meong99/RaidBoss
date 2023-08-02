@@ -62,6 +62,11 @@ URaidBossAbilitySystemComponent* ARaidBossPlayerControllerBase::GetRaidBossAbili
 	return AbilitySystemComponent;
 }
 
+URaidBossInventorySystem* ARaidBossPlayerControllerBase::GetInventorySystem() const
+{
+	return InventorySystem;
+}
+
 TSubclassOf<UGameplayEffect> ARaidBossPlayerControllerBase::GetCharacterStatusEffect() const
 {
 	return CharacterStatusEffect;

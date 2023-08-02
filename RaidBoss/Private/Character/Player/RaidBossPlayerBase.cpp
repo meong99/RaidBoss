@@ -56,7 +56,7 @@ void ARaidBossPlayerBase::ApplyCharacterStatusEffect()
 {
 	ARaidBossPlayerControllerBase*	PlayerController;
 
-	PlayerController = GetRiadBossPlayerController();
+	PlayerController = GetRaidBossPlayerController();
 	if (PlayerController && AbilitySystemComponent)
 	{
 		TSubclassOf<UGameplayEffect> EffectClass = PlayerController->GetCharacterStatusEffect();
@@ -116,7 +116,7 @@ float ARaidBossPlayerBase::GetGold() const
 	return Gold;
 }
 
-ARaidBossPlayerControllerBase* ARaidBossPlayerBase::GetRiadBossPlayerController() const
+ARaidBossPlayerControllerBase* ARaidBossPlayerBase::GetRaidBossPlayerController() const
 {
 	return Cast<ARaidBossPlayerControllerBase>(GetController());
 }

@@ -48,10 +48,12 @@ public:
  *	----------- Access
  */
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
 	ARaidBossPlayerBase*				GetRaidBossPlayerBase() const;
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
 	URaidBossAbilitySystemComponent*	GetRaidBossAbilitySystemComponent() const;
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
+	URaidBossInventorySystem*			GetInventorySystem() const;
 	
 	TSubclassOf<UGameplayEffect>		GetCharacterStatusEffect() const;
 /*

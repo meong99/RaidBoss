@@ -339,6 +339,22 @@ bool URaidBossInventorySystem::IsInventoryFull(EITemCategory ItemCategory)
 	return bIsInventoryFull;
 }
 
+int32 URaidBossInventorySystem::TakeProductDataForBuying(URaidBossItemBase* Product)
+{
+	if (Product == nullptr)
+		return -1;
+
+	bool	bIsNotEnoughGold = (Product->GetItemInfo().BuyingPrice > Gold);
+	bool	bIsInventoryFull = IsInventoryFull(Product->GetItemCategory());
+	
+	if (bIsNotEnoughGold || bIsInventoryFull)
+		return -1;
+
+	AddNewItem(Product->GetClass());
+	
+	return 0;
+}
+
 const URaidBossEquipmentItem* URaidBossInventorySystem::GetEquipmentItem(int32 Index) const
 {
 	FItemInfomation	CopyItemInfo;
@@ -386,6 +402,21 @@ int32 URaidBossInventorySystem::GetItemAmount(EITemCategory ItemCategory, int32 
 	return ItemAmount;
 }
 
+const int32& URaidBossInventorySystem::GetGold() const
+{
+	return Gold;
+}
+
+const TArray<FItemInfomation>& URaidBossInventorySystem::GetEquipItems() const
+{
+	return EquipItemInfo;
+}
+
+const TArray<FItemInfomation>& URaidBossInventorySystem::GetConsumableItems() const
+{
+	return ConsumableItemInfo;
+}
+
 void URaidBossInventorySystem::SetInventoryWidget(URaidBossInventoryWidget* InInventoryWidget)
 {
 	if (InInventoryWidget)
@@ -394,6 +425,11 @@ void URaidBossInventorySystem::SetInventoryWidget(URaidBossInventoryWidget* InIn
 		InventoryWidget->SetWeakInventorySystem(this);
 		InventoryWidget->CreateSlot();
 	}
+}
+
+void URaidBossInventorySystem::SetGold(int32 InGold)
+{
+	Gold = InGold;
 }
 
 ARaidBossPlayerControllerBase* URaidBossInventorySystem::GetRaidBossPlayerControllerBase() const

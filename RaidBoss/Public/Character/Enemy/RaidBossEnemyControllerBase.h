@@ -13,7 +13,7 @@ namespace BBKey
 
 namespace FilePath
 {
-	TCHAR const* const BehaviourTreePath = TEXT("/Script/AIModule.BehaviorTree'/Game/Enermy/BT_DefaultEnermy.BT_DefaultEnermy'");
+	TCHAR const* const BehaviourTreePath = TEXT("/Script/AIModule.BehaviorTree'/Game/Character/Enermy/BT_DefaultEnermy.BT_DefaultEnermy'");
 }
 
 class UBehaviorTreeComponent;
