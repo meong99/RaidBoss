@@ -43,6 +43,23 @@ void URaidBossStoreSlotWidget::SetItemAmount(int32 InAmount)
 	}
 }
 
+void URaidBossStoreSlotWidget::SetItemName(FString InItemName)
+{
+	ItemName = InItemName;
+}
+
+void URaidBossStoreSlotWidget::SetItemPrice(int32 InItemPrice)
+{
+	if (InItemPrice == 0)
+	{
+		ItemPrice = "";
+	}
+	else
+	{
+		ItemPrice = FString::FromInt(InItemPrice);
+	}
+}
+
 void URaidBossStoreSlotWidget::SetIsProduct(bool InIsProduct)
 {
 	bIsProduct = InIsProduct;

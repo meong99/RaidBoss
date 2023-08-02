@@ -54,8 +54,6 @@ public:
 	URaidBossAbilitySystemComponent*	GetRaidBossAbilitySystemComponent() const;
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
 	URaidBossInventorySystem*			GetInventorySystem() const;
-	
-	TSubclassOf<UGameplayEffect>		GetCharacterStatusEffect() const;
 /*
  *	----------- Member Variables
  */
@@ -67,6 +65,4 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category="Raid Boss | Player Controller")
 	TArray<TSubclassOf<URaidBossAbilityBase>>	DefaultAbilities;
-	UPROPERTY(EditDefaultsOnly, Category="Raid Boss | Player Controller")
-	TSubclassOf<UGameplayEffect>				CharacterStatusEffect;
 };

@@ -52,21 +52,6 @@ void ARaidBossPlayerBase::PossessedBy(AController* NewController)
 	ApplyCharacterStatusEffect();
 }
 
-void ARaidBossPlayerBase::ApplyCharacterStatusEffect()
-{
-	ARaidBossPlayerControllerBase*	PlayerController;
-
-	PlayerController = GetRaidBossPlayerController();
-	if (PlayerController && AbilitySystemComponent)
-	{
-		TSubclassOf<UGameplayEffect> EffectClass = PlayerController->GetCharacterStatusEffect();
-		FGameplayEffectContextHandle ContextHandle = AbilitySystemComponent->MakeEffectContext();
-
-		ContextHandle.AddSourceObject(this);
-		AbilitySystemComponent->ApplyGameplayEffectToSelf(EffectClass.GetDefaultObject(), 1, ContextHandle);
-	}
-}
-
 void ARaidBossPlayerBase::JumpCharacter()
 {
 	if (IsCharacterStateTurnOn(ECharacterState::CanMove))

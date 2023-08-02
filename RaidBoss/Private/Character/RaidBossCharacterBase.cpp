@@ -26,6 +26,17 @@ void ARaidBossCharacterBase::ClearAllMember()
 	AbilitySystemComponent = nullptr;
 }
 
+void ARaidBossCharacterBase::ApplyCharacterStatusEffect()
+{
+	if (AbilitySystemComponent)
+	{
+		FGameplayEffectContextHandle ContextHandle = AbilitySystemComponent->MakeEffectContext();
+
+		ContextHandle.AddSourceObject(this);
+		AbilitySystemComponent->ApplyGameplayEffectToSelf(CharacterStatusEffect.GetDefaultObject(), 1, ContextHandle);
+	}
+}
+
 void ARaidBossCharacterBase::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
@@ -66,11 +77,6 @@ double ARaidBossCharacterBase::GetMaxExperience() const
 	return MaxExperience;
 }
 
-int ARaidBossCharacterBase::GetSkillPoint() const
-{
-	return SkillPoint;
-}
-
 bool ARaidBossCharacterBase::IsCharacterStateTurnOn(ECharacterState CharacterState)
 {
 	return CharacterStateBitMask & static_cast<int32>(CharacterState);
@@ -84,16 +90,6 @@ float ARaidBossCharacterBase::GetHealth() const
 float ARaidBossCharacterBase::GetAttackPower() const
 {
 	return CharacterStatusAttributeSet->GetAttackPower();
-}
-
-void ARaidBossCharacterBase::IncreaseSkillPoint()
-{
-	SkillPoint++;
-}
-
-void ARaidBossCharacterBase::DecreaseSkillPoint()
-{
-	SkillPoint--;
 }
 
 void ARaidBossCharacterBase::TurnOnCharacterStateBitMap(ECharacterState CharacterState)
@@ -123,5 +119,4 @@ void ARaidBossCharacterBase::CharacterLevelUp(float IncrementNum)
 	Experience = fmod(Experience, MaxExperience);
 	MaxExperience = MaxExperience * IncrementNum * 2;
 	CharacterLevel += IncrementNum;
-	SkillPoint += 5;
 }

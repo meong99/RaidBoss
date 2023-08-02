@@ -1,12 +1,7 @@
 ﻿#include "UI/RaidBossUserWidgetBase.h"
 #include "Character/Player/RaidBossPlayerControllerBase.h"
 
-TSet<URaidBossUserWidgetBase*>	URaidBossUserWidgetBase::WidgetsInViewport = {};
-
-URaidBossUserWidgetBase::URaidBossUserWidgetBase(const FObjectInitializer& Initializer) : Super(Initializer)
-{
-	WidgetsInViewport.Reset();
-}
+TSet<URaidBossUserWidgetBase*>	URaidBossUserWidgetBase::WidgetsInViewport = TSet<URaidBossUserWidgetBase*>();
 
 void URaidBossUserWidgetBase::AddToViewportWithTracking(int32 ZOrder)
 {

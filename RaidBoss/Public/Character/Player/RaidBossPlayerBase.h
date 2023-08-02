@@ -29,9 +29,6 @@ protected:
 /*
  *	----------- Other Method
  */
-protected:
-	void	ApplyCharacterStatusEffect();
-	
 /*
  *	----------- Binded by Delegate
  */

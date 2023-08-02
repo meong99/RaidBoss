@@ -48,6 +48,8 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
 	virtual void	ClearAllMember();
 	
+	void	ApplyCharacterStatusEffect();
+
 /*
  *	----------- Access
  */
@@ -64,8 +66,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
 	double	GetMaxExperience() const;
 	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
-	int		GetSkillPoint() const;
-	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
 	bool	IsCharacterStateTurnOn(ECharacterState CharacterState);
 	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
 	float	GetHealth() const;
@@ -77,10 +77,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
 	void			TurnOffCharacterStateBitMap(ECharacterState CharacterState);
 	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
-	void			IncreaseSkillPoint();
-	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
-	void			DecreaseSkillPoint();
-	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
 	virtual void	GiveExperience(double Exp);
 	virtual void	CharacterLevelUp(float IncrementNum);
 
@@ -90,12 +86,12 @@ public:
 protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Character Base")
 	TObjectPtr<URaidBossAbilitySystemComponent>		AbilitySystemComponent;
+	UPROPERTY(EditDefaultsOnly, Category = "Raid Boss | Character Base")
+	TSubclassOf<UGameplayEffect>					CharacterStatusEffect;
 	UPROPERTY()
 	const URaidBossCharacterStatusAttributeSet*		CharacterStatusAttributeSet;
-
 	int32	CharacterStateBitMask;
 	double	Experience = 0;// 골드 경험치 어트리뷰트로 ㄱㄱ
 	double	MaxExperience = 100;
-	int		SkillPoint = 5;
 	float	CharacterLevel = 1;
 };

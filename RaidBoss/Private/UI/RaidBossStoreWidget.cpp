@@ -71,6 +71,8 @@ void URaidBossStoreWidget::CreateProductSlots()
 			SlotWidget->SetIndex(i);
 			SlotWidget->SetIsProduct(true);
 			SlotWidget->SetItemAmount(0);
+			SlotWidget->SetItemName(Item->GetItemInfo().ItemName.ToString());
+			SlotWidget->SetItemPrice(Item->GetItemInfo().SellingPrice);
 			StoreScroll->AddChild(SlotWidget);
 		}
 	}
@@ -115,18 +117,27 @@ void URaidBossStoreWidget::UpdateInventory()
 		const URaidBossItemBase*	Item = CurrentBelonging[i].GetItemCDO();
 		URaidBossStoreSlotWidget*	SlotWidget = Cast<URaidBossStoreSlotWidget>(Slots[i]);
 
-		if (Item == nullptr)
-		{
-			SlotWidget->SetVisibility(ESlateVisibility::Hidden);
-		}
-		else if (SlotWidget)
+		if (Item && SlotWidget)
 		{
 			SlotWidget->SetItemTexture(Item->GetItemTexture());
 			SlotWidget->SetIndex(i);
 			SlotWidget->SetItemAmount(CurrentBelonging[i].Amount);
-			SlotWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			SlotWidget->SetItemName(Item->GetItemInfo().ItemName.ToString());
+			SlotWidget->SetItemPrice(Item->GetItemInfo().SellingPrice);
+		}
+		else if (Item == nullptr)
+		{
+			SlotWidget->SetItemTexture(nullptr);
+			SlotWidget->SetItemAmount(0);
+			SlotWidget->SetItemName("");
+			SlotWidget->SetItemPrice(0);
 		}
 	}
+}
+
+void URaidBossStoreWidget::SetShownItemCategory(EITemCategory Category)
+{
+	ShownItemCategory = Category;
 }
 
 void URaidBossStoreWidget::SetWeakStoreSystem(URaidBossStoreSystem* InWeakStoreSystem)

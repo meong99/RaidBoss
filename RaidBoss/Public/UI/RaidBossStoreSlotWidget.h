@@ -31,9 +31,11 @@ class RAIDBOSS_API URaidBossStoreSlotWidget : public URaidBossUserWidgetBase
 */
 public:
 	void	SetWeakStoreWidget(IN URaidBossStoreWidget*	InWeakStoreWidget);
-	void	SetItemTexture(UTexture2D* Texture);
-	void	SetIndex(IN int32 InIndex);
-	void	SetItemAmount(IN int32 InAmount);
+	void	SetItemTexture(IN UTexture2D* Texture);
+	void	SetIndex(int32 InIndex);
+	void	SetItemAmount(int32 InAmount);
+	void	SetItemName(FString InItemName);
+	void	SetItemPrice(int32 InItemPrice);
 	void	SetIsProduct(bool InIsProduct);
 /*
 *	----------- Member Variables
@@ -43,6 +45,10 @@ private:
 	TWeakObjectPtr<URaidBossStoreWidget>	WeakStoreWidget;
 	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Store Slot Widget", meta=(AllowPrivateAccess))
 	int32	Index = -1;
+	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Store Slot Widget", meta=(AllowPrivateAccess))
+	FString	ItemName;
+	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Store Slot Widget", meta=(AllowPrivateAccess))
+	FString	ItemPrice;
 	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Store Slot Widget", meta=(AllowPrivateAccess))
 	FString	ItemAmount;
 	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Store Slot Widget", meta=(AllowPrivateAccess))
