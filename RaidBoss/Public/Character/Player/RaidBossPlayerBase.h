@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "Character/RaidBossCharacterBase.h"
-#include "InputActionValue.h"
 #include "RaidBossPlayerBase.generated.h"
 
 class URaidBossEquipmentItem;
@@ -24,7 +23,7 @@ public:
  *	----------- Overrided
  */
 protected:
-	virtual void	PossessedBy(AController* NewController) override;
+	virtual void	BeginPlay() override;
 
 /*
  *	----------- Other Method

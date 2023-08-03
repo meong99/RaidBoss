@@ -49,7 +49,7 @@ public:
 protected:
 	bool							ActivateTasks();
 	void							InterpolateAttackDirection(float DeltaTime);
-	TArray<ARaidBossEnemyBase*>	SelectTargets();
+	TArray<ARaidBossEnemyBase*>		SelectTargets();
 	void							ApplyEffecsToTargets(const TArray<ARaidBossEnemyBase*>& TargetArr);
 	void							ResetAbility();
 	float							CalculateAdditialnalAttackPower();

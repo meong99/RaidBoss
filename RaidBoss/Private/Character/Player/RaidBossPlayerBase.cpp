@@ -5,15 +5,11 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Abilities/RaidBossAbilitySystemComponent.h"
-#include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
 #include "Character/Player/RaidBossPlayerControllerBase.h"
 #include "Math/UnrealMathUtility.h"
 #include "Abilities/Skill/RaidBossSkillBase.h"
 #include "Global/RaidBossInteractionBase.h"
 #include "Abilities/RaidBossCharacterStatusAttributeSet.h"
-#include "Abilities/Item/RaidBossEquipmentItem.h"
 
 ARaidBossPlayerBase::ARaidBossPlayerBase()
 {
@@ -45,9 +41,9 @@ ARaidBossPlayerBase::ARaidBossPlayerBase()
 	Tags.Add(PLAYER_TAG);
 }
 
-void ARaidBossPlayerBase::PossessedBy(AController* NewController)
+void ARaidBossPlayerBase::BeginPlay()
 {
-	Super::PossessedBy(NewController);
+	Super::BeginPlay();
 	
 	ApplyCharacterStatusEffect();
 }

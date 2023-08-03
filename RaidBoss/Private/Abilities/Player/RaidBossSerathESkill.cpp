@@ -75,10 +75,7 @@ void URaidBossSerathESkill::EventReceivedCallback(const FGameplayEventData Paylo
 	{
 		FGameplayAbilityTargetDataHandle	TargetData = CreateAbilityTargetDataFromActor(EnermyObject);
 
-		for (const auto Effect : Effects)
-		{
-			ApplyGameplayEffectToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, TargetData, Effect, 1);
-		}
+		ApplyGameplayEffectToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, TargetData, EffectClass, 1);
 	}
 	FVector	Location = OwnerCharacter->GetActorLocation();
 	Location.Z = 0;

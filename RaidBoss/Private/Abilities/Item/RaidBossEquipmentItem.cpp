@@ -61,38 +61,6 @@ void URaidBossEquipmentItem::UnEquipItem()
 	}
 }
 
-FGameplayEffectSpecHandle URaidBossEquipmentItem::CreateEffectSpecHandle()
-{
-	const URaidBossAbilitySystemComponent*	AbilitySystemComponent;
-	FGameplayEffectSpec*					EffectSpec;
-	UGameplayEffect*						EffectObject;
-	
-	AbilitySystemComponent = Cast<URaidBossAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
-	FGameplayEffectContextHandle EffectContextHandle =
-		AbilitySystemComponent ? AbilitySystemComponent->MakeEffectContext() : FGameplayEffectContextHandle();
-	
-	EffectObject = CraeteNewEffectObject();
-	EffectContextHandle.AddSourceObject(OwnerCharacter);
-	
-	EffectSpec = new FGameplayEffectSpec(EffectObject, EffectContextHandle);
-
-	return FGameplayEffectSpecHandle(EffectSpec);
-}
-
-UGameplayEffect* URaidBossEquipmentItem::CraeteNewEffectObject()
-{
-	UGameplayEffect* Effect;
-
-	Effect = NewObject<UGameplayEffect>(this, ItemEffect);
-	
-	if (Effect)
-	{
-		Effect->Modifiers.Add(EquipModifier);
-	}
-
-	return Effect;
-}
-
 int32 URaidBossEquipmentItem::GetEquipType() const
 {
 	return static_cast<int32>(EquipType);

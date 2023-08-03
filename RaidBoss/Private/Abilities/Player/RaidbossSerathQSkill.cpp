@@ -95,7 +95,7 @@ TArray<ARaidBossEnemyBase*> URaidbossSerathQSkill::SelectTargets()
 	{
 		ARaidBossEnemyBase* EnermyObject = Cast<ARaidBossEnemyBase>(Element);
 
-		if (IsValid(EnermyObject) && IsTargetInRangeXY(EnermyObject, Range) == true && EnermyObject->GetHealth() > 0)
+		if (IsValid(EnermyObject) && IsTargetInRangeXY(EnermyObject, Range) == true)
 		{
 			TargetArr.Add(EnermyObject);
 		}
@@ -109,14 +109,11 @@ void URaidbossSerathQSkill::ApplyEffecsToTargets(TArray<ARaidBossEnemyBase*> Tar
 	for (const auto& TergetObject : TargetArr)
 	{
 		FGameplayAbilityTargetDataHandle	TargetData = CreateAbilityTargetDataFromActor(TergetObject);
-		for (const auto& Effect : Effects)
-		{
-			float Magnitude					 = CalculateAdditialnalAttackPower();
-            FGameplayTag DataTag		 	 = FGameplayTag::RequestGameplayTag(FName("DamageExecution"));
-            FGameplayEffectSpecHandle Handle = SetCallerMagnitudeByDataTag(Effect, DataTag, Magnitude, SkillInfo.SkillLevel);
-			
-			ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, Handle, TargetData);
-		}
+		float Magnitude					 = CalculateAdditialnalAttackPower();
+        FGameplayTag DataTag		 	 = FGameplayTag::RequestGameplayTag(FName("DamageExecution"));
+        FGameplayEffectSpecHandle Handle = SetCallerMagnitudeByDataTag(EffectClass, DataTag, Magnitude, SkillInfo.SkillLevel);
+		
+		ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, Handle, TargetData);
 		
 		FVector	Location = TergetObject->GetActorLocation();
 		Location.Z = 0;

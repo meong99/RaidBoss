@@ -11,8 +11,8 @@ URaidBossCharacterStatusAttributeSet::URaidBossCharacterStatusAttributeSet()
 	, AttackPower(1.0f)
 	, AttackRange(0.0f)
 	, DefensePower(1.0f)
-	, AdditialnalAttackPower(0.0f)
-	, AdditialnalDefencePower(0.0f)
+	, AdditionalAttackPower(0.0f)
+	, AdditionalDefencePower(0.0f)
 	, MoveSpeed(0.0f)
 {
 }
@@ -43,10 +43,6 @@ void URaidBossCharacterStatusAttributeSet::PostGameplayEffectExecute(const FGame
 	Super::PostGameplayEffectExecute(Data);
 
 	CheckHealthAndToDeath();
-	if (SourceHasTag(Data, "Attack") == true)
-	{
-		DisplayExecutedDamage(Data);
-	}
 }
 
 void URaidBossCharacterStatusAttributeSet::AdjustAttributeForMaxChange(FGameplayAttributeData& AffectedAttribute,
@@ -72,10 +68,4 @@ void URaidBossCharacterStatusAttributeSet::CheckHealthAndToDeath() const
 	{
 		OwnerCharacter->OnDeath();
 	}
-}
-
-void URaidBossCharacterStatusAttributeSet::DisplayExecutedDamage(const FGameplayEffectModCallbackData& Data) const
-{
-	float ModifiredSize = GetModifiredSize(Data, GetHealthAttribute());
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Blue, FString::Printf(TEXT("%f"), ModifiredSize));
 }

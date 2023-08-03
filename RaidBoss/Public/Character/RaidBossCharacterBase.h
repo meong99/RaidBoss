@@ -30,9 +30,6 @@ public:
 /*
  *	----------- Overrided
  */
-protected:
-	virtual void	PossessedBy(AController* NewController) override;
-
 /*
  *	----------- Binded by Delegate
  */
@@ -55,9 +52,9 @@ protected:
  */
 public:
 	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
-	virtual UAbilitySystemComponent*		GetAbilitySystemComponent() const override;
+	virtual UAbilitySystemComponent*			GetAbilitySystemComponent() const override;
 	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
-	URaidBossAbilitySystemComponent*		GetRaidBossAbilitySystemComponent() const;
+	URaidBossAbilitySystemComponent*			GetRaidBossAbilitySystemComponent() const;
 	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
 	const URaidBossCharacterStatusAttributeSet*	GetCharacterStatusAttributeSet() const;
 	
@@ -88,7 +85,7 @@ protected:
 	TObjectPtr<URaidBossAbilitySystemComponent>		AbilitySystemComponent;
 	UPROPERTY(EditDefaultsOnly, Category = "Raid Boss | Character Base")
 	TSubclassOf<UGameplayEffect>					CharacterStatusEffect;
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Base")
 	const URaidBossCharacterStatusAttributeSet*		CharacterStatusAttributeSet;
 	int32	CharacterStateBitMask;
 	double	Experience = 0;// 골드 경험치 어트리뷰트로 ㄱㄱ

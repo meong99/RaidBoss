@@ -29,31 +29,3 @@ bool URaidBossConsumableItem::CanActivateAbility(const FGameplayAbilitySpecHandl
 	
 	return (bCanActivate);
 }
-
-FGameplayEffectSpecHandle URaidBossConsumableItem::CreateEffectSpecHandle()
-{
-	FGameplayEffectContextHandle	EffectContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
-	FGameplayEffectSpec*			EffectSpec;
-	UGameplayEffect*				Effect;
-	
-	Effect = CraeteNewEffectObject();
-	EffectContextHandle.AddSourceObject(OwnerCharacter);
-	
-	EffectSpec = new FGameplayEffectSpec(Effect, EffectContextHandle);
-
-	return FGameplayEffectSpecHandle(EffectSpec);
-}
-
-UGameplayEffect* URaidBossConsumableItem::CraeteNewEffectObject()
-{
-	UGameplayEffect* Effect;
-
-	Effect = NewObject<UGameplayEffect>(this, ItemEffect);
-	
-	if (Effect)
-	{
-		Effect->Executions.Add(ItemExecution);
-	}
-
-	return Effect;
-}

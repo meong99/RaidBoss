@@ -1,8 +1,6 @@
 #include "Character/RaidBossCharacterBase.h"
 #include "Abilities/RaidBossAbilitySystemComponent.h"
 #include "Abilities/RaidBossCharacterStatusAttributeSet.h"
-#include "Abilities\RaidBossAbilityBase.h"
-#include "Global/RaidBossGameInstance.h"
 
 ARaidBossCharacterBase::ARaidBossCharacterBase()
 {
@@ -11,15 +9,12 @@ ARaidBossCharacterBase::ARaidBossCharacterBase()
 	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -98.f));
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f).Quaternion());
 
-	AbilitySystemComponent = CreateDefaultSubobject<URaidBossAbilitySystemComponent>("Ability Component");
-	AbilitySystemComponent->SetIsReplicated(true);
-	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
-	CharacterStatusAttributeSet = CreateDefaultSubobject<URaidBossCharacterStatusAttributeSet>("Character Status AttributeSet");
+	AbilitySystemComponent = CreateDefaultSubobject<URaidBossAbilitySystemComponent>(TEXT("Ability Component"));
+	CharacterStatusAttributeSet = CreateDefaultSubobject<URaidBossCharacterStatusAttributeSet>(TEXT("Character Status AttributeSet"));
 	CharacterStateBitMask |= static_cast<int32>(ECharacterState::Alive);
 	CharacterStateBitMask |= static_cast<int32>(ECharacterState::CanMove);
 	CharacterStateBitMask |= static_cast<int32>(ECharacterState::CanUsingAttack);
 }
-
 
 void ARaidBossCharacterBase::ClearAllMember()
 {
@@ -35,16 +30,6 @@ void ARaidBossCharacterBase::ApplyCharacterStatusEffect()
 		ContextHandle.AddSourceObject(this);
 		AbilitySystemComponent->ApplyGameplayEffectToSelf(CharacterStatusEffect.GetDefaultObject(), 1, ContextHandle);
 	}
-}
-
-void ARaidBossCharacterBase::PossessedBy(AController* NewController)
-{
-	Super::PossessedBy(NewController);
-
-	if (IsValid(AbilitySystemComponent) == false)
-		return;
-
-	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 }
 
 UAbilitySystemComponent* ARaidBossCharacterBase::GetAbilitySystemComponent() const

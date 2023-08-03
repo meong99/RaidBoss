@@ -73,7 +73,7 @@ void ARaidBossEnemyControllerBase::OnTargetDetectedDelegated(AActor* Actor, FAIS
 	
 	if (IsValid(Actor) == false || IsValid(Blackboard) == false || IsValid(ControlledCharacter) == false)
 		return;
-	if (Actor->ActorHasTag(FName("Enermy")))
+	if (Actor->ActorHasTag(FName("Enemy")))
 		return;
 
 	if (Actor->ActorHasTag(FName("Player")) && Stimulus.WasSuccessfullySensed())
