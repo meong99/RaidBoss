@@ -1,4 +1,7 @@
 ﻿#include "Abilities/Player/RaidBossSerathDefaultAttak.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
+#include "Abilities/RaidBossAbilitySystemComponent.h"
 #include "Abilities/RaidBossCharacterStatusAttributeSet.h"
 #include "Abilities/Util/RaidBossComboSystem.h"
 #include "Character/RaidBossCharacterBase.h"
@@ -173,19 +176,15 @@ TArray<ARaidBossEnemyBase*> URaidBossSerathDefaultAttak::SelectTargets()
 
 void URaidBossSerathDefaultAttak::ApplyEffecsToTargets(const TArray<ARaidBossEnemyBase*>& TargetArr)
 {
+	FGameplayAbilityTargetData_ActorArray*	NewData = new FGameplayAbilityTargetData_ActorArray();
+	
 	for (const auto TargetObject : TargetArr)
 	{
-		FGameplayAbilityTargetDataHandle	TargetData = CreateAbilityTargetDataFromActor(TargetObject);
-		
-		for (const auto Effect : Effects)
-		{
-			float Magnitude					 = CalculateAdditialnalAttackPower();
-			FGameplayTag DataTag		 	 = FGameplayTag::RequestGameplayTag(FName("DamageExecution"));
-			FGameplayEffectSpecHandle Handle = SetCallerMagnitudeByDataTag(Effect, DataTag, Magnitude, SkillInfo.SkillLevel);
-			
-			ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, Handle, TargetData);
-		}
+		NewData->TargetActorArray.Add(TargetObject);
 	}
+	FGameplayAbilityTargetDataHandle	TargetData(NewData);
+	FGameplayEffectSpecHandle			EffectSpecHandle = CreateEffectSpecHandle();
+	TArray<FActiveGameplayEffectHandle> EffectHandles = ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle, TargetData);
 }
 
 void URaidBossSerathDefaultAttak::ResetAbility()

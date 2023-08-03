@@ -67,11 +67,6 @@ URaidBossInventorySystem* ARaidBossPlayerControllerBase::GetInventorySystem() co
 	return InventorySystem;
 }
 
-TSubclassOf<UGameplayEffect> ARaidBossPlayerControllerBase::GetCharacterStatusEffect() const
-{
-	return CharacterStatusEffect;
-}
-
 void ARaidBossPlayerControllerBase::ToggleInventoryWidget() const
 {
 	InventorySystem->ToggleInventoryWidget();

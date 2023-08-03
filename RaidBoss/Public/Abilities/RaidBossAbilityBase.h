@@ -31,6 +31,9 @@ public:
 	bool	UseAbility();
 	
 protected:
+	FGameplayEffectSpecHandle					CreateEffectSpecHandle();
+	UGameplayEffect*							CraeteNewEffect();
+
 	URaidBossAbilitySystemComponent*			GetOwnerAbilityComponent() const;
 	const URaidBossCharacterStatusAttributeSet*	GetOwnerCharacterState();
 	FGameplayEffectSpecHandle					SetCallerMagnitudeByDataTag(TSubclassOf<UGameplayEffect> Effect,
@@ -44,13 +47,17 @@ protected:
  */
 public:
 	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<ARaidBossCharacterBase>		OwnerCharacter;
+	TObjectPtr<ARaidBossCharacterBase>			OwnerCharacter;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Raid Boss | Ability base")
-	ERaidBossAbilityInputID					AbilityInputID = ERaidBossAbilityInputID::None;
+	ERaidBossAbilityInputID						AbilityInputID = ERaidBossAbilityInputID::None;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Ability base")
-	TObjectPtr<UTexture2D>					AbilityTexture;
+	TObjectPtr<UTexture2D>						AbilityTexture;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Ability base")
-	TArray<TSubclassOf<UGameplayEffect>>	Effects;
+	TSubclassOf<UGameplayEffect>				EffectClass;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Ability base")
-	TArray<TObjectPtr<UAnimMontage>>		Montages;
+	TArray<TObjectPtr<UAnimMontage>>			Montages;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Ability base")
+	TArray<FGameplayEffectExecutionDefinition>	EffectExecutions;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Ability base")
+	TArray<FGameplayModifierInfo>				EffectModifiers;
 };

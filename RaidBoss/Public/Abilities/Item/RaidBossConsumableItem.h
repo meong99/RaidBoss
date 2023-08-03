@@ -18,21 +18,13 @@ class RAIDBOSS_API URaidBossConsumableItem : public URaidBossItemBase
 /*
 *	----------- Binded by Delegate
 */
-
 /*
 *	----------- Other Method
 */
-private:
-	FGameplayEffectSpecHandle	CreateEffectSpecHandle();
-	UGameplayEffect*			CraeteNewEffectObject();
-
 /*
 *	----------- Access
 */
 /*
 *	----------- Member Variables
 */
-protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Consumable Item")
-	FGameplayEffectExecutionDefinition ItemExecution;
 };

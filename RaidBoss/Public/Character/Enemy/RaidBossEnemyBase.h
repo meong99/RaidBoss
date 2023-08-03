@@ -19,14 +19,12 @@ public:
  */
 protected:
 	virtual void	BeginPlay() override;
-
 /*
 *	----------- Binded by Delegate
 */
 /*
 *	----------- Other Method
 */
-	void	CreateSkillObjects();
 /*
 *	----------- Access
 */
@@ -34,7 +32,4 @@ protected:
 /*
 *	----------- Member Variables
 */
-protected:
-	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Enermy Base")
-	TArray<URaidBossSkillBase*>	SkillObjects;
 };

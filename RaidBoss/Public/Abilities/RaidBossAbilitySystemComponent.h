@@ -23,11 +23,13 @@ public:
 /*
 *	----------- Other Method
 */
+public:
 	bool	GiveAbilityWithoutDuplication(TSubclassOf<URaidBossAbilityBase> AbilityClass,
 		OUT FGameplayAbilitySpecHandle& OutSpecHandle, int32 InputID = INDEX_NONE);
 /*
 *	----------- Access
 */
+public:
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Ability Component")
 	URaidBossAbilityBase*	GetAbilityByClass(TSubclassOf<URaidBossAbilityBase> AbilityClass);
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Ability Component")

@@ -45,6 +45,40 @@ FGameplayEffectSpecHandle URaidBossAbilityBase::SetCallerMagnitudeByDataTag(TSub
 	return Handle;
 }
 
+FGameplayEffectSpecHandle URaidBossAbilityBase::CreateEffectSpecHandle()
+{
+	FGameplayEffectContextHandle	EffectContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
+	FGameplayEffectSpec*			EffectSpec;
+	UGameplayEffect*				Effect;
+	
+	Effect = CraeteNewEffect();
+	EffectContextHandle.AddSourceObject(OwnerCharacter);
+	EffectSpec = new FGameplayEffectSpec(Effect, EffectContextHandle);
+
+	return FGameplayEffectSpecHandle(EffectSpec);
+}
+
+UGameplayEffect* URaidBossAbilityBase::CraeteNewEffect()
+{
+	UGameplayEffect* EffectObject;
+
+	EffectObject = NewObject<UGameplayEffect>(this, EffectClass);
+	
+	if (EffectObject)
+	{
+		if (EffectExecutions.IsEmpty() == false)
+		{
+			EffectObject->Executions.Append(EffectExecutions);
+		}
+		else if (EffectModifiers.IsEmpty() == false)
+		{
+			EffectObject->Modifiers.Append(EffectModifiers);
+		}
+	}
+
+	return EffectObject;
+}
+
 bool URaidBossAbilityBase::UseAbility()
 {
 	URaidBossAbilitySystemComponent*	AbilityComponent;

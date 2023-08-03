@@ -40,6 +40,8 @@ private:
 *	----------- Access(Get, Set, Check)
 */
 public:
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Store Widget")
+	void	SetShownItemCategory(EITemCategory Category);
 	void	SetWeakStoreSystem(URaidBossStoreSystem* InWeakStoreSystem);
 private:
 	const TArray<FItemInfomation>&	GetCurrentBelonging();

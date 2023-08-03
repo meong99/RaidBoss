@@ -36,15 +36,22 @@ void URaidBossStoreSystem::CloseStoreWidget()
 {
 	if (StoreWidget && StoreWidget->IsInViewport() == true)
 	{
-		FInputModeGameOnly	InputMode;
-		int32				RemainingWidget;
+		int32	RemainingWidget;
 		
 		StoreWidget->RemoveWidget(StoreWidget, RemainingWidget);
 		if (RemainingWidget == 0)
 		{
+			FInputModeGameOnly	InputMode;
+			
 			PlayerController->SetInputMode(InputMode);
 			PlayerController->FlushPressedKeys();
 			PlayerController->SetShowMouseCursor(false);
+		}
+		else
+		{
+			FInputModeGameAndUI	InputMode;
+
+			PlayerController->SetInputMode(InputMode);
 		}
 	}
 }
@@ -105,7 +112,7 @@ const TArray<FItemInfomation>& URaidBossStoreSystem::GetEquipItemsFromPlayer() c
 
 const TArray<FItemInfomation>& URaidBossStoreSystem::GetConsumableItemsFromPlayer() const
 {
-	return InventorySystem->GetEquipItems();
+	return InventorySystem->GetConsumableItems();
 }
 
 int32 URaidBossStoreSystem::GetMaximumItemAmount() const

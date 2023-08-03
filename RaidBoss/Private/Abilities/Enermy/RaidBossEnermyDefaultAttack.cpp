@@ -95,9 +95,6 @@ void URaidBossEnermyDefaultAttack::ApplyEffecsToTargets(const TArray<ARaidBossPl
 	{
 		FGameplayAbilityTargetDataHandle	TargetData = CreateAbilityTargetDataFromActor(TargetObject);
 		
-		for (const auto Effect : Effects)
-		{
-			ApplyGameplayEffectToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, TargetData, Effect, SkillInfo.SkillLevel);
-		}
+		ApplyGameplayEffectToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, TargetData, EffectClass, SkillInfo.SkillLevel);
 	}
 }
