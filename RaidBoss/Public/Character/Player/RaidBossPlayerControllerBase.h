@@ -4,19 +4,19 @@
 #include "GameFramework/PlayerController.h"
 #include "RaidBossPlayerControllerBase.generated.h"
 
-class URaidBossAbilitySystemComponent;
+class URaidBossRewardSystem;
 class ARaidBossPlayerBase;
 class URaidBossInventorySystem;
 class URaidBossSkillSystem;
 class URaidBossAbilityBase;
-class UGameplayEffect;
-class UInputMappingContext;
-class UInputAction;
+class URaidBossAbilitySystemComponent;
 
 UCLASS(Abstract)
 class RAIDBOSS_API ARaidBossPlayerControllerBase : public APlayerController
 {
 	GENERATED_BODY()
+public:
+	ARaidBossPlayerControllerBase();
 /*
  *	----------- Overrided
  */
@@ -36,8 +36,6 @@ public:
 	void	JumpCharacter() const;
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
 	void	StopJumpCharacter() const;
-	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
-	void	Interaction();
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
 	void	ToggleInventoryWidget() const;
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
@@ -62,6 +60,8 @@ protected:
 	TObjectPtr<URaidBossInventorySystem>	InventorySystem;
 	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Player Controller")
 	TObjectPtr<URaidBossSkillSystem>		SkillSystem;
+	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Player Controller")
+	TObjectPtr<URaidBossRewardSystem>		RewardSystem;
 	
 	UPROPERTY(EditDefaultsOnly, Category="Raid Boss | Player Controller")
 	TArray<TSubclassOf<URaidBossAbilityBase>>	DefaultAbilities;

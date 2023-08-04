@@ -4,7 +4,13 @@
 #include "Character/Player/RaidBossPlayerBase.h"
 #include "Management/RaidBossSkillSystem.h"
 #include "Management/RaidBossInventorySystem.h"
+#include "Management/RaidBossRewardSystem.h"
 #include "Management/RaidBossSkillSystem.h"
+
+ARaidBossPlayerControllerBase::ARaidBossPlayerControllerBase()
+{
+	RewardSystem = CreateDefaultSubobject<URaidBossRewardSystem>(TEXT("Reward System"));
+}
 
 void ARaidBossPlayerControllerBase::MoveCharacter(FVector2D Value) const
 {
@@ -28,14 +34,6 @@ void ARaidBossPlayerControllerBase::StopJumpCharacter() const
 
 	if (PlayerBase)
 		PlayerBase->StopJumpCharacter();
-}
-
-void ARaidBossPlayerControllerBase::Interaction()
-{
-	ARaidBossPlayerBase* PlayerBase = GetRaidBossPlayerBase();
-
-	if (PlayerBase)
-		PlayerBase->Interaction();
 }
 
 void ARaidBossPlayerControllerBase::LookCharacter(FVector2D Value) const

@@ -1,4 +1,6 @@
 #include "Character/RaidBossCharacterBase.h"
+
+#include "Abilities/RaidBossAbilityBase.h"
 #include "Abilities/RaidBossAbilitySystemComponent.h"
 #include "Abilities/RaidBossCharacterStatusAttributeSet.h"
 
@@ -19,6 +21,27 @@ ARaidBossCharacterBase::ARaidBossCharacterBase()
 void ARaidBossCharacterBase::ClearAllMember()
 {
 	AbilitySystemComponent = nullptr;
+}
+
+void ARaidBossCharacterBase::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	GiveDefaultAbilities();
+}
+
+void ARaidBossCharacterBase::GiveDefaultAbilities()
+{
+	if (AbilitySystemComponent == nullptr)
+		return;
+	
+	for (const auto Ability : DefaultAbilities)
+	{
+		FGameplayAbilitySpecHandle	AbilitySpecHandle;
+		URaidBossAbilityBase*		AbilityCDO = Cast<URaidBossAbilityBase>(Ability->GetDefaultObject());
+		
+		AbilitySystemComponent->GiveAbilityWithoutDuplication(Ability, AbilitySpecHandle, static_cast<int32>(AbilityCDO->AbilityInputID));
+	}
 }
 
 void ARaidBossCharacterBase::ApplyCharacterStatusEffect()
