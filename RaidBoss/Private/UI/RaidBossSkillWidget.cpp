@@ -24,6 +24,14 @@ int32 URaidBossSkillWidget::GetSkillLevel(int32 Index)
 	return 0;
 }
 
+const URaidBossSkillBase* URaidBossSkillWidget::GetSkillInstance(int32 Index) const
+{
+	if (WeakSkillSystem != nullptr)
+		return WeakSkillSystem->GetSkillInstance(Index);
+
+	return nullptr;
+}
+
 int32 URaidBossSkillWidget::IncreaseSkillLevel(int32 Index)
 {
 	if (WeakSkillSystem != nullptr)

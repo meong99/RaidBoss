@@ -25,13 +25,16 @@ class RAIDBOSS_API URaidBossSkillWidget : public URaidBossUserWidgetBase
 */
 public:
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill Widget")
-	int32	IncreaseSkillLevel(int32 Index);
+	int32						IncreaseSkillLevel(int32 Index);
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill Widget")
-	int32	DecreaseSkillLevel(int32 Index);
+	int32						DecreaseSkillLevel(int32 Index);
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill Widget")
+	int32						GetSkillLevel(int32 Index);
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill Widget")
+	const URaidBossSkillBase*	GetSkillInstance(int32 Index) const;
 	
 	void	InitializeSkillWidget(IN URaidBossSkillSystem* InWeakSkillSystem);
 	void	UseSkill(int32 Index);
-	int32	GetSkillLevel(int32 Index);
 	
 private:
 	void					CreateSlots();
