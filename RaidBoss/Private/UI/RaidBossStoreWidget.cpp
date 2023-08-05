@@ -72,7 +72,7 @@ void URaidBossStoreWidget::CreateProductSlots()
 			SlotWidget->SetIsProduct(true);
 			SlotWidget->SetItemAmount(0);
 			SlotWidget->SetItemName(Item->GetItemInfo().ItemName.ToString());
-			SlotWidget->SetItemPrice(Item->GetItemInfo().SellingPrice);
+			SlotWidget->SetItemPrice(Item->GetItemInfo().BuyingPrice);
 			StoreScroll->AddChild(SlotWidget);
 		}
 	}

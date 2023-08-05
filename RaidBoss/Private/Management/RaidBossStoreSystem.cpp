@@ -73,7 +73,7 @@ bool URaidBossStoreSystem::RespondBuyingRequest(int32 ProductsIndex)
 	
 	if (bIsNotEnoughGold == false && bIsInventoryFull == false)
 	{
-		InventorySystem->SetGold(InventorySystem->GetGold() - Product->GetItemInfo().BuyingPrice);
+		InventorySystem->SubtractGold(Product->GetItemInfo().BuyingPrice);
 		InventorySystem->AddNewItem(Product->GetClass());
 	}
 	
@@ -86,7 +86,7 @@ bool URaidBossStoreSystem::RespondSellingRequest(EITemCategory Category, int32 I
 
 	if (Item)
 	{
-		InventorySystem->SetGold(InventorySystem->GetGold() + Item->GetItemInfo().SellingPrice);
+		InventorySystem->AddGold(Item->GetItemInfo().SellingPrice);
 		InventorySystem->DecreaseItemAmount(Category, InventoryIndex);
 
 		return true;

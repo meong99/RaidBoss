@@ -41,13 +41,13 @@ protected:
 */
 public:
 	const URaidBossSkillBase*	GetSkillCDO(int32 Index) const;
+	URaidBossSkillBase*			GetSkillInstance(int32 Index) const;
 	int32						GetSkillCount() const;
 	int32						GetCurrentSkillPoint() const;
 
 private:
 	ARaidBossPlayerControllerBase*		GetRaidBossPlayerControllerBase() const;
 	URaidBossAbilitySystemComponent*	GetRaidBossAbilitySystemComponent() const;
-	URaidBossSkillBase*					GetSkillInstance(int32 Index) const;
 	
 /*
 *	----------- Member Variables

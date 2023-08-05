@@ -427,9 +427,14 @@ void URaidBossInventorySystem::SetInventoryWidget(URaidBossInventoryWidget* InIn
 	}
 }
 
-void URaidBossInventorySystem::SetGold(int32 InGold)
+void URaidBossInventorySystem::AddGold(int32 AdditionalGold)
 {
-	Gold = InGold;
+	Gold += AdditionalGold;
+}
+
+void URaidBossInventorySystem::SubtractGold(int32 SubtractionGold)
+{
+	Gold -= SubtractionGold;
 }
 
 ARaidBossPlayerControllerBase* URaidBossInventorySystem::GetRaidBossPlayerControllerBase() const

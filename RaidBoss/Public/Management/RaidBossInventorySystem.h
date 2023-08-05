@@ -86,8 +86,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Inventory System")
 	void	SetInventoryWidget(URaidBossInventoryWidget* InInventoryWidget);
-	
-	void	SetGold(IN int32 InGold);
+	void	AddGold(int32 AdditionalGold);
+	void	SubtractGold(int32 SubtractionGold);
 
 private:
 	ARaidBossPlayerControllerBase*		GetRaidBossPlayerControllerBase() const;

@@ -182,6 +182,7 @@ void URaidBossSerathDefaultAttak::ApplyEffecsToTargets(const TArray<ARaidBossEne
 	{
 		NewData->TargetActorArray.Add(TargetObject);
 	}
+	
 	FGameplayAbilityTargetDataHandle	TargetData(NewData);
 	FGameplayEffectSpecHandle			EffectSpecHandle = CreateEffectSpecHandle();
 	TArray<FActiveGameplayEffectHandle> EffectHandles = ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle, TargetData);

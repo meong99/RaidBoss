@@ -8,7 +8,6 @@
 #include "Character/Player/RaidBossPlayerControllerBase.h"
 #include "Math/UnrealMathUtility.h"
 #include "Abilities/Skill/RaidBossSkillBase.h"
-#include "Global/RaidBossInteractionBase.h"
 #include "Abilities/RaidBossCharacterStatusAttributeSet.h"
 
 ARaidBossPlayerBase::ARaidBossPlayerBase()
@@ -77,24 +76,6 @@ void ARaidBossPlayerBase::LookCharacter(const FVector2D& Value)
 {
 	AddControllerYawInput(Value.X * 0.4);
 	AddControllerPitchInput(Value.Y * 0.4);
-}
-
-void ARaidBossPlayerBase::Interaction()
-{
-	for (const auto& Actor : InteractionableActors)
-	{
-		Actor->OnInteration(this);
-	}
-}
-
-TArray<ARaidBossInteractionBase*> ARaidBossPlayerBase::GetInteractionableActors() const
-{
-	return InteractionableActors;
-}
-
-float ARaidBossPlayerBase::GetGold() const
-{
-	return Gold;
 }
 
 ARaidBossPlayerControllerBase* ARaidBossPlayerBase::GetRaidBossPlayerController() const

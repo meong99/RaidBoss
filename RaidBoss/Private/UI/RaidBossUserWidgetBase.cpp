@@ -3,6 +3,11 @@
 
 TSet<URaidBossUserWidgetBase*>	URaidBossUserWidgetBase::WidgetsInViewport = TSet<URaidBossUserWidgetBase*>();
 
+URaidBossUserWidgetBase::URaidBossUserWidgetBase(const FObjectInitializer& Initializer) : Super(Initializer)
+{
+	WidgetsInViewport.Reset();
+}
+
 void URaidBossUserWidgetBase::AddToViewportWithTracking(int32 ZOrder)
 {
 	bool	bIsAlreadyInSet = false;

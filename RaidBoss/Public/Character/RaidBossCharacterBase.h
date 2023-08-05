@@ -27,30 +27,9 @@ class RAIDBOSS_API ARaidBossCharacterBase : public ACharacter, public IAbilitySy
 public:
 	ARaidBossCharacterBase();
 	
-/*
- *	----------- Overrided
- */
-/*
- *	----------- Binded by Delegate
- */
-		
-/*
- *	----------- Other Method
- */
-public:
-
 	UFUNCTION(BlueprintImplementableEvent, Category = "Raid Boss | Character Base")
 	void			OnDeath();
-protected:
-	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
-	virtual void	ClearAllMember();
-	
-	void	ApplyCharacterStatusEffect();
 
-/*
- *	----------- Access
- */
-public:
 	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
 	virtual UAbilitySystemComponent*			GetAbilitySystemComponent() const override;
 	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
@@ -77,18 +56,27 @@ public:
 	virtual void	GiveExperience(double Exp);
 	virtual void	CharacterLevelUp(float IncrementNum);
 
+protected:
+	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
+	virtual void	ClearAllMember();
+
+	virtual void	BeginPlay() override;
+	void			GiveDefaultAbilities();
+	void			ApplyCharacterStatusEffect();
 /*
  *	----------- Member Variables
  */
 protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Character Base")
-	TObjectPtr<URaidBossAbilitySystemComponent>		AbilitySystemComponent;
-	UPROPERTY(EditDefaultsOnly, Category = "Raid Boss | Character Base")
-	TSubclassOf<UGameplayEffect>					CharacterStatusEffect;
+	TObjectPtr<URaidBossAbilitySystemComponent>	AbilitySystemComponent;
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Base")
-	const URaidBossCharacterStatusAttributeSet*		CharacterStatusAttributeSet;
+	const URaidBossCharacterStatusAttributeSet*	CharacterStatusAttributeSet;
+	UPROPERTY(EditDefaultsOnly, Category = "Raid Boss | Character Base")
+	TArray<TSubclassOf<URaidBossAbilityBase>>	DefaultAbilities;
+	UPROPERTY(EditDefaultsOnly, Category = "Raid Boss | Character Base")
+	TSubclassOf<UGameplayEffect>				CharacterStatusEffect;
 	int32	CharacterStateBitMask;
-	double	Experience = 0;// 골드 경험치 어트리뷰트로 ㄱㄱ
+	double	Experience = 0;// 경험치 어트리뷰트로 ㄱㄱ
 	double	MaxExperience = 100;
 	float	CharacterLevel = 1;
 };

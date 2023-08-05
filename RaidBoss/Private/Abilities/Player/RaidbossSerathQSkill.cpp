@@ -106,19 +106,20 @@ TArray<ARaidBossEnemyBase*> URaidbossSerathQSkill::SelectTargets()
 
 void URaidbossSerathQSkill::ApplyEffecsToTargets(TArray<ARaidBossEnemyBase*> TargetArr)
 {
-	for (const auto& TergetObject : TargetArr)
+	FGameplayAbilityTargetData_ActorArray*	NewData = new FGameplayAbilityTargetData_ActorArray();
+	
+	for (const auto TargetObject : TargetArr)
 	{
-		FGameplayAbilityTargetDataHandle	TargetData = CreateAbilityTargetDataFromActor(TergetObject);
-		float Magnitude					 = CalculateAdditialnalAttackPower();
-        FGameplayTag DataTag		 	 = FGameplayTag::RequestGameplayTag(FName("DamageExecution"));
-        FGameplayEffectSpecHandle Handle = SetCallerMagnitudeByDataTag(EffectClass, DataTag, Magnitude, SkillInfo.SkillLevel);
+		NewData->TargetActorArray.Add(TargetObject);
 		
-		ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, Handle, TargetData);
-		
-		FVector	Location = TergetObject->GetActorLocation();
+		FVector	Location = TargetObject->GetActorLocation();
 		Location.Z = 0;
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Particle, Location);
 	}
+	
+	FGameplayAbilityTargetDataHandle	TargetData(NewData);
+	FGameplayEffectSpecHandle			EffectSpecHandle = CreateEffectSpecHandle();
+	TArray<FActiveGameplayEffectHandle> EffectHandles = ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle, TargetData);
 }
 
 float URaidbossSerathQSkill::CalculateAdditialnalAttackPower()
