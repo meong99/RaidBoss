@@ -48,8 +48,8 @@ public:
  *	----------- Member Variables
  */
 public:
-	UPROPERTY(VisibleAnywhere, Category = "Raid Boss | Player Base")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Raid Boss | Player Base")
 	TObjectPtr<USpringArmComponent>		CameraBoom;
-	UPROPERTY(VisibleAnywhere, Category = "Raid Boss | Player Base")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Raid Boss | Player Base")
 	TObjectPtr<UCameraComponent>		FollowCamera;
 };
