@@ -202,7 +202,7 @@ void URaidBossSlotWidget::DropOnQuickSlot(URaidBossSlotWidget* Payload)
 		UTexture2D*	Texture = UWidgetBlueprintLibrary::GetBrushResourceAsTexture2D(Payload->BindImage->Brush);
 		SetTexture(Texture);
 	}
-	else if (QuickSlotWidget)
+	else if (QuickSlotWidget && PayloadInven == nullptr)
 	{
 		QuickSlotWidget->MoveSlotData(Payload->Index, Index);
 	}

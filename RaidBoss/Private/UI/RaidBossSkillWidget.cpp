@@ -1,8 +1,8 @@
 ﻿#include "UI/RaidBossSkillWidget.h"
+#include "UI/RaidBossSlotWidget.h"
 #include "Abilities/Skill/RaidBossSkillBase.h"
 #include "Components/ScrollBox.h"
 #include "Management/RaidBossSkillSystem.h"
-#include "UI/RaidBossSlotWidget.h"
 
 void URaidBossSkillWidget::InitializeSkillWidget(URaidBossSkillSystem* InWeakSkillSystem)
 {
