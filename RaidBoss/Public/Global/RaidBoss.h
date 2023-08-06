@@ -21,19 +21,3 @@ enum class ERaidBossAbilityInputID : uint8
 	Death UMETA(DisplayName = "Death"),
 	Respawn UMETA(DisplayName = "Respawn"),
 };
-
-/*
- *	----------- Override
- */
-/*
- *	----------- Used on delegate
- */
-/*
- *	----------- Process Method
- */
-/*
- *	----------- Access(Get, Set, Check)
- */
-/*
- *	----------- Member Variables
- */
