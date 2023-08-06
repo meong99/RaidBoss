@@ -1,11 +1,5 @@
 #include "Abilities/RaidBossAbilitySystemComponent.h"
 #include "Abilities/Skill/RaidBossSkillBase.h"
-#include "Global/RaidBoss.h"
-#include "Global/RaidBossGameInstance.h"
-
-URaidBossAbilitySystemComponent::URaidBossAbilitySystemComponent()
-{
-}
 
 bool URaidBossAbilitySystemComponent::GiveAbilityWithoutDuplication(TSubclassOf<URaidBossAbilityBase> AbilityClass,
 	FGameplayAbilitySpecHandle& OutSpecHandle, int32 InputID)
@@ -16,6 +10,18 @@ bool URaidBossAbilitySystemComponent::GiveAbilityWithoutDuplication(TSubclassOf<
 
 		OutSpecHandle = GiveAbility(Spec);
 	}
+	return false;
+}
+
+bool URaidBossAbilitySystemComponent::TryActivateAbilityByInputID(int32 InputID)
+{
+	FGameplayAbilitySpec* Spec = FindAbilitySpecFromInputID(InputID);
+	
+	if (Spec)
+	{
+		return TryActivateAbility(Spec->Handle);
+	}
+
 	return false;
 }
 
@@ -43,16 +49,4 @@ URaidBossAbilityBase* URaidBossAbilitySystemComponent::GetAbilityByInputID(int32
 	}
 
 	return Ret;
-}
-
-bool URaidBossAbilitySystemComponent::TryActivateAbilityByInpuID(int32 InputID)
-{
-	FGameplayAbilitySpec* Spec = FindAbilitySpecFromInputID(InputID);
-	
-	if (Spec)
-	{
-		return TryActivateAbility(Spec->Handle);
-	}
-
-	return false;
 }
