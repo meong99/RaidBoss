@@ -1,20 +1,6 @@
 ﻿#include "Util/RaidBossLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 
-bool RaidBossLibrary::NearbyCompareFloat(float A, float B, float Margin)
-{
-	if (Margin == 0)
-	{
-		A = floor(A);
-		B = floor(B);
-	}
-
-	if (abs(A - B) <= Margin)
-		return true;
-
-	return false;
-}
-
 bool RaidBossLibrary::SphereTraceSingleForObjects(const UWorld* World, const FVector Start, const FVector End, float CapsuleRadius,
 	FHitResult& ResultOut, const EDrawDebugTrace::Type DrawDebugType, const TArray<AActor*>& IgnoreActors,
 	const TArray<ECollisionChannel>& CollisionChannel)

@@ -1,5 +1,4 @@
 #include "Character/RaidBossCharacterBase.h"
-
 #include "Abilities/RaidBossAbilityBase.h"
 #include "Abilities/RaidBossAbilitySystemComponent.h"
 #include "Abilities/RaidBossCharacterStatusAttributeSet.h"
@@ -18,11 +17,6 @@ ARaidBossCharacterBase::ARaidBossCharacterBase()
 	CharacterStateBitMask |= static_cast<int32>(ECharacterState::CanUsingAttack);
 }
 
-void ARaidBossCharacterBase::ClearAllMember()
-{
-	AbilitySystemComponent = nullptr;
-}
-
 void ARaidBossCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
@@ -30,7 +24,7 @@ void ARaidBossCharacterBase::BeginPlay()
 	GiveDefaultAbilities();
 }
 
-void ARaidBossCharacterBase::GiveDefaultAbilities()
+void ARaidBossCharacterBase::GiveDefaultAbilities() const
 {
 	if (AbilitySystemComponent == nullptr)
 		return;
@@ -44,7 +38,7 @@ void ARaidBossCharacterBase::GiveDefaultAbilities()
 	}
 }
 
-void ARaidBossCharacterBase::ApplyCharacterStatusEffect()
+void ARaidBossCharacterBase::ApplyCharacterStatusEffect() const
 {
 	if (AbilitySystemComponent)
 	{
@@ -62,12 +56,7 @@ UAbilitySystemComponent* ARaidBossCharacterBase::GetAbilitySystemComponent() con
 
 URaidBossAbilitySystemComponent* ARaidBossCharacterBase::GetRaidBossAbilitySystemComponent() const
 {
-	URaidBossAbilitySystemComponent* Ret = Cast<URaidBossAbilitySystemComponent>(GetAbilitySystemComponent());
-
-	if (IsValid(Ret) == false)
-		return nullptr;
-
-	return Ret;
+	return Cast<URaidBossAbilitySystemComponent>(GetAbilitySystemComponent());
 }
 
 const URaidBossCharacterStatusAttributeSet* ARaidBossCharacterBase::GetCharacterStatusAttributeSet() const
@@ -85,7 +74,7 @@ double ARaidBossCharacterBase::GetMaxExperience() const
 	return MaxExperience;
 }
 
-bool ARaidBossCharacterBase::IsCharacterStateTurnOn(ECharacterState CharacterState)
+bool ARaidBossCharacterBase::IsCharacterStateTurnOn(ECharacterState CharacterState) const
 {
 	return CharacterStateBitMask & static_cast<int32>(CharacterState);
 }
@@ -103,12 +92,14 @@ float ARaidBossCharacterBase::GetAttackPower() const
 void ARaidBossCharacterBase::TurnOnCharacterStateBitMap(ECharacterState CharacterState)
 {
 	int32	Bit = static_cast<int32>(CharacterState);
+	
 	CharacterStateBitMask |= Bit;
 }
 
 void ARaidBossCharacterBase::TurnOffCharacterStateBitMap(ECharacterState CharacterState)
 {
 	int32	Bit = static_cast<int32>(CharacterState);
+	
 	CharacterStateBitMask &= ~Bit;
 }
 
