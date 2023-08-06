@@ -16,36 +16,20 @@ class RAIDBOSS_API URaidBossAbilityBase : public UGameplayAbility
 public:
 	URaidBossAbilityBase();
 
-/*
- *	----------- Overrided
- */
-protected:
 	virtual void OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
-/*
- *	----------- Binded by Delegate
-*/
-/*
- *	----------- Other Method
- */
-public:
-	bool	UseAbility();
+
+	bool	UseAbility() const;
+	
+	ERaidBossAbilityInputID						GetAbilityInputID() const;
 	
 protected:
 	FGameplayEffectSpecHandle					CreateEffectSpecHandle();
-	UGameplayEffect*							CraeteNewEffect();
+	UGameplayEffect*							CreateNewEffect();
 
 	URaidBossAbilitySystemComponent*			GetOwnerAbilityComponent() const;
-	const URaidBossCharacterStatusAttributeSet*	GetOwnerCharacterState();
-	FGameplayEffectSpecHandle					SetCallerMagnitudeByDataTag(TSubclassOf<UGameplayEffect> Effect,
-													const FGameplayTag& DataTag, float Magnitude, float Level);
-/*
- *	----------- Access
- */
-
-/*
- *	----------- Member Variables
- */
-public:
+	const URaidBossCharacterStatusAttributeSet*	GetOwnerCharacterState() const;
+	
+protected:
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<ARaidBossCharacterBase>			OwnerCharacter;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Raid Boss | Ability base")

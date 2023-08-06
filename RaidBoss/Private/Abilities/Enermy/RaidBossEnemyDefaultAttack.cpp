@@ -1,11 +1,11 @@
-#include "Abilities/Enermy/RaidBossEnermyDefaultAttack.h"
+#include "Abilities/Enermy/RaidBossEnemyDefaultAttack.h"
 #include "AbilitySystemComponent.h"
 #include "Abilities/RaidBossCharacterStatusAttributeSet.h"
 #include "Components/CapsuleComponent.h"
 #include "Character/Player/RaidBossPlayerBase.h"
 #include "Kismet/GameplayStatics.h"
 
-URaidBossEnermyDefaultAttack::URaidBossEnermyDefaultAttack()
+URaidBossEnemyDefaultAttack::URaidBossEnemyDefaultAttack()
 {
 	SkillInfo.SkillCost = 0;
 	SkillInfo.SkillLevel = 1;
@@ -17,7 +17,7 @@ URaidBossEnermyDefaultAttack::URaidBossEnermyDefaultAttack()
 	AbilityTags.AddTag(BlockTag);
 }
 
-void URaidBossEnermyDefaultAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+void URaidBossEnemyDefaultAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	const FGameplayEventData* TriggerEventData)
 {
@@ -36,13 +36,13 @@ void URaidBossEnermyDefaultAttack::ActivateAbility(const FGameplayAbilitySpecHan
 	
 	if (::IsValid(PlayMontageAndWait) == true && ::IsValid(WaitGameplayEvent) == true)
 	{
-		PlayMontageAndWait->OnCompleted.AddDynamic(this, &URaidBossEnermyDefaultAttack::EndAbilityCallback);
-		PlayMontageAndWait->OnBlendOut.AddDynamic(this, &URaidBossEnermyDefaultAttack::EndAbilityCallback);
-		PlayMontageAndWait->OnInterrupted.AddDynamic(this, &URaidBossEnermyDefaultAttack::EndAbilityCallback);
-		PlayMontageAndWait->OnCancelled.AddDynamic(this, &URaidBossEnermyDefaultAttack::EndAbilityCallback);
+		PlayMontageAndWait->OnCompleted.AddDynamic(this, &URaidBossEnemyDefaultAttack::EndAbilityCallback);
+		PlayMontageAndWait->OnBlendOut.AddDynamic(this, &URaidBossEnemyDefaultAttack::EndAbilityCallback);
+		PlayMontageAndWait->OnInterrupted.AddDynamic(this, &URaidBossEnemyDefaultAttack::EndAbilityCallback);
+		PlayMontageAndWait->OnCancelled.AddDynamic(this, &URaidBossEnemyDefaultAttack::EndAbilityCallback);
 		PlayMontageAndWait->Activate();
 		
-		WaitGameplayEvent->EventReceived.AddDynamic(this, &URaidBossEnermyDefaultAttack::EventReceivedCallback);
+		WaitGameplayEvent->EventReceived.AddDynamic(this, &URaidBossEnemyDefaultAttack::EventReceivedCallback);
 		WaitGameplayEvent->Activate();
 	}
 	else
@@ -52,17 +52,17 @@ void URaidBossEnermyDefaultAttack::ActivateAbility(const FGameplayAbilitySpecHan
 	}
 }
 
-void URaidBossEnermyDefaultAttack::EventReceivedCallback(const FGameplayEventData Payload)
+void URaidBossEnemyDefaultAttack::EventReceivedCallback(const FGameplayEventData Payload)
 {
-	ApplyEffecsToTargets(SelectTargets());
+	ApplyEffectsToTargets(SelectTargets());
 }
 
-void URaidBossEnermyDefaultAttack::EndAbilityCallback()
+void URaidBossEnemyDefaultAttack::EndAbilityCallback()
 {
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 
-TArray<ARaidBossPlayerBase*> URaidBossEnermyDefaultAttack::SelectTargets()
+TArray<ARaidBossPlayerBase*> URaidBossEnemyDefaultAttack::SelectTargets()
 {
 	TArray<AActor*>	OutArray;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARaidBossPlayerBase::StaticClass(), OutArray);
@@ -80,7 +80,8 @@ TArray<ARaidBossPlayerBase*> URaidBossEnermyDefaultAttack::SelectTargets()
 		FVector	TargetVector				= TargetObject->GetActorLocation() - OwnerCharacter->GetActorLocation();
 
 		if (IsTargetInRangeXY(TargetObject, CharacterRange + EnermyCapsuleRadius) == true 
-			&& IsTargetInAngleXY(StandardVector, TargetVector, 90) == true)
+			&& IsTargetInAngleXY(StandardVector, TargetVector, 90) == true
+			&& TargetObject->IsCharacterStateTurnOn(ECharacterState::Alive))
 		{
 			TargetArr.Add(TargetObject);
 		}
@@ -89,12 +90,18 @@ TArray<ARaidBossPlayerBase*> URaidBossEnermyDefaultAttack::SelectTargets()
 	return TargetArr;
 }
 
-void URaidBossEnermyDefaultAttack::ApplyEffecsToTargets(const TArray<ARaidBossPlayerBase*>& TargetArr)
+void URaidBossEnemyDefaultAttack::ApplyEffectsToTargets(const TArray<ARaidBossPlayerBase*>& TargetArr)
 {
+	FGameplayAbilityTargetData_ActorArray*	NewData = new FGameplayAbilityTargetData_ActorArray();
+
 	for (const auto TargetObject : TargetArr)
 	{
+		NewData->TargetActorArray.Add(TargetObject);
+
 		FGameplayAbilityTargetDataHandle	TargetData = CreateAbilityTargetDataFromActor(TargetObject);
-		
-		ApplyGameplayEffectToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, TargetData, EffectClass, SkillInfo.SkillLevel);
 	}
+		
+	FGameplayAbilityTargetDataHandle	TargetData(NewData);
+	FGameplayEffectSpecHandle			EffectSpecHandle = CreateEffectSpecHandle();
+	TArray<FActiveGameplayEffectHandle> EffectHandles = ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle, TargetData);
 }

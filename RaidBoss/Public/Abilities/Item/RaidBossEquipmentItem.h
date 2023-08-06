@@ -22,40 +22,23 @@ class RAIDBOSS_API URaidBossEquipmentItem : public URaidBossItemBase
 	GENERATED_BODY()
 public:
 	URaidBossEquipmentItem();
-/*
-*	----------- Overrided
-*/
-public:
+
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 			const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const override;
+	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+			const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
+
+	int32	GetEquipType() const;
+	
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 			const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
-	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-			const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
-/*
-*	----------- Binded by Delegate
-*/
-/*
-*	----------- Other Method
-*/
-protected:
+
+private:
 	void	EquipItem();
 	void	UnEquipItem();
-	
 
-/*
-*	----------- Access
-*/
-public:
-	int32	GetEquipType() const;
-/*
-*	----------- Static Variables
-*/
-/*
-*	----------- Member Variables
-*/
-protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Equipment Item")
+private:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Equipment Item", meta=(AllowPrivateAccess))
 	EEquipType EquipType = EEquipType::Size;
 };

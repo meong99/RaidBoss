@@ -1,11 +1,34 @@
 #include "Abilities/Skill/RaidBossSkillBase.h"
-#include "AbilitySystemComponent.h"
 #include "Character/RaidBossCharacterBase.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 
-URaidBossSkillBase::URaidBossSkillBase()
+const FRaidBossSkillInfo& URaidBossSkillBase::GetSkillInfo() const
 {
+	return SkillInfo;
+}
+
+bool URaidBossSkillBase::IncreaseSkillLevel()
+{
+	if (SkillInfo.SkillLevel + 1 <= SkillInfo.MaximumSkillLevel)
+	{
+		SkillInfo.SkillLevel++;
+
+		return  true;
+	}
+
+	return false;
+}
+
+bool URaidBossSkillBase::DecreaseSkillLevel()
+{
+	if ( SkillInfo.SkillLevel - 1 >= SkillInfo.MinimumSkillLevel)
+	{
+		SkillInfo.SkillLevel--;
+		return  true;
+	}
+	
+	return false;
 }
 
 FGameplayAbilityTargetDataHandle URaidBossSkillBase::CreateAbilityTargetDataFromActor(AActor* Target) const
@@ -35,7 +58,7 @@ UAbilityTask_WaitGameplayEvent* URaidBossSkillBase::CreateWaitGameplayEventTask(
 	return WaitEventTask;
 }
 
-bool URaidBossSkillBase::IsTargetInRangeXY(AActor* Target, float Range)
+bool URaidBossSkillBase::IsTargetInRangeXY(AActor* Target, float Range) const
 {
 	if (IsValid(Target) == false || IsValid(OwnerCharacter) == false)
 		return false;
@@ -49,7 +72,7 @@ bool URaidBossSkillBase::IsTargetInRangeXY(AActor* Target, float Range)
 	return false;
 }
 
-bool URaidBossSkillBase::IsTargetInAngleXY(FVector StandardVector, FVector TargetVector, float MaxAngle)
+bool URaidBossSkillBase::IsTargetInAngleXY(FVector StandardVector, FVector TargetVector, float MaxAngle) const
 {
 	StandardVector.Z = 0;
 	TargetVector.Z = 0;
@@ -64,42 +87,14 @@ bool URaidBossSkillBase::IsTargetInAngleXY(FVector StandardVector, FVector Targe
 	return false;
 }
 
-void URaidBossSkillBase::BlockOwnerCharacterMovement()
+void URaidBossSkillBase::BlockOwnerCharacterMovement() const
 {
 	if (IsValid(OwnerCharacter) == true)
 		OwnerCharacter->TurnOffCharacterStateBitMap(ECharacterState::CanMove);
 }
 
-void URaidBossSkillBase::ReleaseOwnerCharacterMovement()
+void URaidBossSkillBase::ReleaseOwnerCharacterMovement() const
 {
 	if (IsValid(OwnerCharacter) == true)
 		OwnerCharacter->TurnOnCharacterStateBitMap(ECharacterState::CanMove);
-}
-
-const FRaidBossSkillInfo& URaidBossSkillBase::GetSkillInfo() const
-{
-	return SkillInfo;
-}
-
-bool URaidBossSkillBase::IncreaseSkillLevel()
-{
-	if (SkillInfo.SkillLevel + 1 <= SkillInfo.MaximumSkillLevel)
-	{
-		SkillInfo.SkillLevel++;
-
-		return  true;
-	}
-
-	return false;
-}
-
-bool URaidBossSkillBase::DecreaseSkillLevel()
-{
-	if ( SkillInfo.SkillLevel - 1 >= SkillInfo.MinimumSkillLevel)
-	{
-		SkillInfo.SkillLevel--;
-		return  true;
-	}
-	
-	return false;
 }

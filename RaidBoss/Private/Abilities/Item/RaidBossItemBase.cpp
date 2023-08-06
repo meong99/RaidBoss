@@ -1,6 +1,6 @@
 #include "Abilities/Item/RaidBossItemBase.h"
 
-const TObjectPtr<UTexture2D> URaidBossItemBase::GetItemTexture() const
+UTexture2D* URaidBossItemBase::GetItemTexture() const
 {
 	return ITemInfo.ItemTexture;
 }

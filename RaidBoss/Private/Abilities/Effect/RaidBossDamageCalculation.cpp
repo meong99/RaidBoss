@@ -38,8 +38,6 @@ URaidBossDamageCalculation::URaidBossDamageCalculation()
 void URaidBossDamageCalculation::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
                                                         FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
 {
-	Super::Execute_Implementation(ExecutionParams, OutExecutionOutput);
-
 	FAggregatorEvaluateParameters EvaluateParameters;
 
 	float SourceTotalAttackPower = 0;

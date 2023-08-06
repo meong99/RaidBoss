@@ -17,6 +17,49 @@ URaidBossDash::URaidBossDash()
 	BlockAbilitiesWithTag.AddTag(BlockTag);
 }
 
+bool URaidBossDash::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
+	const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
+{
+	bool bCanActivate			= Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags) &&
+								  (SkillInfo.SkillLevel > 0);
+	bool bOwnerCharacterState	= IsValid(OwnerCharacter) &&
+								  OwnerCharacter->GetCharacterMovement()->IsFalling() == false;
+	
+	bool bResult = bCanActivate && bOwnerCharacterState;
+	
+	return bResult;
+}
+
+void URaidBossDash::Tick(float DeltaTime)
+{
+	if (IsValid(OwnerCharacter) == true)
+	{
+		FVector Start = OwnerCharacter->GetActorLocation();
+		FVector End = DashDestination;
+		OwnerCharacter->SetActorLocation(FMath::VInterpTo(Start, InterpolateDestinationByTracing(Start, End), DeltaTime, 7.5f));
+		
+		if (OwnerCharacter->GetActorLocation() == DashDestination)
+			EndAbilityCallback();
+	}
+}
+
+bool URaidBossDash::ActivateTasks()
+{
+	PlayMontageAndWait	= CreatePlayMontageAndWaitTask();
+	
+	if (::IsValid(PlayMontageAndWait) == false || IsValid(OwnerCharacter) == false)
+		return false;
+
+	PlayMontageAndWait->OnCompleted.AddDynamic(this,	&URaidBossDash::EndAbilityCallback);
+	PlayMontageAndWait->OnBlendOut.AddDynamic(this,	&URaidBossDash::EndAbilityCallback);
+	PlayMontageAndWait->OnInterrupted.AddDynamic(this, &URaidBossDash::EndAbilityCallback);
+	PlayMontageAndWait->OnCancelled.AddDynamic(this,	&URaidBossDash::EndAbilityCallback);
+	PlayMontageAndWait->Activate();
+
+	return true;
+}
+
 void URaidBossDash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
@@ -41,36 +84,6 @@ void URaidBossDash::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	}
 }
 
-bool URaidBossDash::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
-	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
-	const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
-{
-	bool bCanActivate			= Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags) &&
-								  (SkillInfo.SkillLevel > 0);
-	bool bOwnerCharacterState	= IsValid(OwnerCharacter) &&
-								  OwnerCharacter->GetCharacterMovement()->IsFalling() == false;
-	
-	bool bResult = bCanActivate && bOwnerCharacterState;
-	
-	return bResult;
-}
-
-void URaidBossDash::Tick(float DeltaTime)
-{
-	if (IsValid(OwnerCharacter) == true)
-	{
-		FVector	Start;
-		FVector End;
-
-		Start = OwnerCharacter->GetActorLocation();
-		End = DashDestination;
-		OwnerCharacter->SetActorLocation(FMath::VInterpTo(Start, InterpolateDestinationByTracing(Start, End), DeltaTime, 7.5f));
-		
-		if (OwnerCharacter->GetActorLocation() == DashDestination)
-			EndAbilityCallback();
-	}
-}
-
 void URaidBossDash::EndAbilityCallback()
 {
 	SetIsTickable(false);
@@ -78,34 +91,18 @@ void URaidBossDash::EndAbilityCallback()
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 
-bool URaidBossDash::ActivateTasks()
-{
-	PlayMontageAndWait	= CreatePlayMontageAndWaitTask();
-	
-	if (::IsValid(PlayMontageAndWait) == false || IsValid(OwnerCharacter) == false)
-		return false;
-
-	PlayMontageAndWait->OnCompleted.AddDynamic(this,	&URaidBossDash::EndAbilityCallback);
-	PlayMontageAndWait->OnBlendOut.AddDynamic(this,	&URaidBossDash::EndAbilityCallback);
-	PlayMontageAndWait->OnInterrupted.AddDynamic(this, &URaidBossDash::EndAbilityCallback);
-	PlayMontageAndWait->OnCancelled.AddDynamic(this,	&URaidBossDash::EndAbilityCallback);
-	PlayMontageAndWait->Activate();
-
-	return true;
-}
-
 FVector URaidBossDash::GetDestination()
 {
-	FVector					Direction;
-	APlayerController*		Controller;
-	ARaidBossPlayerBase*	Player;
 
-	Controller	= Cast<APlayerController>(OwnerCharacter->GetController());
-	Player		= Cast<ARaidBossPlayerBase>(OwnerCharacter);
-	if (IsValid(Controller) == true && IsValid(Player))
+	APlayerController* Controller	= Cast<APlayerController>(OwnerCharacter->GetController());
+	ARaidBossPlayerBase* Player		= Cast<ARaidBossPlayerBase>(OwnerCharacter);
+	UCameraComponent* FollowCamera  = Player ? Player->GetFollowCamera() : nullptr;
+	
+	FVector	Direction;
+	
+	if (IsValid(Controller) == true && IsValid(Player) && FollowCamera)
 	{
 		FVector	CameraVector;
-		UCameraComponent* FollowCamera = Player->GetFollowCamera();
 
 		if (Controller->IsInputKeyDown(EKeys::A) == true)
 		{
@@ -140,7 +137,7 @@ FVector URaidBossDash::GetDestination()
 	return OwnerCharacter->GetActorLocation() + Direction;
 }
 
-FVector URaidBossDash::InterpolateDestinationByTracing(FVector Start, FVector End)
+FVector URaidBossDash::InterpolateDestinationByTracing(FVector Start, FVector End) const
 {
 	FHitResult	Result;
 	float		CapsuleRadius;

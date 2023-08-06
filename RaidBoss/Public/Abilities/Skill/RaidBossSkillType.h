@@ -12,7 +12,6 @@ enum class ERaidBossSkillType  : uint8
 	Buff UMETA(DisplayName = "Buff"),
 	Debuff UMETA(DisplayName = "Debuff"),
 	Util UMETA(DisplayName = "Util"),
-
 };
 
 USTRUCT(BlueprintType)

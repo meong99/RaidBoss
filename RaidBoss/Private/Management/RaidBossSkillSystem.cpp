@@ -133,7 +133,7 @@ void URaidBossSkillSystem::GiveSkillToAbilityComponent() const
 			const URaidBossSkillBase*	SkillCDO = Cast<URaidBossSkillBase>(SkillClass->GetDefaultObject());
 			FGameplayAbilitySpecHandle	OutSpecHandle;
 			
-			AbilitySystemComponent->GiveAbilityWithoutDuplication(SkillClass, OutSpecHandle, static_cast<int32>(SkillCDO->AbilityInputID));
+			AbilitySystemComponent->GiveAbilityWithoutDuplication(SkillClass, OutSpecHandle, static_cast<int32>(SkillCDO->GetAbilityInputID()));
 		}
 	}
 }

@@ -11,17 +11,11 @@ class RAIDBOSS_API URaidBossChangeCharacterStatus : public UGameplayEffectExecut
 
 public:
 	URaidBossChangeCharacterStatus();
-/*
-*	----------- Overrided
-*/
+
 	virtual void Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
 										FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const override;
-/*
-*	----------- Binded by Delegate
-*/
-/*
-*	----------- Other Method
-*/
+
+private:
 	void	SaveAggregatorFromExecutedSpec(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const;
 	void	CheckAndApplyHealth(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const;
 	void	CheckAndApplyMaxHealth(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const;
@@ -31,9 +25,6 @@ public:
 	void	CheckAndApplyDefencePower(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const;
 	void	SetProperty(FGameplayEffectCustomExecutionOutput& OutExecutionOutput, const FGameplayAttribute& InAttribute, TEnumAsByte<EGameplayModOp::Type> ModifierOp, float Magnitude) const;
 
-/*
-*	----------- Access
-*/
 	float	GetBonusHealthFromExecutedSpec(const FGameplayEffectAttributeCaptureDefinition& InCaptureDef) const;
 	float	GetBonusMaxHealthFromExecutedSpec(const FGameplayEffectAttributeCaptureDefinition& InCaptureDef) const;
 	float	GetBonusManaFromExecutedSpec(const FGameplayEffectAttributeCaptureDefinition& InCaptureDef) const;
@@ -47,15 +38,12 @@ public:
 	float	GetBaseMaxMana(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const;
 	float	GetBaseAttackPower(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const;
 	float	GetBaseDefensePower(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const;
-	float	GetBonusHealthAllEcecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const;
-	float	GetBonusMaxHealthAllEcecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const;
-	float	GetBonusManaAllEcecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const;
-	float	GetBonusMaxManaAllEcecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const;
-	float	GetBonusAttackPowerAllEcecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const;
-	float	GetBonusDefensePowerAllEcecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const;
-/*
-*	----------- Member Variables
-*/
+	float	GetBonusHealthAllExecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const;
+	float	GetBonusMaxHealthAllExecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const;
+	float	GetBonusManaAllExecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const;
+	float	GetBonusMaxManaAllExecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const;
+	float	GetBonusAttackPowerAllExecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const;
+	float	GetBonusDefensePowerAllExecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const;
 
 private:
 	static TMap<FGameplayEffectAttributeCaptureDefinition, float>	ExecutedValueFromSpec;

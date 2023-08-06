@@ -34,7 +34,7 @@ void ARaidBossCharacterBase::GiveDefaultAbilities() const
 		FGameplayAbilitySpecHandle	AbilitySpecHandle;
 		URaidBossAbilityBase*		AbilityCDO = Cast<URaidBossAbilityBase>(Ability->GetDefaultObject());
 		
-		AbilitySystemComponent->GiveAbilityWithoutDuplication(Ability, AbilitySpecHandle, static_cast<int32>(AbilityCDO->AbilityInputID));
+		AbilitySystemComponent->GiveAbilityWithoutDuplication(Ability, AbilitySpecHandle, static_cast<int32>(AbilityCDO->GetAbilityInputID()));
 	}
 }
 

@@ -6,7 +6,6 @@
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "RaidBossSkillBase.generated.h"
 
-class ARaidBossCharacterBase;
 class UAbilityTask_PlayMontageAndWait;
 class UAbilityTask_WaitGameplayEvent;
 
@@ -15,30 +14,6 @@ class RAIDBOSS_API URaidBossSkillBase : public URaidBossAbilityBase
 {
 	GENERATED_BODY()
 public:
-	URaidBossSkillBase();
-
-/*
- *	----------- Overrided
- */
-/*
- *	----------- Binded by Delegate
- */
-/*
- *	----------- Other Method
- */
-protected:
-	FGameplayAbilityTargetDataHandle	CreateAbilityTargetDataFromActor(AActor* Target) const;
-	UAbilityTask_PlayMontageAndWait*	CreatePlayMontageAndWaitTask(int32 MontageIndex = 0);
-	UAbilityTask_WaitGameplayEvent*		CreateWaitGameplayEventTask(FGameplayTag EventTag, bool OnlyTriggerOnce = true);
-	bool								IsTargetInRangeXY(AActor* Target, float Range);
-	bool								IsTargetInAngleXY(FVector StandardVector, FVector TargetVector, float MaxAngle);
-	void								BlockOwnerCharacterMovement();
-	void								ReleaseOwnerCharacterMovement();
-	
-/*
- *	----------- Access
- */
-public:
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill Base")
 	const FRaidBossSkillInfo&	GetSkillInfo() const;
 	
@@ -46,10 +21,17 @@ public:
 	bool	IncreaseSkillLevel();
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill Base")
 	bool	DecreaseSkillLevel();
-/*
- *	----------- Member Variables
- */
+	
+protected:
+	FGameplayAbilityTargetDataHandle	CreateAbilityTargetDataFromActor(AActor* Target) const;
+	UAbilityTask_PlayMontageAndWait*	CreatePlayMontageAndWaitTask(int32 MontageIndex = 0);
+	UAbilityTask_WaitGameplayEvent*		CreateWaitGameplayEventTask(FGameplayTag EventTag, bool OnlyTriggerOnce = true);
+	bool								IsTargetInRangeXY(AActor* Target, float Range) const;
+	bool								IsTargetInAngleXY(FVector StandardVector, FVector TargetVector, float MaxAngle) const;
+	void								BlockOwnerCharacterMovement() const;
+	void								ReleaseOwnerCharacterMovement() const;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="Raid Boss | Skill Base")
-	FRaidBossSkillInfo					SkillInfo;
+	FRaidBossSkillInfo	SkillInfo;
 };

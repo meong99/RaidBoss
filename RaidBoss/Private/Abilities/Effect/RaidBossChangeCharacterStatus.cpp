@@ -44,8 +44,6 @@ void URaidBossChangeCharacterStatus::Execute_Implementation(
 	const FGameplayEffectCustomExecutionParameters& ExecutionParams,
 	FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
 {
-	Super::Execute_Implementation(ExecutionParams, OutExecutionOutput);
-
 	ExecutedValueFromSpec.Reset();
 	SaveAggregatorFromExecutedSpec(ExecutionParams);
 	
@@ -320,7 +318,7 @@ float URaidBossChangeCharacterStatus::GetBaseDefensePower(
 	return OutValue;
 }
 
-float URaidBossChangeCharacterStatus::GetBonusHealthAllEcecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const
+float URaidBossChangeCharacterStatus::GetBonusHealthAllExecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const
 {
 	FAggregatorEvaluateParameters EvaluateParameters;
 	float OutValue = 0;
@@ -330,7 +328,7 @@ float URaidBossChangeCharacterStatus::GetBonusHealthAllEcecuted(const FGameplayE
 	return OutValue;
 }
 
-float URaidBossChangeCharacterStatus::GetBonusMaxHealthAllEcecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const
+float URaidBossChangeCharacterStatus::GetBonusMaxHealthAllExecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const
 {
 	FAggregatorEvaluateParameters EvaluateParameters;
 	float OutValue = 0;
@@ -340,7 +338,7 @@ float URaidBossChangeCharacterStatus::GetBonusMaxHealthAllEcecuted(const FGamepl
 	return OutValue;
 }
 
-float URaidBossChangeCharacterStatus::GetBonusManaAllEcecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const
+float URaidBossChangeCharacterStatus::GetBonusManaAllExecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const
 {
 	float OutValue = 0;
 
@@ -350,7 +348,7 @@ float URaidBossChangeCharacterStatus::GetBonusManaAllEcecuted(const FGameplayEff
 	return OutValue;
 }
 
-float URaidBossChangeCharacterStatus::GetBonusMaxManaAllEcecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const
+float URaidBossChangeCharacterStatus::GetBonusMaxManaAllExecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const
 {
 	float OutValue = 0;
 
@@ -360,7 +358,7 @@ float URaidBossChangeCharacterStatus::GetBonusMaxManaAllEcecuted(const FGameplay
 	return OutValue;
 }
 
-float URaidBossChangeCharacterStatus::GetBonusAttackPowerAllEcecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const
+float URaidBossChangeCharacterStatus::GetBonusAttackPowerAllExecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const
 {
 	FAggregatorEvaluateParameters	EvaluateParameters;
 	float							OutValue;
@@ -371,7 +369,7 @@ float URaidBossChangeCharacterStatus::GetBonusAttackPowerAllEcecuted(const FGame
 	return OutValue;
 }
 
-float URaidBossChangeCharacterStatus::GetBonusDefensePowerAllEcecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const
+float URaidBossChangeCharacterStatus::GetBonusDefensePowerAllExecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const
 {
 	float OutValue = 0;
 
