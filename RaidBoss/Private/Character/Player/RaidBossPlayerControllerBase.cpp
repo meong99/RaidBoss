@@ -1,11 +1,8 @@
 #include "Character/Player/RaidBossPlayerControllerBase.h"
-#include "Blueprint/UserWidget.h"
-#include "InputMappingContext.h"
 #include "Character/Player/RaidBossPlayerBase.h"
 #include "Management/RaidBossSkillSystem.h"
 #include "Management/RaidBossInventorySystem.h"
 #include "Management/RaidBossRewardSystem.h"
-#include "Management/RaidBossSkillSystem.h"
 
 ARaidBossPlayerControllerBase::ARaidBossPlayerControllerBase()
 {
@@ -51,13 +48,9 @@ ARaidBossPlayerBase* ARaidBossPlayerControllerBase::GetRaidBossPlayerBase() cons
 
 URaidBossAbilitySystemComponent* ARaidBossPlayerControllerBase::GetRaidBossAbilitySystemComponent() const
 {
-	URaidBossAbilitySystemComponent*	AbilitySystemComponent;
-	ARaidBossPlayerBase*				PlayerBase;
-
-	PlayerBase = GetRaidBossPlayerBase();
-	AbilitySystemComponent = PlayerBase ? PlayerBase->GetRaidBossAbilitySystemComponent() : nullptr;
-
-	return AbilitySystemComponent;
+	ARaidBossPlayerBase* PlayerBase = GetRaidBossPlayerBase();
+	
+	return PlayerBase ? PlayerBase->GetRaidBossAbilitySystemComponent() : nullptr;
 }
 
 URaidBossInventorySystem* ARaidBossPlayerControllerBase::GetInventorySystem() const
@@ -78,5 +71,7 @@ void ARaidBossPlayerControllerBase::ToggleSkillWidget() const
 void ARaidBossPlayerControllerBase::AttemptDropItem(EITemCategory ItemCategory, int32 Index)
 {
 	if (InventorySystem)
+	{
 		InventorySystem->RemoveItem(ItemCategory, Index);
+	}
 }
