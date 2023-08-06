@@ -1,7 +1,7 @@
 #include "Abilities/RaidBossCharacterStatusAttributeSet.h"
 #include "Abilities/RaidBossAbilitySystemComponent.h"
-#include "GameplayEffectExtension.h"
 #include "Character/RaidBossCharacterBase.h"
+#include "GameplayEffectExtension.h"
 
 URaidBossCharacterStatusAttributeSet::URaidBossCharacterStatusAttributeSet()
 	: Health(1.f)

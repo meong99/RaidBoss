@@ -12,29 +12,11 @@ class RAIDBOSS_API URaidBossCharacterStatusAttributeSet : public URaidBossAttrib
 
 public:
 	URaidBossCharacterStatusAttributeSet();
-/*
- *	----------- Overrided
- */
-public:
+
 	virtual void	PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	virtual bool	PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data) override;
 	virtual void	PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
-/*
- *	----------- Binded by Delegate
- */
-/*
- *	----------- Other Method
- */
-protected:
-	void	AdjustAttributeForMaxChange(FGameplayAttributeData& AffectedAttribute, const FGameplayAttributeData& MaxAttribute,
-										float NewMaxValue, const FGameplayAttribute& AffectedAttributeProperty);
-	void	CheckHealthAndToDeath() const;
-	
-/*
- *	----------- Access
- */
-public:
 	ATTRIBUTE_ACCESSORS(URaidBossCharacterStatusAttributeSet, Health)
 	ATTRIBUTE_ACCESSORS(URaidBossCharacterStatusAttributeSet, MaxHealth)
 	ATTRIBUTE_ACCESSORS(URaidBossCharacterStatusAttributeSet, Mana)
@@ -46,28 +28,30 @@ public:
 	ATTRIBUTE_ACCESSORS(URaidBossCharacterStatusAttributeSet, AdditionalDefencePower)
 	ATTRIBUTE_ACCESSORS(URaidBossCharacterStatusAttributeSet, MoveSpeed)
 	
-/*
- *	----------- Member Variables
- */
+protected:
+	void	AdjustAttributeForMaxChange(FGameplayAttributeData& AffectedAttribute, const FGameplayAttributeData& MaxAttribute,
+										float NewMaxValue, const FGameplayAttribute& AffectedAttributeProperty);
+	void	CheckHealthAndToDeath() const;
+
 public:
-	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute", meta=(AllowPrivateAccess))
 	FGameplayAttributeData	Health;
-	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute", meta=(AllowPrivateAccess))
 	FGameplayAttributeData	MaxHealth;
-	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute", meta=(AllowPrivateAccess))
 	FGameplayAttributeData	Mana;
-	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute", meta=(AllowPrivateAccess))
 	FGameplayAttributeData	MaxMana;
-	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute", meta=(AllowPrivateAccess))
 	FGameplayAttributeData	AttackPower;
-	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute", meta=(AllowPrivateAccess))
 	FGameplayAttributeData	AttackRange;
-	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute", meta=(AllowPrivateAccess))
 	FGameplayAttributeData	DefensePower;
-	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute", meta=(AllowPrivateAccess))
 	FGameplayAttributeData	AdditionalAttackPower;
-	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute", meta=(AllowPrivateAccess))
 	FGameplayAttributeData	AdditionalDefencePower;
-	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute")
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute", meta=(AllowPrivateAccess))
 	FGameplayAttributeData	MoveSpeed;
 };
