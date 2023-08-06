@@ -14,22 +14,7 @@ class RAIDBOSS_API ARaidBossEnemyBase : public ARaidBossCharacterBase
 public:
 	ARaidBossEnemyBase();
 
-/*
- *	----------- Overrided
- */
-protected:
 	virtual void	BeginPlay() override;
-/*
-*	----------- Binded by Delegate
-*/
-/*
-*	----------- Other Method
-*/
-/*
-*	----------- Access
-*/
+
 	ARaidBossEnemyControllerBase*	GetRiadBossEnemyController() const;
-/*
-*	----------- Member Variables
-*/
 };
