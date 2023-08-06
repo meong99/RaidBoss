@@ -46,11 +46,11 @@ public:
 	int32	UseConsumableItem(int32 Index);
 	
 	const URaidBossItemBase*		GetItemCDO(EITemCategory ItemCategory, int32 Index) const;
+	const TArray<FItemInformation>&	GetEquipItems() const;
+	const TArray<FItemInformation>&	GetConsumableItems() const;
 	const URaidBossEquipmentItem*	GetEquipmentItem(int32 Index) const;
 	const URaidBossEquipmentItem*	GetEquippedItem(int32 Index) const;
 	const int32&					GetGold() const;
-	const TArray<FItemInformation>&	GetEquipItems() const;
-	const TArray<FItemInformation>&	GetConsumableItems() const;
 	int32							GetMaximumItemAmount() const;
 	int32							GetItemAmount(EITemCategory ItemCategory, int32 Index) const;
 	bool							IsInventoryFull(EITemCategory ItemCategory) const;
@@ -83,8 +83,8 @@ private:
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Inventory System", meta=(AllowPrivateAccess))
 	int32	Gold = 0;
 	
-	TArray<FItemInformation>						EquipItemInfo;
-	TArray<FItemInformation>						ConsumableItemInfo;
+	TArray<FItemInformation>					EquipItemInfo;
+	TArray<FItemInformation>					ConsumableItemInfo;
 	TMap<int32, TSubclassOf<URaidBossItemBase>>	EquippedItems;
 
 	int32	CurrentEquipItemCount = 0;

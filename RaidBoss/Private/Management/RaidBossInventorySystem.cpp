@@ -62,11 +62,6 @@ void URaidBossInventorySystem::AddNewItem(const TSubclassOf<URaidBossItemBase> N
 		case EITemCategory::Consumable	: AddNewConsumableItem(ItemCDO);	break;
 		default: break;
 	}
-
-	if (InventoryWidget)
-	{
-		InventoryWidget->UpdateInventorySlot();
-	}
 }
 
 void URaidBossInventorySystem::RemoveItem(EITemCategory ItemCategory, int32 Index)
@@ -86,11 +81,6 @@ void URaidBossInventorySystem::RemoveItem(EITemCategory ItemCategory, int32 Inde
 			break;
 		}
 		default: break;
-	}
-	
-	if (InventoryWidget)
-	{
-		InventoryWidget->UpdateInventorySlot();
 	}
 }
 
@@ -148,7 +138,6 @@ int32 URaidBossInventorySystem::UseConsumableItem(int32 Index)
 		AbilitySystemComponent->ClearAbility(SpecHandle);
 		
 		DecreaseItemAmount(EITemCategory::Consumable, Index);
-		InventoryWidget->UpdateInventorySlot();
 		return ItemInfo->Amount;
 	}
 	
@@ -178,6 +167,16 @@ const URaidBossItemBase* URaidBossInventorySystem::GetItemCDO(EITemCategory Item
 	return nullptr;
 }
 
+const TArray<FItemInformation>& URaidBossInventorySystem::GetEquipItems() const
+{
+	return EquipItemInfo;
+}
+
+const TArray<FItemInformation>& URaidBossInventorySystem::GetConsumableItems() const
+{
+	return ConsumableItemInfo;
+}
+
 const URaidBossEquipmentItem* URaidBossInventorySystem::GetEquipmentItem(int32 Index) const
 {
 	FItemInformation	CopyItemInfo = EquipItemInfo[Index];
@@ -201,16 +200,6 @@ const URaidBossEquipmentItem* URaidBossInventorySystem::GetEquippedItem(int32 In
 const int32& URaidBossInventorySystem::GetGold() const
 {
 	return Gold;
-}
-
-const TArray<FItemInformation>& URaidBossInventorySystem::GetEquipItems() const
-{
-	return EquipItemInfo;
-}
-
-const TArray<FItemInformation>& URaidBossInventorySystem::GetConsumableItems() const
-{
-	return ConsumableItemInfo;
 }
 
 int32 URaidBossInventorySystem::GetMaximumItemAmount() const
@@ -265,11 +254,6 @@ void URaidBossInventorySystem::ChangeItemOrder(int32 Index1, int32 Index2, EITem
 		case EITemCategory::Consumable	: SwapItems(ConsumableItemInfo, Index1, Index2);	break;
 		default: break;
 	}
-
-	if (InventoryWidget)
-	{
-		InventoryWidget->UpdateInventorySlot();
-	}
 }
 
 TSubclassOf<URaidBossItemBase> URaidBossInventorySystem::UnEquipItem(int32 Index)
@@ -288,8 +272,6 @@ TSubclassOf<URaidBossItemBase> URaidBossInventorySystem::UnEquipItem(int32 Index
 		}
 		
 		EquippedItems.Remove(Index);
-		InventoryWidget->UpdateInventorySlot();
-		InventoryWidget->UpdateEquipmentSlot();
 	}
 
 	return ItemClass;
@@ -313,8 +295,6 @@ void URaidBossInventorySystem::EquipItem(int32 Index)
 		
 		EquippedItems.Add(ItemCDO->GetEquipType(), EquipmentItem->ItemClass);
 		DecreaseItemAmount(EITemCategory::Equip, Index);
-		InventoryWidget->UpdateInventorySlot();
-		InventoryWidget->UpdateEquipmentSlot();
 	}
 	
 	AddNewItem(AddToInventory);
