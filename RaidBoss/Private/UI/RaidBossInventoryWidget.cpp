@@ -18,6 +18,21 @@ bool URaidBossInventoryWidget::Initialize()
 	return false;
 }
 
+void URaidBossInventoryWidget::ClickedEquipButton()
+{
+	SetItemCategory(EITemCategory::Equip);
+}
+
+void URaidBossInventoryWidget::ClickedConsumableButton()
+{
+	SetItemCategory(EITemCategory::Consumable);
+}
+
+void URaidBossInventoryWidget::ClickedMiscellaneousButton()
+{
+	SetItemCategory(EITemCategory::Miscellaneous);
+}
+
 void URaidBossInventoryWidget::CreateSlot()
 {
 	CreateInventorySlot();
@@ -123,21 +138,6 @@ void URaidBossInventoryWidget::UseItem(ESlotType SlotType, int32 Index) const
 		
 		default: break;
 	}
-}
-
-void URaidBossInventoryWidget::ClickedEquipButton()
-{
-	SetItemCategory(EITemCategory::Equip);
-}
-
-void URaidBossInventoryWidget::ClickedConsumableButton()
-{
-	SetItemCategory(EITemCategory::Consumable);
-}
-
-void URaidBossInventoryWidget::ClickedMiscellaneousButton()
-{
-	SetItemCategory(EITemCategory::Miscellaneous);
 }
 
 void URaidBossInventoryWidget::ChangeItemOrder(int32 Index1, int32 Index2) const

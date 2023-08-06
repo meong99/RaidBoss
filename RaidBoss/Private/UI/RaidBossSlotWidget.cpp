@@ -1,10 +1,73 @@
 ﻿#include "UI/RaidBossSlotWidget.h"
-#include "Abilities/Item/RaidBossEquipmentItem.h"
 #include "UI/RaidBossInventoryWidget.h"
-#include "Blueprint/WidgetBlueprintLibrary.h"
-#include "Components/Image.h"
 #include "UI/RaidBossQuickSlotWidget.h"
 #include "UI/RaidBossSkillWidget.h"
+#include "Abilities/Item/RaidBossEquipmentItem.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Components/Image.h"
+
+void URaidBossSlotWidget::UseSlot() const
+{
+	URaidBossInventoryWidget*	InventoryWidget = Cast<URaidBossInventoryWidget>(WeakOwnerWidget);
+	URaidBossSkillWidget*		SkillWidget = Cast<URaidBossSkillWidget>(WeakOwnerWidget);
+	URaidBossQuickSlotWidget*	QuickWidget = Cast<URaidBossQuickSlotWidget>(WeakOwnerWidget);
+	
+	if (InventoryWidget)
+		InventoryWidget->UseItem(SlotType, Index);
+
+	if (SkillWidget)
+		SkillWidget->UseSkill(Index);
+
+	if (QuickWidget)
+		QuickWidget->UseQuickSlot(Index);
+}
+
+void URaidBossSlotWidget::ResetThisSlot()
+{
+	ItemAmount = "";
+	SetTexture(nullptr);
+}
+
+UTexture2D* URaidBossSlotWidget::GetTexture() const
+{
+	return UWidgetBlueprintLibrary::GetBrushResourceAsTexture2D(BindImage->Brush);
+}
+
+int32 URaidBossSlotWidget::GetItemAmount() const
+{
+	return FCString::Atoi(*ItemAmount);
+}
+
+void URaidBossSlotWidget::SetWeakOwnerWidget(UUserWidget* InWeakOwnerWidget)
+{
+	WeakOwnerWidget = InWeakOwnerWidget;
+}
+
+void URaidBossSlotWidget::SetTexture(UTexture2D* InTexture)
+{
+	if (InTexture)
+		BindImage->SetBrushFromTexture(InTexture);
+	else
+		BindImage->SetBrushFromTexture(DefaultTexture);
+}
+
+void URaidBossSlotWidget::SetIndex(int32 InIndex)
+{
+	Index = InIndex;
+}
+
+void URaidBossSlotWidget::SetItemAmount(int32 Amount)
+{
+	if (Amount > 0)
+		ItemAmount = FString::FromInt(Amount);
+	else
+		ItemAmount = "";
+}
+
+void URaidBossSlotWidget::SetSlotType(ESlotType InSlotType)
+{
+	SlotType = InSlotType;
+}
 
 void URaidBossSlotWidget::NativeConstruct()
 {
@@ -25,9 +88,9 @@ bool URaidBossSlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragD
 
 		switch (SlotType)
 		{
-			case ESlotType::ItemSlot		: DropOnItemSlot(Payload);	break;
+			case ESlotType::ItemSlot		: DropOnItemSlot(Payload);		break;
 			case ESlotType::EquipmentSlot	: DropOnEquipmentSlot(Payload); break;
-			case ESlotType::QuickSlot		: DropOnQuickSlot(Payload);
+			case ESlotType::QuickSlot		: DropOnQuickSlot(Payload);		break;
 			default: break;
 		}
 		
@@ -81,32 +144,14 @@ FReply URaidBossSlotWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InGe
 {
 	Super::NativeOnMouseButtonDoubleClick(InGeometry, InMouseEvent);
 	
-	FEventReply	ReplyResult;
-
 	UseSlot();
 	
-	ReplyResult = UWidgetBlueprintLibrary::Handled();
+	FEventReply ReplyResult = UWidgetBlueprintLibrary::Handled();
 
 	return ReplyResult.NativeReply; 
 }
 
-void URaidBossSlotWidget::UseSlot()
-{
-	URaidBossInventoryWidget*	InventoryWidget = Cast<URaidBossInventoryWidget>(WeakOwnerWidget);
-	URaidBossSkillWidget*		SkillWidget = Cast<URaidBossSkillWidget>(WeakOwnerWidget);
-	URaidBossQuickSlotWidget*	QuickWidget = Cast<URaidBossQuickSlotWidget>(WeakOwnerWidget);
-	
-	if (InventoryWidget)
-		InventoryWidget->UseItem(SlotType, Index);
-
-	if (SkillWidget)
-		SkillWidget->UseSkill(Index);
-
-	if (QuickWidget)
-		QuickWidget->UseQuickSlot(Index);
-}
-
-void URaidBossSlotWidget::DropOnItemSlot(const URaidBossSlotWidget* Payload)
+void URaidBossSlotWidget::DropOnItemSlot(const URaidBossSlotWidget* Payload) const
 {
 	URaidBossInventoryWidget* InventoryWidget= Cast<URaidBossInventoryWidget>(WeakOwnerWidget);
 	
@@ -121,7 +166,7 @@ void URaidBossSlotWidget::DropOnItemSlot(const URaidBossSlotWidget* Payload)
 	}
 }
 
-void URaidBossSlotWidget::DropOnEquipmentSlot(const URaidBossSlotWidget* Payload)
+void URaidBossSlotWidget::DropOnEquipmentSlot(const URaidBossSlotWidget* Payload) const
 {
 	URaidBossInventoryWidget* InventoryWidget = Cast<URaidBossInventoryWidget>(WeakOwnerWidget);
 	
@@ -180,51 +225,4 @@ bool URaidBossSlotWidget::IsEquippable(const URaidBossSlotWidget* Payload) const
 	bool	bIsFromItemSlot		= (Payload->SlotType == ESlotType::ItemSlot);
 
 	return (bIsEquipmentWindow && bIsFromItemSlot && bIsEquippable);
-}
-
-UTexture2D* URaidBossSlotWidget::GetTexture() const
-{
-	return UWidgetBlueprintLibrary::GetBrushResourceAsTexture2D(BindImage->Brush);
-}
-
-int32 URaidBossSlotWidget::GetItemAmount() const
-{
-	return FCString::Atoi(*ItemAmount);
-}
-
-void URaidBossSlotWidget::ResetThisSlot()
-{
-	ItemAmount = "";
-	SetTexture(nullptr);
-}
-
-void URaidBossSlotWidget::SetWeakOwnerWidget(UUserWidget* InWeakOwnerWidget)
-{
-	WeakOwnerWidget = InWeakOwnerWidget;
-}
-
-void URaidBossSlotWidget::SetTexture(UTexture2D* InTexture)
-{
-	if (InTexture)
-		BindImage->SetBrushFromTexture(InTexture);
-	else
-		BindImage->SetBrushFromTexture(DefaultTexture);
-}
-
-void URaidBossSlotWidget::SetIndex(int32 InIndex)
-{
-	Index = InIndex;
-}
-
-void URaidBossSlotWidget::SetItemAmount(int32 Amount)
-{
-	if (Amount > 0)
-		ItemAmount = FString::FromInt(Amount);
-	else
-		ItemAmount = "";
-}
-
-void URaidBossSlotWidget::SetSlotType(ESlotType InSlotType)
-{
-	SlotType = InSlotType;
 }
