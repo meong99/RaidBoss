@@ -14,52 +14,38 @@ UCLASS()
 class RAIDBOSS_API URaidBossSkillWidget : public URaidBossUserWidgetBase
 {
 	GENERATED_BODY()
-/*
-*	----------- Override
-*/
-/*
-*	----------- Used on delegate
-*/
-/*
-*	----------- Process Method
-*/
+
 public:
+	void	InitializeSkillWidget(IN URaidBossSkillSystem* InWeakSkillSystem);
+	void	UseSkill(int32 Index) const;
+	
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill Widget")
-	int32						IncreaseSkillLevel(int32 Index);
-	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill Widget")
-	int32						DecreaseSkillLevel(int32 Index);
-	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill Widget")
-	int32						GetSkillLevel(int32 Index);
+	int32						GetSkillLevel(int32 Index) const;
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill Widget")
 	const URaidBossSkillBase*	GetSkillInstance(int32 Index) const;
-	
-	void	InitializeSkillWidget(IN URaidBossSkillSystem* InWeakSkillSystem);
-	void	UseSkill(int32 Index);
-	
-private:
-	void					CreateSlots();
-	URaidBossSlotWidget*	CreateNewSlot();
-/*
-*	----------- Access(Get, Set, Check)
-*/
-public:
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill Widget")
 	const URaidBossSkillBase*	GetSkillCDO(int32 Index) const;
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill Widget")
 	int32						GetCurrentSkillPoint() const;
-/*
-*	----------- Member Variables
-*/
-protected:
-	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Skill Widget")
+	
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill Widget")
+	int32	IncreaseSkillLevel(int32 Index);
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill Widget")
+	int32	DecreaseSkillLevel(int32 Index);
+
+private:
+	void	CreateSlots();
+
+private:
+	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Skill Widget", meta=(AllowPrivateAccess))
 	TWeakObjectPtr<URaidBossSkillSystem>	WeakSkillSystem;
-	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Skill Widget", meta = (ExposeOnSpawn = true))
+	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Skill Widget", meta=(AllowPrivateAccess, ExposeOnSpawn = true))
 	TSubclassOf<URaidBossSlotWidget>		SlotClass;
-	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Skill Widget")
+	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Skill Widget", meta=(AllowPrivateAccess))
 	TArray<URaidBossSlotWidget*>			SkillSlots;
 	
-	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Skill Widget", meta=(BindWidget))
+	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Skill Widget", meta=(BindWidget, AllowPrivateAccess))
 	TObjectPtr<UScrollBox>		ScrollBox;
-	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Skill Widget", meta=(BindWidget))
+	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Skill Widget", meta=(BindWidget, AllowPrivateAccess))
 	TObjectPtr<UVerticalBox>	SkillVerticalBox;
 };

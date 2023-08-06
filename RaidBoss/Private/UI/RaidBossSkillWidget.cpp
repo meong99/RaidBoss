@@ -10,13 +10,13 @@ void URaidBossSkillWidget::InitializeSkillWidget(URaidBossSkillSystem* InWeakSki
 	CreateSlots();
 }
 
-void URaidBossSkillWidget::UseSkill(int32 Index)
+void URaidBossSkillWidget::UseSkill(int32 Index) const
 {
 	if (WeakSkillSystem != nullptr)
 		WeakSkillSystem->UseSkill(Index);
 }
 
-int32 URaidBossSkillWidget::GetSkillLevel(int32 Index)
+int32 URaidBossSkillWidget::GetSkillLevel(int32 Index) const
 {
 	if (WeakSkillSystem != nullptr)
 		return WeakSkillSystem->GetSkillLevel(Index);
@@ -30,6 +30,24 @@ const URaidBossSkillBase* URaidBossSkillWidget::GetSkillInstance(int32 Index) co
 		return WeakSkillSystem->GetSkillInstance(Index);
 
 	return nullptr;
+}
+
+const URaidBossSkillBase* URaidBossSkillWidget::GetSkillCDO(int32 Index) const
+{
+	if (WeakSkillSystem != nullptr)
+		return WeakSkillSystem->GetSkillCDO(Index);
+	
+	return nullptr;
+}
+
+int32 URaidBossSkillWidget::GetCurrentSkillPoint() const
+{
+	if (WeakSkillSystem != nullptr)
+	{
+		return WeakSkillSystem->GetCurrentSkillPoint();
+	}
+
+	return 0;
 }
 
 int32 URaidBossSkillWidget::IncreaseSkillLevel(int32 Index)
@@ -57,7 +75,7 @@ void URaidBossSkillWidget::CreateSlots()
 		for (int i = 0; i < SkillCount; i++)
 		{
 			const URaidBossSkillBase*	Skill = WeakSkillSystem->GetSkillCDO(i);
-			URaidBossSlotWidget*		SkillSlot = CreateNewSlot();
+			URaidBossSlotWidget*		SkillSlot = Cast<URaidBossSlotWidget>(CreateWidget(this, SlotClass));
 			
 			SkillSlot->SetSlotType(ESlotType::SkillSlot);
 			SkillSlot->SetIndex(i);
@@ -67,29 +85,4 @@ void URaidBossSkillWidget::CreateSlots()
 			SkillSlots.Add(SkillSlot);
 		}
 	}
-}
-
-URaidBossSlotWidget* URaidBossSkillWidget::CreateNewSlot()
-{
-	URaidBossSlotWidget* SkillSlot = Cast<URaidBossSlotWidget>(CreateWidget(this, SlotClass));
-
-	return SkillSlot;
-}
-
-const URaidBossSkillBase* URaidBossSkillWidget::GetSkillCDO(int32 Index) const
-{
-	if (WeakSkillSystem != nullptr)
-		return WeakSkillSystem->GetSkillCDO(Index);
-	
-	return nullptr;
-}
-
-int32 URaidBossSkillWidget::GetCurrentSkillPoint() const
-{
-	if (WeakSkillSystem != nullptr)
-	{
-		return WeakSkillSystem->GetCurrentSkillPoint();
-	}
-
-	return 0;
 }
