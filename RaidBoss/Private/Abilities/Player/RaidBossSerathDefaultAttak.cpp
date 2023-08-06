@@ -135,11 +135,12 @@ void URaidBossSerathDefaultAttak::InterpolateAttackDirection(float DeltaTime)
 	
 	if (IsValid(Onwer) == true)
 	{
-		if (IsValid(Onwer) == false)
+		UCameraComponent* FollowCamera = Onwer->GetFollowCamera();
+		if (FollowCamera == nullptr)
 			return;
-	
+		
 		FRotator OwnerRotation	= Onwer->GetActorRotation();
-		FRotator CameraRotator	= Onwer->FollowCamera->GetForwardVector().Rotation();
+		FRotator CameraRotator	= FollowCamera->GetForwardVector().Rotation();
 		CameraRotator.Pitch = 0;
 		CameraRotator.Roll = 0;
 		

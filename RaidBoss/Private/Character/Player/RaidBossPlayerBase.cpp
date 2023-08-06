@@ -1,14 +1,10 @@
 #include "Character/Player/RaidBossPlayerBase.h"
+#include "Character/Player/RaidBossPlayerControllerBase.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Character/Player/RaidBossPlayerControllerBase.h"
-#include "Math/UnrealMathUtility.h"
-#include "Abilities/Skill/RaidBossSkillBase.h"
-#include "Abilities/RaidBossCharacterStatusAttributeSet.h"
 
 ARaidBossPlayerBase::ARaidBossPlayerBase()
 {
@@ -37,7 +33,7 @@ ARaidBossPlayerBase::ARaidBossPlayerBase()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 
-	Tags.Add(PLAYER_TAG);
+	Tags.Add("Player");
 }
 
 void ARaidBossPlayerBase::BeginPlay()
@@ -45,19 +41,6 @@ void ARaidBossPlayerBase::BeginPlay()
 	Super::BeginPlay();
 	
 	ApplyCharacterStatusEffect();
-}
-
-void ARaidBossPlayerBase::JumpCharacter()
-{
-	if (IsCharacterStateTurnOn(ECharacterState::CanMove))
-	{
-		Super::Jump();
-	}
-}
-
-void ARaidBossPlayerBase::StopJumpCharacter()
-{
-	Super::StopJumping();
 }
 
 void ARaidBossPlayerBase::MoveCharacter(const FVector2D& Value)
@@ -78,7 +61,25 @@ void ARaidBossPlayerBase::LookCharacter(const FVector2D& Value)
 	AddControllerPitchInput(Value.Y * 0.4);
 }
 
+void ARaidBossPlayerBase::JumpCharacter()
+{
+	if (IsCharacterStateTurnOn(ECharacterState::CanMove))
+	{
+		Super::Jump();
+	}
+}
+
+void ARaidBossPlayerBase::StopJumpCharacter()
+{
+	Super::StopJumping();
+}
+
 ARaidBossPlayerControllerBase* ARaidBossPlayerBase::GetRaidBossPlayerController() const
 {
 	return Cast<ARaidBossPlayerControllerBase>(GetController());
+}
+
+UCameraComponent* ARaidBossPlayerBase::GetFollowCamera() const
+{
+	return FollowCamera;
 }

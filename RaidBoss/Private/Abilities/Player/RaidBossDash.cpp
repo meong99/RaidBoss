@@ -105,31 +105,32 @@ FVector URaidBossDash::GetDestination()
 	if (IsValid(Controller) == true && IsValid(Player))
 	{
 		FVector	CameraVector;
-		
+		UCameraComponent* FollowCamera = Player->GetFollowCamera();
+
 		if (Controller->IsInputKeyDown(EKeys::A) == true)
 		{
-			CameraVector = Player->FollowCamera->GetRightVector();
+			CameraVector = FollowCamera->GetRightVector();
 			CameraVector.Z = 0;
 			CameraVector.Normalize();
 			Direction += (CameraVector * DashRange * -1);
 		}
 		else if (Controller->IsInputKeyDown(EKeys::D) == true)
 		{
-			CameraVector = Player->FollowCamera->GetRightVector();
+			CameraVector = FollowCamera->GetRightVector();
 			CameraVector.Z = 0;
 			CameraVector.Normalize();
 			Direction += (CameraVector * DashRange);
 		}
 		if (Controller->IsInputKeyDown(EKeys::S) == true)
 		{
-			CameraVector = Player->FollowCamera->GetForwardVector();
+			CameraVector = FollowCamera->GetForwardVector();
 			CameraVector.Z = 0;
 			CameraVector.Normalize();
 			Direction += (CameraVector * DashRange * -1);
 		}
 		else if (Controller->IsInputKeyDown(EKeys::W) == true || Direction.Length() < 1)
 		{
-			CameraVector = Player->FollowCamera->GetForwardVector();
+			CameraVector = FollowCamera->GetForwardVector();
 			CameraVector.Z = 0;
 			CameraVector.Normalize();
 			Direction += (CameraVector * DashRange);
