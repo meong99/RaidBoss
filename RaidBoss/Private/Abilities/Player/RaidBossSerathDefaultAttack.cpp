@@ -1,7 +1,5 @@
-﻿#include "Abilities/Player/RaidBossSerathDefaultAttak.h"
-
+﻿#include "Abilities/Player/RaidBossSerathDefaultAttack.h"
 #include "AbilitySystemBlueprintLibrary.h"
-#include "Abilities/RaidBossAbilitySystemComponent.h"
 #include "Abilities/RaidBossCharacterStatusAttributeSet.h"
 #include "Abilities/Util/RaidBossComboSystem.h"
 #include "Character/RaidBossCharacterBase.h"
@@ -12,7 +10,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
-URaidBossSerathDefaultAttak::URaidBossSerathDefaultAttak()
+URaidBossSerathDefaultAttack::URaidBossSerathDefaultAttack()
 {
 	SkillInfo.SkillCost			= 0;
 	SkillInfo.SkillLevel		= 1;
@@ -28,9 +26,42 @@ URaidBossSerathDefaultAttak::URaidBossSerathDefaultAttak()
 	Combo->SetResetTime(1.5);
 }
 
-void URaidBossSerathDefaultAttak::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-                                                  const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-                                                  const FGameplayEventData* TriggerEventData)
+bool URaidBossSerathDefaultAttack::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
+	const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
+{
+	bool CanActivate			= Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags) &&
+								SkillInfo.SkillLevel > 0;
+	bool OwnerCharacterState	= IsValid(OwnerCharacter) &&
+								OwnerCharacter->IsCharacterStateTurnOn(ECharacterState::CanMove) &&
+								OwnerCharacter->IsCharacterStateTurnOn(ECharacterState::CanUsingAttack) &&
+								OwnerCharacter->GetCharacterMovement()->IsFalling() == false;
+	
+	bool Result = CanActivate && OwnerCharacterState;
+	
+	return Result;
+}
+
+void URaidBossSerathDefaultAttack::PreActivate(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+	FOnGameplayAbilityEnded::FDelegate* OnGameplayAbilityEndedDelegate, const FGameplayEventData* TriggerEventData)
+{
+	Super::PreActivate(Handle, ActorInfo, ActivationInfo, OnGameplayAbilityEndedDelegate, TriggerEventData);
+
+	if (IsActive() == true)
+		bIsRetriggered = true;
+	else
+		bIsRetriggered = false;
+}
+
+void URaidBossSerathDefaultAttack::Tick(float DeltaTime)
+{
+	InterpolateAttackDirection(DeltaTime);
+}
+
+void URaidBossSerathDefaultAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+												  const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+												  const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
@@ -53,54 +84,21 @@ void URaidBossSerathDefaultAttak::ActivateAbility(const FGameplayAbilitySpecHand
 	}
 }
 
-bool URaidBossSerathDefaultAttak::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
-	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
-	const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
-{
-	bool CanActivate			= Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags) &&
-								SkillInfo.SkillLevel > 0;
-	bool OwnerCharacterState	= IsValid(OwnerCharacter) &&
-								OwnerCharacter->IsCharacterStateTurnOn(ECharacterState::CanMove) &&
-								OwnerCharacter->IsCharacterStateTurnOn(ECharacterState::CanUsingAttack) &&
-								OwnerCharacter->GetCharacterMovement()->IsFalling() == false;
-	
-	bool Result = CanActivate && OwnerCharacterState;
-	
-	return Result;
-}
-
-void URaidBossSerathDefaultAttak::PreActivate(const FGameplayAbilitySpecHandle Handle,
-	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-	FOnGameplayAbilityEnded::FDelegate* OnGameplayAbilityEndedDelegate, const FGameplayEventData* TriggerEventData)
-{
-	Super::PreActivate(Handle, ActorInfo, ActivationInfo, OnGameplayAbilityEndedDelegate, TriggerEventData);
-
-	if (IsActive() == true)
-		bIsRetrrigered = true;
-	else
-		bIsRetrrigered = false;
-}
-
-void URaidBossSerathDefaultAttak::Tick(float DeltaTime)
-{
-	InterpolateAttackDirection(DeltaTime);
-}
-
-void URaidBossSerathDefaultAttak::EventReceivedCallback(const FGameplayEventData Payload)
+void URaidBossSerathDefaultAttack::EventReceivedCallback(const FGameplayEventData Payload)
 {
 	SetIsTickable(false);
-	ApplyEffecsToTargets(SelectTargets());
+	ApplyEffectsToTargets(SelectTargets());
 }
 
-void URaidBossSerathDefaultAttak::EndAbilityCallback()
+void URaidBossSerathDefaultAttack::EndAbilityCallback()
 {
 	ResetAbility();
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 
-void URaidBossSerathDefaultAttak::Interrupt()
+void URaidBossSerathDefaultAttack::Interrupt()
 {
-	if (bIsRetrrigered == true)
+	if (bIsRetriggered == true)
 	{
 		ResetAbility();
 	}
@@ -110,36 +108,37 @@ void URaidBossSerathDefaultAttak::Interrupt()
 	}
 }
 
-bool URaidBossSerathDefaultAttak::ActivateTasks()
+bool URaidBossSerathDefaultAttack::ActivateTasks()
 {
-	PlayMontageAndWait	= CreatePlayMontageAndWaitTask(Combo->GetCurrentStack());
-	FGameplayTag ThisTag		= FGameplayTag::RequestGameplayTag(FName("Attack.DefaultAttack"));
-	WaitGameplayEvent	= CreateWaitGameplayEventTask(ThisTag);
+	PlayMontageAndWait	 = CreatePlayMontageAndWaitTask(Combo->GetCurrentStack());
+	FGameplayTag ThisTag = FGameplayTag::RequestGameplayTag(FName("Attack.DefaultAttack"));
+	WaitGameplayEvent	 = CreateWaitGameplayEventTask(ThisTag);
 	
 	if (::IsValid(PlayMontageAndWait) == false || ::IsValid(WaitGameplayEvent) == false)
 		return false;
 
-	PlayMontageAndWait->OnBlendOut.AddDynamic(this,	&URaidBossSerathDefaultAttak::EndAbilityCallback);
-	PlayMontageAndWait->OnInterrupted.AddDynamic(this, &URaidBossSerathDefaultAttak::Interrupt);
-	PlayMontageAndWait->OnCancelled.AddDynamic(this,	&URaidBossSerathDefaultAttak::EndAbilityCallback);
+	PlayMontageAndWait->OnBlendOut.AddDynamic(this,	&URaidBossSerathDefaultAttack::EndAbilityCallback);
+	PlayMontageAndWait->OnInterrupted.AddDynamic(this, &URaidBossSerathDefaultAttack::Interrupt);
+	PlayMontageAndWait->OnCancelled.AddDynamic(this,	&URaidBossSerathDefaultAttack::EndAbilityCallback);
 	PlayMontageAndWait->Activate();
 
-	WaitGameplayEvent->EventReceived.AddDynamic(this, &URaidBossSerathDefaultAttak::EventReceivedCallback);
+	WaitGameplayEvent->EventReceived.AddDynamic(this, &URaidBossSerathDefaultAttack::EventReceivedCallback);
 	WaitGameplayEvent->Activate();
 	return true;
 }
 
-void URaidBossSerathDefaultAttak::InterpolateAttackDirection(float DeltaTime)
+void URaidBossSerathDefaultAttack::InterpolateAttackDirection(float DeltaTime)
 {
 	ARaidBossPlayerBase* Onwer = Cast<ARaidBossPlayerBase>(OwnerCharacter);
 	
 	if (IsValid(Onwer) == true)
 	{
-		if (IsValid(Onwer) == false)
+		UCameraComponent* FollowCamera = Onwer->GetFollowCamera();
+		if (FollowCamera == nullptr)
 			return;
-	
+		
 		FRotator OwnerRotation	= Onwer->GetActorRotation();
-		FRotator CameraRotator	= Onwer->FollowCamera->GetForwardVector().Rotation();
+		FRotator CameraRotator	= FollowCamera->GetForwardVector().Rotation();
 		CameraRotator.Pitch = 0;
 		CameraRotator.Roll = 0;
 		
@@ -147,7 +146,7 @@ void URaidBossSerathDefaultAttak::InterpolateAttackDirection(float DeltaTime)
 	}
 }
 
-TArray<ARaidBossEnemyBase*> URaidBossSerathDefaultAttak::SelectTargets()
+TArray<ARaidBossEnemyBase*> URaidBossSerathDefaultAttack::SelectTargets()
 {
 	TArray<AActor*> OutArray;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARaidBossEnemyBase::StaticClass(), OutArray);
@@ -165,7 +164,8 @@ TArray<ARaidBossEnemyBase*> URaidBossSerathDefaultAttak::SelectTargets()
 		FVector	TargetVector				= TergetObject->GetActorLocation() - OwnerCharacter->GetActorLocation();
 
 		if (IsTargetInRangeXY(TergetObject, CharacterRange + EnermyCapsuleRadius) == true 
-			&& IsTargetInAngleXY(StandardVector, TargetVector, 90) == true)
+			&& IsTargetInAngleXY(StandardVector, TargetVector, 90) == true
+			&& TergetObject->IsCharacterStateTurnOn(ECharacterState::Alive))
 		{
 			TargetArr.Add(TergetObject);
 		}
@@ -174,7 +174,7 @@ TArray<ARaidBossEnemyBase*> URaidBossSerathDefaultAttak::SelectTargets()
 	return TargetArr;
 }
 
-void URaidBossSerathDefaultAttak::ApplyEffecsToTargets(const TArray<ARaidBossEnemyBase*>& TargetArr)
+void URaidBossSerathDefaultAttack::ApplyEffectsToTargets(const TArray<ARaidBossEnemyBase*>& TargetArr)
 {
 	FGameplayAbilityTargetData_ActorArray*	NewData = new FGameplayAbilityTargetData_ActorArray();
 	
@@ -188,14 +188,14 @@ void URaidBossSerathDefaultAttak::ApplyEffecsToTargets(const TArray<ARaidBossEne
 	TArray<FActiveGameplayEffectHandle> EffectHandles = ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle, TargetData);
 }
 
-void URaidBossSerathDefaultAttak::ResetAbility()
+void URaidBossSerathDefaultAttack::ResetAbility()
 {
 	SetIsTickable(false);
 	ReleaseOwnerCharacterMovement();
-	bIsRetrrigered = false;
+	bIsRetriggered = false;
 }
 
-float URaidBossSerathDefaultAttak::CalculateAdditialnalAttackPower()
+float URaidBossSerathDefaultAttack::CalculateAdditionalAttackPower()
 {
 	int		SkillLevel			= SkillInfo.SkillLevel;
 	float	TotalIncreaseRate	= (SkillLevel - 1) * IncreaseRate;

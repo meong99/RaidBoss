@@ -10,6 +10,7 @@ class RAIDBOSS_API URaidBossDamageCalculation : public UGameplayEffectExecutionC
 	GENERATED_BODY()
 public:
 	URaidBossDamageCalculation();
+	
 	virtual void	Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
 											FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const override;
 };

@@ -15,54 +15,40 @@ void URaidBossAbilityBase::OnGiveAbility(const FGameplayAbilityActorInfo* ActorI
 	OwnerCharacter = Cast<ARaidBossCharacterBase>(ActorInfo->OwnerActor);
 }
 
-URaidBossAbilitySystemComponent* URaidBossAbilityBase::GetOwnerAbilityComponent() const
+bool URaidBossAbilityBase::UseAbility() const
 {
-	return Cast<URaidBossAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
-}
-
-const URaidBossCharacterStatusAttributeSet* URaidBossAbilityBase::GetOwnerCharacterState()
-{
-	const URaidBossCharacterStatusAttributeSet* OwnerCharacterState = nullptr;
+	URaidBossAbilitySystemComponent* AbilityComponent	= GetOwnerAbilityComponent();
+	bool bAbilityActivated	= false;
 	
-	if (IsValid(OwnerCharacter) == true)
+	if (IsValid(AbilityComponent) == true)
 	{
-		OwnerCharacterState = OwnerCharacter->GetCharacterStatusAttributeSet();
+		AbilityComponent->TryActivateAbility(CurrentSpecHandle);
+		bAbilityActivated = true;
 	}
 
-	return OwnerCharacterState;
-}
-
-FGameplayEffectSpecHandle URaidBossAbilityBase::SetCallerMagnitudeByDataTag(TSubclassOf<UGameplayEffect> Effect, const FGameplayTag& DataTag, float Magnitude, float Level)
-{
-	FGameplayEffectSpecHandle Handle = MakeOutgoingGameplayEffectSpec(Effect, Level);
-	FGameplayEffectSpec* Spec = Handle.Data.Get();
-
-	if (Spec)
-	{
-		Spec->SetSetByCallerMagnitude(DataTag, Magnitude);
-	}
-
-	return Handle;
+	return bAbilityActivated;
 }
 
 FGameplayEffectSpecHandle URaidBossAbilityBase::CreateEffectSpecHandle()
 {
 	FGameplayEffectContextHandle	EffectContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
-	FGameplayEffectSpec*			EffectSpec;
-	UGameplayEffect*				Effect;
-	
-	Effect = CraeteNewEffect();
 	EffectContextHandle.AddSourceObject(OwnerCharacter);
-	EffectSpec = new FGameplayEffectSpec(Effect, EffectContextHandle);
+	
+	UGameplayEffect* Effect = CreateNewEffect();
+	if (Effect == nullptr)
+		return FGameplayEffectSpecHandle();
+	
+	FGameplayEffectSpec* EffectSpec = new FGameplayEffectSpec(Effect, EffectContextHandle);
 
 	return FGameplayEffectSpecHandle(EffectSpec);
 }
 
-UGameplayEffect* URaidBossAbilityBase::CraeteNewEffect()
+UGameplayEffect* URaidBossAbilityBase::CreateNewEffect()
 {
-	UGameplayEffect* EffectObject;
-
-	EffectObject = NewObject<UGameplayEffect>(this, EffectClass);
+	if (EffectClass == nullptr)
+		return nullptr;
+	
+	UGameplayEffect* EffectObject = NewObject<UGameplayEffect>(this, EffectClass);
 	
 	if (EffectObject)
 	{
@@ -79,19 +65,22 @@ UGameplayEffect* URaidBossAbilityBase::CraeteNewEffect()
 	return EffectObject;
 }
 
-bool URaidBossAbilityBase::UseAbility()
+URaidBossAbilitySystemComponent* URaidBossAbilityBase::GetOwnerAbilityComponent() const
 {
-	URaidBossAbilitySystemComponent*	AbilityComponent;
-	bool								bAbilityActivated;
-	
-	AbilityComponent	= GetOwnerAbilityComponent();
-	bAbilityActivated	= false;
-	
-	if (IsValid(AbilityComponent) == true)
+	return Cast<URaidBossAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
+}
+
+const URaidBossCharacterStatusAttributeSet* URaidBossAbilityBase::GetOwnerCharacterState() const
+{
+	if (IsValid(OwnerCharacter) == true)
 	{
-		AbilityComponent->TryActivateAbility(CurrentSpecHandle);
-		bAbilityActivated = true;
+		return OwnerCharacter->GetCharacterStatusAttributeSet();
 	}
 
-	return bAbilityActivated;
+	return nullptr;
+}
+
+ERaidBossAbilityInputID URaidBossAbilityBase::GetAbilityInputID() const
+{
+	return AbilityInputID;
 }

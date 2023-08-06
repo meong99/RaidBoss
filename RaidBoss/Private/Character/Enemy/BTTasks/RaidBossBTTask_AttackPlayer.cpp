@@ -13,10 +13,8 @@ URaidBossBTTask_AttackPlayer::URaidBossBTTask_AttackPlayer()
 EBTNodeResult::Type URaidBossBTTask_AttackPlayer::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	ARaidBossEnemyBase*	OwnerCharacter = Cast<ARaidBossEnemyBase>(OwnerComp.GetAIOwner()->GetCharacter());
-	if (IsValid(OwnerCharacter) == false)
-		return EBTNodeResult::Failed;
-
-	URaidBossAbilitySystemComponent*	AbilityCom = OwnerCharacter->GetRaidBossAbilitySystemComponent();
+	URaidBossAbilitySystemComponent*	AbilityCom = OwnerCharacter? OwnerCharacter->GetRaidBossAbilitySystemComponent() : nullptr;
+	
 	if (IsValid(AbilityCom) == false)
 		return EBTNodeResult::Failed;
 

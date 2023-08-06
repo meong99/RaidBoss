@@ -1,6 +1,32 @@
 ﻿#include "UI/RaidBossStoreWidget.h"
-#include "Management/RaidBossStoreSystem.h"
 #include "UI/RaidBossStoreSlotWidget.h"
+#include "Management/RaidBossStoreSystem.h"
+
+void URaidBossStoreWidget::RespondBuyingRequest(int32 ProductsIndex) const
+{
+	if (WeakStoreSystem != nullptr)
+	{
+		WeakStoreSystem->RespondBuyingRequest(ProductsIndex);
+	}
+}
+
+void URaidBossStoreWidget::RespondSellingRequest(int32 InventoryIndex) const
+{
+	if (WeakStoreSystem != nullptr)
+	{
+		WeakStoreSystem->RespondSellingRequest(ShownItemCategory, InventoryIndex);
+	}
+}
+
+void URaidBossStoreWidget::SetShownItemCategory(EITemCategory Category)
+{
+	ShownItemCategory = Category;
+}
+
+void URaidBossStoreWidget::SetWeakStoreSystem(URaidBossStoreSystem* InWeakStoreSystem)
+{
+	WeakStoreSystem = InWeakStoreSystem;
+}
 
 void URaidBossStoreWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
@@ -25,22 +51,6 @@ void URaidBossStoreWidget::NativeDestruct()
 
 	StoreScroll->ClearChildren();
 	InventoryScroll->ClearChildren();
-}
-
-void URaidBossStoreWidget::RespondBuyingRequest(int32 ProductsIndex)
-{
-	if (WeakStoreSystem != nullptr)
-	{
-		WeakStoreSystem->RespondBuyingRequest(ProductsIndex);
-	}
-}
-
-void URaidBossStoreWidget::RespondSellingRequest(int32 InventoryIndex)
-{
-	if (WeakStoreSystem != nullptr)
-	{
-		WeakStoreSystem->RespondSellingRequest(ShownItemCategory, InventoryIndex);
-	}
 }
 
 void URaidBossStoreWidget::InitInventoryData()
@@ -104,7 +114,7 @@ void URaidBossStoreWidget::UpdateInventory()
 	if (WeakStoreSystem == nullptr)
 		return;
 	
-	const TArray<FItemInfomation>&	CurrentBelonging = GetCurrentBelonging();
+	const TArray<FItemInformation>&	CurrentBelonging = GetCurrentBelonging();
 	TArray<UWidget*>				Slots = InventoryScroll->GetAllChildren();
 
 	GoldPlayerHas = WeakStoreSystem->GetGoldFromPlayer();
@@ -135,17 +145,7 @@ void URaidBossStoreWidget::UpdateInventory()
 	}
 }
 
-void URaidBossStoreWidget::SetShownItemCategory(EITemCategory Category)
-{
-	ShownItemCategory = Category;
-}
-
-void URaidBossStoreWidget::SetWeakStoreSystem(URaidBossStoreSystem* InWeakStoreSystem)
-{
-	WeakStoreSystem = InWeakStoreSystem;
-}
-
-const TArray<FItemInfomation>& URaidBossStoreWidget::GetCurrentBelonging()
+const TArray<FItemInformation>& URaidBossStoreWidget::GetCurrentBelonging() const
 {
 	if (ShownItemCategory == EITemCategory::Equip)
 		return *EquipItems;

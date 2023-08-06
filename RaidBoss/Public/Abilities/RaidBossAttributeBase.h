@@ -16,25 +16,7 @@ UCLASS()
 class RAIDBOSS_API URaidBossAttributeBase : public UAttributeSet
 {
 	GENERATED_BODY()
-	
-/*
-*	----------- Overrided
-*/
-/*
-*	----------- Binded by Delegate
-*/
-/*
-*	----------- Other Method
-*/
+
 protected:
-	bool	SourceHasTag(const FGameplayEffectModCallbackData& Data, FName TagName) const;
-	ARaidBossCharacterBase*	GetInstigator(const FGameplayEffectModCallbackData& Data) const;
 	ARaidBossCharacterBase*	GetOwnerCharacter() const;
-	float	GetModifiredSize(const FGameplayEffectModCallbackData& Data, const FGameplayAttribute& Attribute) const;
-/*
-*	----------- Access
-*/
-/*
-*	----------- Member Variables
-*/
 };

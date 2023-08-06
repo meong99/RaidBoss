@@ -2,55 +2,37 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/Skill/RaidBossSkillBase.h"
-#include "RaidbossSerathQSkill.generated.h"
+#include "RaidBossSerathQSkill.generated.h"
 
 class ARaidBossEnemyBase;
 class UAnimMontage;
 class UParticleSystem;
 
 UCLASS()
-class RAIDBOSS_API URaidbossSerathQSkill : public URaidBossSkillBase
+class RAIDBOSS_API URaidBossSerathQSkill : public URaidBossSkillBase
 {
 	GENERATED_BODY()
 public:
-	URaidbossSerathQSkill();
-	
-/*
- *	----------- Overrided
- */
-public:
-	virtual void	ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-									const FGameplayAbilityActivationInfo ActivationInfo,
-									const FGameplayEventData* TriggerEventData) override;
+	URaidBossSerathQSkill();
+
 	virtual bool	CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 										const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags,
 										FGameplayTagContainer* OptionalRelevantTags) const override;
-/*
- *	----------- Binded by Delegate
- */
-public:
 	UFUNCTION()
 	void			EventReceivedCallback(const FGameplayEventData Payload);
 	UFUNCTION()
 	void			EndAbilityCallback();
-	
-/*
- *	----------- Other Method
- */
+
 protected:
+	virtual void	ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+									const FGameplayAbilityActivationInfo ActivationInfo,
+									const FGameplayEventData* TriggerEventData) override;
+	TArray<ARaidBossEnemyBase*>		SelectTargets();
 	bool							ActivateTasks();
-	TArray<ARaidBossEnemyBase*>	SelectTargets();
-	void							ApplyEffecsToTargets(TArray<ARaidBossEnemyBase*> TargetArr);
-	float							CalculateAdditialnalAttackPower();
-	
-/*
- *	----------- Access
- */
-	
-/*
- *	----------- Member Variables
- */
-protected:
+	void							ApplyEffectsToTargets(TArray<ARaidBossEnemyBase*> TargetArr);
+	float							CalculateAdditionalAttackPower();
+
+private:
 	float	Range = 1000;
 	float	IncreaseRate = 20;
 	

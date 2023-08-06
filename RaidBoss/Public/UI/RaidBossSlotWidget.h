@@ -6,7 +6,6 @@
 #include "RaidBossSlotWidget.generated.h"
 
 class UImage;
-class URaidBossAbilityBase;
 
 UENUM(BlueprintType)
 enum class ESlotType : uint8
@@ -22,37 +21,12 @@ UCLASS()
 class RAIDBOSS_API URaidBossSlotWidget : public URaidBossUserWidgetBase
 {
 	GENERATED_BODY()
-/*
-*	----------- Override
-*/
-protected:
-	virtual void	NativeConstruct() override;
-	virtual bool	NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
-	virtual void	NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
-	virtual FReply	NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
-	virtual FReply	NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
-/*
-*	----------- Used on delegate
-*/
-/*
-*	----------- Process Method
-*/
-public:
-	UFUNCTION(BlueprintCallable)
-	void	UseSlot();
-	UFUNCTION(BlueprintCallable)
-	void	ResetThisSlot();
 
-private:
-	void	DropOnItemSlot(const URaidBossSlotWidget* Payload);
-	void	DropOnEquipmentSlot(const URaidBossSlotWidget* Payload);
-	void	DropOnQuickSlot(URaidBossSlotWidget* Payload);
-	
-	bool	IsEquippable(const URaidBossSlotWidget* Payload) const;
-/*
-*	----------- Access(Get, Set, Check)
-*/
 public:
+	UFUNCTION(BlueprintCallable)
+	void	UseSlot() const;
+	void	ResetThisSlot();
+	
 	UTexture2D*	GetTexture() const;
 	int32		GetItemAmount() const;
 	
@@ -61,9 +35,21 @@ public:
 	void	SetIndex(IN int32 InIndex);
 	void	SetItemAmount(IN int32 Amount);
 	void	SetSlotType(IN ESlotType InSlotType);
-/*
-*	----------- Member Variables
-*/
+	
+protected:
+	virtual void	NativeConstruct() override;
+	virtual bool	NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+	virtual void	NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
+	virtual FReply	NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual FReply	NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
+private:
+	void	DropOnItemSlot(const URaidBossSlotWidget* Payload) const;
+	void	DropOnEquipmentSlot(const URaidBossSlotWidget* Payload) const;
+	void	DropOnQuickSlot(URaidBossSlotWidget* Payload);
+	
+	bool	IsEquippable(const URaidBossSlotWidget* Payload) const;
+
 private:
 	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))
 	TWeakObjectPtr<UUserWidget>	WeakOwnerWidget;

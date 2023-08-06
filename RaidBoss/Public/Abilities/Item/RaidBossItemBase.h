@@ -4,9 +4,6 @@
 #include "Abilities/RaidBossAbilityBase.h"
 #include "RaidBossItemBase.generated.h"
 
-class ARaidBossCharacterBase;
-class URaidBossAbilitySystemComponent;
-
 UENUM(BlueprintType)
 enum class EITemCategory : uint8
 {
@@ -21,7 +18,6 @@ struct FItemAbilityInformation
 {
 	GENERATED_BODY()
 
-public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	EITemCategory			ItemCategory;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -38,25 +34,12 @@ UCLASS(Blueprintable)
 class RAIDBOSS_API URaidBossItemBase : public URaidBossAbilityBase
 {
 	GENERATED_BODY()
-/*
-*	----------- Overrided
-*/
-/*
- *	----------- Binded by Delegate
- */
-/*
- *	----------- Other Method
- */
+
 public:
-	const TObjectPtr<UTexture2D>	GetItemTexture() const;
-	EITemCategory					GetItemCategory() const;
-	FItemAbilityInformation			GetItemInfo() const;
-/*
- *	----------- Access
- */
-/*
- *	----------- Member Variables
- */
+	UTexture2D*				GetItemTexture() const;
+	EITemCategory			GetItemCategory() const;
+	FItemAbilityInformation	GetItemInfo() const;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Item Base")
 	FItemAbilityInformation			ITemInfo;

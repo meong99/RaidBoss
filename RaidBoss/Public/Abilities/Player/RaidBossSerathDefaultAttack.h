@@ -3,27 +3,20 @@
 #include "CoreMinimal.h"
 #include "Abilities/Skill/RaidBossSkillBase.h"
 #include "Util/RaidBossTickableGameObject.h"
-#include "RaidBossSerathDefaultAttak.generated.h"
+#include "RaidBossSerathDefaultAttack.generated.h"
 
 class ARaidBossEnemyBase;
 class URaidBossComboSystem;
 class UGameplayEffect;
 
 UCLASS()
-class RAIDBOSS_API URaidBossSerathDefaultAttak : public URaidBossSkillBase, public FRaidBossTickableGameObject
+class RAIDBOSS_API URaidBossSerathDefaultAttack : public URaidBossSkillBase, public FRaidBossTickableGameObject
 {
 	GENERATED_BODY()
 	
 public:
-	URaidBossSerathDefaultAttak();
+	URaidBossSerathDefaultAttack();
 	
-/*
- *	----------- Overrided
- */
-public:
-	virtual void	ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-									const FGameplayAbilityActivationInfo ActivationInfo,
-									const FGameplayEventData* TriggerEventData) override;
 	virtual bool	CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 										const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags,
 										FGameplayTagContainer* OptionalRelevantTags) const override;
@@ -32,10 +25,12 @@ public:
 								FOnGameplayAbilityEnded::FDelegate* OnGameplayAbilityEndedDelegate,
 								const FGameplayEventData* TriggerEventData) override;
 	virtual void	Tick(float DeltaTime) override;
-/*
- *	----------- Binded by Delegate
- */
-public:
+
+protected:
+	virtual void	ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+									const FGameplayAbilityActivationInfo ActivationInfo,
+									const FGameplayEventData* TriggerEventData) override;
+private:
 	UFUNCTION()
 	void	EventReceivedCallback(const FGameplayEventData Payload);
 	UFUNCTION()
@@ -43,23 +38,13 @@ public:
 	UFUNCTION()
 	void	Interrupt();
 
-/*
- *	----------- Other Method
- */
-protected:
 	bool							ActivateTasks();
 	void							InterpolateAttackDirection(float DeltaTime);
 	TArray<ARaidBossEnemyBase*>		SelectTargets();
-	void							ApplyEffecsToTargets(const TArray<ARaidBossEnemyBase*>& TargetArr);
+	void							ApplyEffectsToTargets(const TArray<ARaidBossEnemyBase*>& TargetArr);
 	void							ResetAbility();
-	float							CalculateAdditialnalAttackPower();
-/*
- *	----------- Access
- */
-	
-/*
- *	----------- Member Variables
- */
+	float							CalculateAdditionalAttackPower();
+
 protected:
 	UPROPERTY()
 	TObjectPtr<UAbilityTask_WaitGameplayEvent>	WaitGameplayEvent;
@@ -67,6 +52,6 @@ protected:
 	TObjectPtr<UAbilityTask_PlayMontageAndWait>	PlayMontageAndWait;
 	UPROPERTY()
 	TObjectPtr<URaidBossComboSystem>	Combo;
-	bool	bIsRetrrigered = false;
+	bool	bIsRetriggered = false;
 	float	IncreaseRate = 20;
 };

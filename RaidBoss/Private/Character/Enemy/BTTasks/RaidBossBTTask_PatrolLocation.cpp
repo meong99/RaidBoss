@@ -1,22 +1,16 @@
 #include "Character/Enemy/BTTasks/RaidBossBTTask_PatrolLocation.h"
-#include "AIController.h"
-#include "NavigationSystem.h"
-#include "BehaviorTree/BlackboardComponent.h"
 #include "Character/Enemy/RaidBossEnemyControllerBase.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "NavigationSystem.h"
+#include "AIController.h"
 
 URaidBossBTTask_PatrolLocation::URaidBossBTTask_PatrolLocation()
 {
 	NodeName = TEXT("Find Random Location");
 }
 
-float URaidBossBTTask_PatrolLocation::GetSearchRadius() const
-{
-	return SearchRadius;
-}
-
 EBTNodeResult::Type URaidBossBTTask_PatrolLocation::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	FNavLocation	location = {};
 	ARaidBossEnemyControllerBase* AIController = Cast<ARaidBossEnemyControllerBase>(OwnerComp.GetAIOwner());
 
 	if (IsValid(AIController) == false)
@@ -34,11 +28,18 @@ EBTNodeResult::Type URaidBossBTTask_PatrolLocation::ExecuteTask(UBehaviorTreeCom
 	if (IsValid(navSystem) == false)
 		return EBTNodeResult::Failed;
 
+	FNavLocation	location;
+	
 	if (navSystem->GetRandomPointInNavigableRadius(origin, SearchRadius, location))
 	{
-		blackboard->SetValueAsVector(BBKey::PATROL_LACATION, location.Location);
+		blackboard->SetValueAsVector(BBKey::PATROL_LOCATION, location.Location);
 		return EBTNodeResult::Succeeded;
 	}
 
 	return EBTNodeResult::Failed;
+}
+
+float URaidBossBTTask_PatrolLocation::GetSearchRadius() const
+{
+	return SearchRadius;
 }

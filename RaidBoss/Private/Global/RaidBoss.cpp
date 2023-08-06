@@ -1,5 +1,3 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #include "Global/RaidBoss.h"
 #include "Modules/ModuleManager.h"
 

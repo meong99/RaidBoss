@@ -1,14 +1,13 @@
 #include "Management/RaidBossSkillSystem.h"
-
 #include "Abilities/RaidBossAbilitySystemComponent.h"
 #include "Abilities/Skill/RaidBossSkillBase.h"
-#include "Character/Player/RaidBossPlayerBase.h"
 #include "Character/Player/RaidBossPlayerControllerBase.h"
 #include "UI/RaidBossSkillWidget.h"
 
 void URaidBossSkillSystem::InitialzeSkillSystem(URaidBossSkillWidget* InSkillWidget)
 {
 	GiveSkillToAbilityComponent();
+	
 	if (InSkillWidget)
 	{
 		SkillWidget = InSkillWidget;
@@ -18,9 +17,7 @@ void URaidBossSkillSystem::InitialzeSkillSystem(URaidBossSkillWidget* InSkillWid
 
 void URaidBossSkillSystem::ToggleSkillWidget() const
 {
-	ARaidBossPlayerControllerBase* PlayerController;
-
-	PlayerController = GetRaidBossPlayerControllerBase();
+	ARaidBossPlayerControllerBase* PlayerController = GetRaidBossPlayerControllerBase();
 	
 	if (PlayerController && SkillWidget && SkillWidget->IsInViewport() == false)
 	{
@@ -45,7 +42,7 @@ void URaidBossSkillSystem::ToggleSkillWidget() const
 	}
 }
 
-void URaidBossSkillSystem::UseSkill(int32 Index)
+void URaidBossSkillSystem::UseSkill(int32 Index) const
 {
 	URaidBossAbilitySystemComponent* AbilitySystemComponent = GetRaidBossAbilitySystemComponent();
 
@@ -57,7 +54,35 @@ void URaidBossSkillSystem::UseSkill(int32 Index)
 	}
 }
 
-int32 URaidBossSkillSystem::GetSkillLevel(int32 Index)
+const URaidBossSkillBase* URaidBossSkillSystem::GetSkillCDO(int32 Index) const
+{
+	if (SkillClasses.IsValidIndex(Index))
+		return SkillClasses[Index].GetDefaultObject();
+
+	return nullptr;
+}
+
+URaidBossSkillBase* URaidBossSkillSystem::GetSkillInstance(int32 Index) const
+{
+	URaidBossAbilitySystemComponent* AbilitySystemComponent = GetRaidBossAbilitySystemComponent();
+
+	if (AbilitySystemComponent)
+		return Cast<URaidBossSkillBase>(AbilitySystemComponent->GetAbilityByClass(SkillClasses[Index]));
+
+	return nullptr;
+}
+
+int32 URaidBossSkillSystem::GetSkillCount() const
+{
+	return  SkillClasses.Num();
+}
+
+int32 URaidBossSkillSystem::GetCurrentSkillPoint() const
+{
+	return CurrentSkillPoint;
+}
+
+int32 URaidBossSkillSystem::GetSkillLevel(int32 Index) const
 {
 	URaidBossSkillBase* SkillObject = GetSkillInstance(Index);
 
@@ -97,7 +122,7 @@ int32 URaidBossSkillSystem::DecreaseSkillLevel(int32 Index)
 	return CurrentSkillLevel;
 }
 
-void URaidBossSkillSystem::GiveSkillToAbilityComponent()
+void URaidBossSkillSystem::GiveSkillToAbilityComponent() const
 {
 	URaidBossAbilitySystemComponent* AbilitySystemComponent = GetRaidBossAbilitySystemComponent();
 	
@@ -108,7 +133,7 @@ void URaidBossSkillSystem::GiveSkillToAbilityComponent()
 			const URaidBossSkillBase*	SkillCDO = Cast<URaidBossSkillBase>(SkillClass->GetDefaultObject());
 			FGameplayAbilitySpecHandle	OutSpecHandle;
 			
-			AbilitySystemComponent->GiveAbilityWithoutDuplication(SkillClass, OutSpecHandle, static_cast<int32>(SkillCDO->AbilityInputID));
+			AbilitySystemComponent->GiveAbilityWithoutDuplication(SkillClass, OutSpecHandle, static_cast<int32>(SkillCDO->GetAbilityInputID()));
 		}
 	}
 }
@@ -124,32 +149,4 @@ URaidBossAbilitySystemComponent* URaidBossSkillSystem::GetRaidBossAbilitySystemC
 	URaidBossAbilitySystemComponent*	AbilitySystemComponent = Controller ? Controller->GetRaidBossAbilitySystemComponent() : nullptr;
 
 	return AbilitySystemComponent;
-}
-
-URaidBossSkillBase* URaidBossSkillSystem::GetSkillInstance(int32 Index) const
-{
-	URaidBossAbilitySystemComponent* AbilitySystemComponent = GetRaidBossAbilitySystemComponent();
-
-	if (AbilitySystemComponent)
-		return Cast<URaidBossSkillBase>(AbilitySystemComponent->GetAbilityByClass(SkillClasses[Index]));
-
-	return nullptr;
-}
-
-const URaidBossSkillBase* URaidBossSkillSystem::GetSkillCDO(int32 Index) const
-{
-	if (SkillClasses.IsValidIndex(Index))
-		return SkillClasses[Index].GetDefaultObject();
-
-	return nullptr;
-}
-
-int32 URaidBossSkillSystem::GetSkillCount() const
-{
-	return  SkillClasses.Num();
-}
-
-int32 URaidBossSkillSystem::GetCurrentSkillPoint() const
-{
-	return CurrentSkillPoint;
 }

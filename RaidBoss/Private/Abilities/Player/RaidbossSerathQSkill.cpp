@@ -1,10 +1,10 @@
-#include "Abilities/Player/RaidbossSerathQSkill.h"
+#include "Abilities/Player/RaidBossSerathQSkill.h"
 #include "Character/Enemy/RaidBossEnemyBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Abilities/RaidBossCharacterStatusAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
 
-URaidbossSerathQSkill::URaidbossSerathQSkill()
+URaidBossSerathQSkill::URaidBossSerathQSkill()
 {
 	SkillInfo.SkillCost			= 0;
 	SkillInfo.SkillLevel		= 0;
@@ -12,11 +12,40 @@ URaidbossSerathQSkill::URaidbossSerathQSkill()
 	SkillInfo.MinimumSkillLevel = 0;
 
 	FGameplayTag BlockTag = FGameplayTag::RequestGameplayTag(FName("Block.OtherSkill"));
+	
 	BlockAbilitiesWithTag.AddTag(BlockTag);
 	AbilityTags.AddTag(BlockTag);
 }
 
-void URaidbossSerathQSkill::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+bool URaidBossSerathQSkill::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
+	const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
+{
+	bool bCanActivate			= Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags) &&
+								  (SkillInfo.SkillLevel > 0);
+	bool bOwnerCharacterState	= IsValid(OwnerCharacter) &&
+								  OwnerCharacter->GetCharacterMovement()->IsFalling() == false;
+	
+	bool bResult = bCanActivate && bOwnerCharacterState;
+	
+	return bResult;
+}
+
+void URaidBossSerathQSkill::EventReceivedCallback(const FGameplayEventData Payload)
+{
+	TArray<ARaidBossEnemyBase*> TargetArr = SelectTargets();
+	
+	ApplyEffectsToTargets(TargetArr);
+}
+
+void URaidBossSerathQSkill::EndAbilityCallback()
+{
+	WaitGameplayEvent->EndTask();
+	ReleaseOwnerCharacterMovement();
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+}
+
+void URaidBossSerathQSkill::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	const FGameplayEventData* TriggerEventData)
 {
@@ -36,53 +65,7 @@ void URaidbossSerathQSkill::ActivateAbility(const FGameplayAbilitySpecHandle Han
 	}
 }
 
-bool URaidbossSerathQSkill::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
-	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
-	const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
-{
-	bool bCanActivate			= Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags) &&
-								  (SkillInfo.SkillLevel > 0);
-	bool bOwnerCharacterState	= IsValid(OwnerCharacter) &&
-								  OwnerCharacter->GetCharacterMovement()->IsFalling() == false;
-	
-	bool bResult = bCanActivate && bOwnerCharacterState;
-	
-	return bResult;
-}
-
-void URaidbossSerathQSkill::EventReceivedCallback(const FGameplayEventData Payload)
-{
-	TArray<ARaidBossEnemyBase*> TargetArr = SelectTargets();
-	ApplyEffecsToTargets(TargetArr);
-}
-
-void URaidbossSerathQSkill::EndAbilityCallback()
-{
-	WaitGameplayEvent->EndTask();
-	ReleaseOwnerCharacterMovement();
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-}
-
-bool URaidbossSerathQSkill::ActivateTasks()
-{
-	PlayMontageAndWait	= CreatePlayMontageAndWaitTask();
-	FGameplayTag ThisTag		= FGameplayTag::RequestGameplayTag(FName("Skill.Q"));
-	WaitGameplayEvent	= CreateWaitGameplayEventTask(ThisTag, false);
-	
-	if (::IsValid(PlayMontageAndWait) == false || ::IsValid(WaitGameplayEvent) == false)
-		return false;
-
-	PlayMontageAndWait->OnBlendOut.AddDynamic(this,	&URaidbossSerathQSkill::EndAbilityCallback);
-	PlayMontageAndWait->OnInterrupted.AddDynamic(this, &URaidbossSerathQSkill::EndAbilityCallback);
-	PlayMontageAndWait->OnCancelled.AddDynamic(this,	&URaidbossSerathQSkill::EndAbilityCallback);
-	PlayMontageAndWait->Activate();
-
-	WaitGameplayEvent->EventReceived.AddDynamic(this, &URaidbossSerathQSkill::EventReceivedCallback);
-	WaitGameplayEvent->Activate();
-	return true;
-}
-
-TArray<ARaidBossEnemyBase*> URaidbossSerathQSkill::SelectTargets()
+TArray<ARaidBossEnemyBase*> URaidBossSerathQSkill::SelectTargets()
 {
 	TArray<AActor*>	OutArray;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARaidBossEnemyBase::StaticClass(), OutArray);
@@ -104,12 +87,35 @@ TArray<ARaidBossEnemyBase*> URaidbossSerathQSkill::SelectTargets()
 	return TargetArr;
 }
 
-void URaidbossSerathQSkill::ApplyEffecsToTargets(TArray<ARaidBossEnemyBase*> TargetArr)
+bool URaidBossSerathQSkill::ActivateTasks()
+{
+	PlayMontageAndWait	 = CreatePlayMontageAndWaitTask();
+	FGameplayTag ThisTag = FGameplayTag::RequestGameplayTag(FName("Skill.Q"));
+	WaitGameplayEvent	 = CreateWaitGameplayEventTask(ThisTag, false);
+	
+	if (::IsValid(PlayMontageAndWait) == false || ::IsValid(WaitGameplayEvent) == false)
+		return false;
+
+	PlayMontageAndWait->OnBlendOut.AddDynamic(this,	&URaidBossSerathQSkill::EndAbilityCallback);
+	PlayMontageAndWait->OnInterrupted.AddDynamic(this, &URaidBossSerathQSkill::EndAbilityCallback);
+	PlayMontageAndWait->OnCancelled.AddDynamic(this,	&URaidBossSerathQSkill::EndAbilityCallback);
+	PlayMontageAndWait->Activate();
+
+	WaitGameplayEvent->EventReceived.AddDynamic(this, &URaidBossSerathQSkill::EventReceivedCallback);
+	WaitGameplayEvent->Activate();
+	
+	return true;
+}
+
+void URaidBossSerathQSkill::ApplyEffectsToTargets(TArray<ARaidBossEnemyBase*> TargetArr)
 {
 	FGameplayAbilityTargetData_ActorArray*	NewData = new FGameplayAbilityTargetData_ActorArray();
 	
 	for (const auto TargetObject : TargetArr)
 	{
+		if (TargetObject->IsCharacterStateTurnOn(ECharacterState::Alive) == false)
+			continue;
+		
 		NewData->TargetActorArray.Add(TargetObject);
 		
 		FVector	Location = TargetObject->GetActorLocation();
@@ -122,7 +128,7 @@ void URaidbossSerathQSkill::ApplyEffecsToTargets(TArray<ARaidBossEnemyBase*> Tar
 	TArray<FActiveGameplayEffectHandle> EffectHandles = ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle, TargetData);
 }
 
-float URaidbossSerathQSkill::CalculateAdditialnalAttackPower()
+float URaidBossSerathQSkill::CalculateAdditionalAttackPower()
 {
 	int		SkillLevel			= SkillInfo.SkillLevel;
 	float	TotalIncreaseRate	= (SkillLevel - 1) * IncreaseRate;

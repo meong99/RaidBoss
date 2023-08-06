@@ -8,7 +8,7 @@ namespace BBKey
 {
 	TCHAR const* const TARGET_ACTOR = TEXT("EnermyActor");
 	TCHAR const* const HAS_LINE_OF_SIGHT = TEXT("HasLineOfSight");
-	TCHAR const* const PATROL_LACATION = TEXT("PatrolLocation");
+	TCHAR const* const PATROL_LOCATION = TEXT("PatrolLocation");
 }
 
 namespace FilePath
@@ -20,7 +20,6 @@ class UBehaviorTreeComponent;
 class UAISenseConfig_Sight;
 class ARaidBossEnemyBase;
 class UGameplayEffect;
-class URaidBossAbilityBase;
 class URaidBossSkillBase;
 
 UCLASS(Abstract)
@@ -29,39 +28,19 @@ class RAIDBOSS_API ARaidBossEnemyControllerBase : public AAIController
 	GENERATED_BODY()
 public:
 	ARaidBossEnemyControllerBase();
-
-/*
- *	----------- Overrided
- */
-protected:
-	virtual	void	OnPossess(APawn* inPawn) override;
-	virtual	void	BeginPlay() override;
 	
-/*
- *	----------- Binded by Delegate
- */
-/*
- *	----------- Other Method
- */
-public:
 	UFUNCTION()
-	virtual void	UpdateWalkSpeed(float speed);
+	void	OnTargetDetectedDelegated(AActor* Actor, struct FAIStimulus Stimulus);
 	UFUNCTION()
-	virtual	void	OnTargetDetectedDelegated(AActor* Actor, struct FAIStimulus Stimulus);
-	UFUNCTION()
-	virtual void	StopChasePlayer();
+	void	StopChasePlayer();
+	void	UpdateWalkSpeed(float Speed);
 
-/*
- *	----------- Access
- */
-public:
-	UFUNCTION(BlueprintCallable, Category="Raid Boss | Enermy Controller")
 	ARaidBossEnemyBase*	GetControlledCharacter() const;
 	
-	TArray<TSubclassOf<URaidBossSkillBase>>		GetSkillClasses() const;
-/*
- *	----------- Member Variables
- */
+protected:
+	virtual	void	OnPossess(APawn* InPawn) override;
+	virtual	void	BeginPlay() override;
+
 protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Enermy Controller", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UBehaviorTree>			BehaviourTree;
@@ -70,10 +49,5 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Enermy Controller", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UAISenseConfig_Sight>	Sight;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Raid Boss | Enermy Controller")
-	TArray<TSubclassOf<URaidBossSkillBase>>		EnemySkillClasses;
-	UPROPERTY(EditDefaultsOnly, Category = "Raid Boss | Enermy Controller")
-	TSubclassOf<UGameplayEffect>				CharacterStatusEffect;
-	
 	FTimerHandle	TimerHandle;
 };

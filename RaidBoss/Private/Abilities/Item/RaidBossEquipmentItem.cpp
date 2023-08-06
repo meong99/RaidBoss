@@ -1,10 +1,31 @@
 ﻿#include "Abilities/Item/RaidBossEquipmentItem.h"
 #include "Abilities/RaidBossAbilitySystemComponent.h"
-#include "Character/RaidBossCharacterBase.h"
 
 URaidBossEquipmentItem::URaidBossEquipmentItem()
 {
 	bRetriggerInstancedAbility = true;
+}
+
+bool URaidBossEquipmentItem::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
+     const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
+     const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
+{
+	bool bCanActivate = Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
+	
+	return (bCanActivate);
+}
+
+void URaidBossEquipmentItem::CancelAbility(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+	bool bReplicateCancelAbility)
+{
+	UnEquipItem();
+	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
+}
+
+int32 URaidBossEquipmentItem::GetEquipType() const
+{
+	return static_cast<int32>(EquipType);
 }
 
 void URaidBossEquipmentItem::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -18,28 +39,9 @@ void URaidBossEquipmentItem::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 	}
 }
 
-void URaidBossEquipmentItem::CancelAbility(const FGameplayAbilitySpecHandle Handle,
-	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-	bool bReplicateCancelAbility)
-{
-	UnEquipItem();
-	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
-}
-
-bool URaidBossEquipmentItem::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
-                                                const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
-                                                const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
-{
-	bool bCanActivate = Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
-	
-	return (bCanActivate);
-}
-
 void URaidBossEquipmentItem::EquipItem()
 {
-	FGameplayAbilitySpec*	AbilitySpec;
-	
-	AbilitySpec = GetCurrentAbilitySpec();
+	FGameplayAbilitySpec* AbilitySpec = GetCurrentAbilitySpec();
 	FGameplayEffectSpecHandle EffectSpecHandle = CreateEffectSpecHandle();
 
 	if (AbilitySpec)
@@ -59,9 +61,4 @@ void URaidBossEquipmentItem::UnEquipItem()
 		
 		AbilitySystemComponent->RemoveActiveGameplayEffect(EffectHandle);
 	}
-}
-
-int32 URaidBossEquipmentItem::GetEquipType() const
-{
-	return static_cast<int32>(EquipType);
 }

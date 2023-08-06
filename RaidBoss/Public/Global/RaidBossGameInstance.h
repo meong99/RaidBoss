@@ -8,20 +8,5 @@ UCLASS(Abstract)
 class RAIDBOSS_API URaidBossGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
-	
-/*
- *	----------- Overrided
- */
-/*
- *	----------- Binded by Delegate
- */
-/*
- *	----------- Other Method
- */
-/*
- *	----------- Access
- */
-/*
- *	----------- Member Variables
- */
+
 };

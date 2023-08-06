@@ -8,23 +8,11 @@ UCLASS(Blueprintable)
 class RAIDBOSS_API URaidBossConsumableItem : public URaidBossItemBase
 {
 	GENERATED_BODY()
-/*
-*	----------- Overrided
-*/
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-			const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+
+public:
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 			const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const override;
-/*
-*	----------- Binded by Delegate
-*/
-/*
-*	----------- Other Method
-*/
-/*
-*	----------- Access
-*/
-/*
-*	----------- Member Variables
-*/
+protected:
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+			const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 };

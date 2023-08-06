@@ -1,21 +1,5 @@
 ﻿#include "UI/RaidBossStoreSlotWidget.h"
 
-void URaidBossStoreSlotWidget::BuyItem()
-{
-	if (WeakStoreWidget != nullptr)
-	{
-		WeakStoreWidget->RespondBuyingRequest(Index);
-	}
-}
-
-void URaidBossStoreSlotWidget::SellItem()
-{
-	if (WeakStoreWidget != nullptr)
-	{
-		WeakStoreWidget->RespondSellingRequest(Index);
-	}
-}
-
 void URaidBossStoreSlotWidget::SetWeakStoreWidget(URaidBossStoreWidget* InWeakStoreWidget)
 {
 	WeakStoreWidget = InWeakStoreWidget;
@@ -60,7 +44,23 @@ void URaidBossStoreSlotWidget::SetItemPrice(int32 InItemPrice)
 	}
 }
 
-void URaidBossStoreSlotWidget::SetIsProduct(bool InIsProduct)
+void URaidBossStoreSlotWidget::SetIsProduct(bool bInIsProduct)
 {
-	bIsProduct = InIsProduct;
+	bIsProduct = bInIsProduct;
+}
+
+void URaidBossStoreSlotWidget::BuyItem() const
+{
+	if (WeakStoreWidget != nullptr)
+	{
+		WeakStoreWidget->RespondBuyingRequest(Index);
+	}
+}
+
+void URaidBossStoreSlotWidget::SellItem() const
+{
+	if (WeakStoreWidget != nullptr)
+	{
+		WeakStoreWidget->RespondSellingRequest(Index);
+	}
 }

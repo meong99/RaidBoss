@@ -1,28 +1,19 @@
 #include "Character/RaidBossAnimBase.h"
+#include "Character/RaidBossCharacterBase.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Character/RaidBossCharacterBase.h"
-
-URaidBossAnimBase::URaidBossAnimBase()
-{
-}
 
 void URaidBossAnimBase::NativeUpdateAnimation(float deltaTime)
 {
-	AActor*		OwingActor;
-	ACharacter* Character;
-	FVector		Velocity;
-	FVector		RotatedVector;
-	FRotator	Temp;
-
-	OwingActor = GetOwningActor();
-	if (IsValid(OwingActor) == false)
-		return;
-	Character = Cast<ACharacter>(OwingActor);
+	Super::NativeUpdateAnimation(deltaTime);
+	
+	ACharacter* Character = Cast<ACharacter>(GetOwningActor());
+	
 	if (IsValid(Character) == false)
 		return;
 
-	Temp = Character->GetBaseAimRotation() - Character->GetActorRotation();
+	FRotator Temp = Character->GetBaseAimRotation() - Character->GetActorRotation();
+	
 	Temp.Normalize();
 	Roll = Temp.Roll;
 	Pitch = Temp.Pitch;
@@ -30,23 +21,25 @@ void URaidBossAnimBase::NativeUpdateAnimation(float deltaTime)
 
 	Speed = Character->GetVelocity().Size2D();
 	bIsInAir = Character->GetCharacterMovement()->IsFalling();
-	bIsAccelorating = (Character->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.f);
+	bIsAccelerating = (Character->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.f);
 
-	Velocity = Character->GetVelocity();
+	FVector Velocity = Character->GetVelocity();
+	
 	Velocity.Normalize();
-	RotatedVector = Character->GetActorRotation().UnrotateVector(Velocity);
+	
+	FVector RotatedVector = Character->GetActorRotation().UnrotateVector(Velocity);
+	
 	MoveForward = RotatedVector.X;
 	MoveRight = RotatedVector.Y;
 
-	if (IsAccelorating() == true)
+	if (IsAccelerating() == true)
+	{
 		SetRootMotionMode(ERootMotionMode::IgnoreRootMotion);
+	}
 	else
+	{
 		SetRootMotionMode(ERootMotionMode::RootMotionFromMontagesOnly);
-}
-
-void URaidBossAnimBase::NativeInitializeAnimation()
-{
-	Super::NativeInitializeAnimation();
+	}
 }
 
 ARaidBossCharacterBase* URaidBossAnimBase::GetOwningCharacter() const

@@ -17,17 +17,7 @@ class RAIDBOSS_API ARaidBossPlayerControllerBase : public APlayerController
 	GENERATED_BODY()
 public:
 	ARaidBossPlayerControllerBase();
-/*
- *	----------- Overrided
- */
-/*
- *	----------- Binded by Delegate
- */
-	
-/*
- *	----------- Other Method
- */
-public:
+
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
 	void	MoveCharacter(FVector2D Value) const;
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
@@ -42,19 +32,14 @@ public:
 	void	ToggleSkillWidget() const;
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
 	void	AttemptDropItem(EITemCategory ItemCategory, int32 Index);
-/*
- *	----------- Access
- */
-public:
+
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
 	ARaidBossPlayerBase*				GetRaidBossPlayerBase() const;
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
 	URaidBossAbilitySystemComponent*	GetRaidBossAbilitySystemComponent() const;
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
 	URaidBossInventorySystem*			GetInventorySystem() const;
-/*
- *	----------- Member Variables
- */
+
 protected:
 	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Player Controller")
 	TObjectPtr<URaidBossInventorySystem>	InventorySystem;

@@ -13,7 +13,9 @@ void URaidBossStoreSystem::BeginPlay()
 	Super::BeginPlay();
 
 	if (StoreWidget)
+	{
 		StoreWidget->SetWeakStoreSystem(this);
+	}
 }
 
 void URaidBossStoreSystem::OpenStoreWidget()
@@ -58,15 +60,17 @@ void URaidBossStoreSystem::CloseStoreWidget()
 
 bool URaidBossStoreSystem::RespondBuyingRequest(int32 ProductsIndex)
 {
-	URaidBossItemBase*	Product;
-
 	if (Products.IsValidIndex(ProductsIndex) == false)
+	{
 		return false;
+	}
 	
-	Product = Products[ProductsIndex].GetDefaultObject();
+	URaidBossItemBase* Product = Products[ProductsIndex].GetDefaultObject();
 
 	if (Product == nullptr || InventorySystem == nullptr)
+	{
 		return false;
+	}
 
 	bool	bIsNotEnoughGold = (Product->GetItemInfo().BuyingPrice > InventorySystem->GetGold());
 	bool	bIsInventoryFull = InventorySystem->IsInventoryFull(Product->GetItemCategory());
@@ -105,22 +109,19 @@ const int32& URaidBossStoreSystem::GetGoldFromPlayer() const
 	return InventorySystem->GetGold();
 }
 
-const TArray<FItemInfomation>& URaidBossStoreSystem::GetEquipItemsFromPlayer() const
+const TArray<FItemInformation>& URaidBossStoreSystem::GetEquipItemsFromPlayer() const
 {
 	return InventorySystem->GetEquipItems();
 }
 
-const TArray<FItemInfomation>& URaidBossStoreSystem::GetConsumableItemsFromPlayer() const
+const TArray<FItemInformation>& URaidBossStoreSystem::GetConsumableItemsFromPlayer() const
 {
 	return InventorySystem->GetConsumableItems();
 }
 
 int32 URaidBossStoreSystem::GetMaximumItemAmount() const
 {
-	if (InventorySystem != nullptr)
-		return InventorySystem->GetMaximumItemAmount();
-
-	return 0;
+	return InventorySystem->GetMaximumItemAmount();
 }
 
 void URaidBossStoreSystem::SetPlayerController(ARaidBossPlayerControllerBase* InPlayerController)

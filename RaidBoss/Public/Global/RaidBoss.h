@@ -1,11 +1,6 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Net/UnrealNetwork.h"
-
-#define PLAYER_TAG "Player"
 
 UENUM(BlueprintType)
 enum class ERaidBossAbilityInputID : uint8
@@ -21,19 +16,3 @@ enum class ERaidBossAbilityInputID : uint8
 	Death UMETA(DisplayName = "Death"),
 	Respawn UMETA(DisplayName = "Respawn"),
 };
-
-/*
- *	----------- Override
- */
-/*
- *	----------- Used on delegate
- */
-/*
- *	----------- Process Method
- */
-/*
- *	----------- Access(Get, Set, Check)
- */
-/*
- *	----------- Member Variables
- */

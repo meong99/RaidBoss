@@ -8,12 +8,9 @@ UCLASS()
 class RAIDBOSS_API URaidBossBTTask_AttackPlayer : public UBTTaskNode
 {
 	GENERATED_BODY()
+	
 public:
 	URaidBossBTTask_AttackPlayer();
-	
-/*
- *	----------- Overrided
- */
-private:
+
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 };

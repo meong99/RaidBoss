@@ -2,44 +2,32 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/Skill/RaidBossSkillBase.h"
-#include "RaidBossEnermyDefaultAttack.generated.h"
+#include "RaidBossEnemyDefaultAttack.generated.h"
 
 class ARaidBossPlayerBase;
 
 UCLASS()
-class RAIDBOSS_API URaidBossEnermyDefaultAttack : public URaidBossSkillBase
+class RAIDBOSS_API URaidBossEnemyDefaultAttack : public URaidBossSkillBase
 {
 	GENERATED_BODY()
 
 public:
-	URaidBossEnermyDefaultAttack();
+	URaidBossEnemyDefaultAttack();
 
-/*
- *	----------- Overrided
- */
-public:
+protected:
 	virtual void	ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 									const FGameplayAbilityActivationInfo ActivationInfo,
 									const FGameplayEventData* TriggerEventData) override;
-/*
- *	----------- Binded by Delegate
- */
-public:
+
+private:
 	UFUNCTION()
-	void			EventReceivedCallback(const FGameplayEventData Payload);
+	void	EventReceivedCallback(const FGameplayEventData Payload);
 	UFUNCTION()
-	void			EndAbilityCallback();
-/*
- *	----------- Other Method
- */
+	void	EndAbilityCallback();
+	
 	TArray<ARaidBossPlayerBase*>	SelectTargets();
-	void							ApplyEffecsToTargets(const TArray<ARaidBossPlayerBase*>& TargetArr);
-/*
- *	----------- Access
- */
-/*
- *	----------- Member Variables
- */
+	void							ApplyEffectsToTargets(const TArray<ARaidBossPlayerBase*>& TargetArr);
+
 protected:
 	UPROPERTY()
 	TObjectPtr<UAbilityTask_WaitGameplayEvent>	WaitGameplayEvent;

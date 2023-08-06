@@ -12,35 +12,23 @@ class RAIDBOSS_API URaidBossDash : public URaidBossSkillBase, public FRaidBossTi
 public:
 	URaidBossDash();
 
-/*
-*	----------- Overrided
-*/
-public:
-	virtual void	ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-									const FGameplayAbilityActivationInfo ActivationInfo,
-									const FGameplayEventData* TriggerEventData) override;
 	virtual bool	CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 										const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags,
 										FGameplayTagContainer* OptionalRelevantTags) const override;
 	virtual void	Tick(float DeltaTime) override;
-/*
-*	----------- Binded by Delegate
-*/
-public:
+
+	
+protected:
+	virtual void	ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+									const FGameplayAbilityActivationInfo ActivationInfo,
+									const FGameplayEventData* TriggerEventData) override;
+private:
     UFUNCTION()
     void	EndAbilityCallback();
-/*
-*	----------- Other Method
-*/
 	bool	ActivateTasks();
 	FVector	GetDestination();
-	FVector	InterpolateDestinationByTracing(FVector Start, FVector End);
-/*
-*	----------- Access
-*/
-/*
-*	----------- Member Variables
- */
+	FVector	InterpolateDestinationByTracing(FVector Start, FVector End) const;
+	
 private:
 	UPROPERTY()
 	TObjectPtr<UAbilityTask_PlayMontageAndWait>	PlayMontageAndWait;
