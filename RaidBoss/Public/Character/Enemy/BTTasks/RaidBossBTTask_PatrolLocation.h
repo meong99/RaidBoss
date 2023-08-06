@@ -11,23 +11,12 @@ class RAIDBOSS_API URaidBossBTTask_PatrolLocation : public UBTTaskNode
 
 public:
 	URaidBossBTTask_PatrolLocation();
-	
-/*
- *	----------- Overrided
- */
-private:
+
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
-/*
- *	----------- Access
- */
-public:
 	float	GetSearchRadius() const;
-	
-/*
- *	----------- Member Variables
- */
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Raid Boss | PatrolLocation", meta = (AllowPrivateAccess = true))
-		float	SearchRadius = 2000.f;
+	float	SearchRadius = 2000.f;
 };
