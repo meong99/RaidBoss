@@ -1,7 +1,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
 #include "RaidBossSkillSystem.generated.h"
 
 class URaidBossSkillWidget;
@@ -14,49 +13,33 @@ class RAIDBOSS_API URaidBossSkillSystem : public UObject
 {
 	GENERATED_BODY()
 	
-/*
-*	----------- Override
-*/
-/*
-*	----------- Used on delegate
-*/
-/*
-*	----------- Process Method
-*/
 public:
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill System")
 	void	InitialzeSkillSystem(URaidBossSkillWidget* InSkillWidget);
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill System")
 	void	ToggleSkillWidget() const;
-
-	void	UseSkill(int32 Index);
-	int32	GetSkillLevel(int32 Index);
-	int32	IncreaseSkillLevel(int32 Index);
-	int32	DecreaseSkillLevel(int32 Index);
+	void	UseSkill(int32 Index) const;
 	
-protected:
-	void	GiveSkillToAbilityComponent();
-/*
-*	----------- Access(Get, Set, Check)
-*/
-public:
 	const URaidBossSkillBase*	GetSkillCDO(int32 Index) const;
 	URaidBossSkillBase*			GetSkillInstance(int32 Index) const;
 	int32						GetSkillCount() const;
 	int32						GetCurrentSkillPoint() const;
+	int32						GetSkillLevel(int32 Index) const;
+	
+	int32	IncreaseSkillLevel(int32 Index);
+	int32	DecreaseSkillLevel(int32 Index);
 
 private:
+	void	GiveSkillToAbilityComponent() const;
+	
 	ARaidBossPlayerControllerBase*		GetRaidBossPlayerControllerBase() const;
 	URaidBossAbilitySystemComponent*	GetRaidBossAbilitySystemComponent() const;
 	
-/*
-*	----------- Member Variables
-*/
-protected:
-	UPROPERTY(EditDefaultsOnly, Category="Raid Boss | Skill System")
+private:
+	UPROPERTY(EditDefaultsOnly, Category="Raid Boss | Skill System", meta=(AllowPrivateAccess))
 	TArray<TSubclassOf<URaidBossSkillBase>>		SkillClasses;
-	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Skill System")
+	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Skill System", meta=(AllowPrivateAccess))
 	TObjectPtr<URaidBossSkillWidget>			SkillWidget;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Raid Boss | Skill System")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Raid Boss | Skill System", meta=(AllowPrivateAccess))
 	int32	CurrentSkillPoint = 5;
 };
