@@ -6,7 +6,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
-#include "Kismet/GameplayStatics.h"
 
 ARaidBossEnemyControllerBase::ARaidBossEnemyControllerBase()
 {
@@ -33,38 +32,8 @@ ARaidBossEnemyControllerBase::ARaidBossEnemyControllerBase()
 
 		PerceptionComponent->ConfigureSense(*Sight);
 	}
+	
 	PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ARaidBossEnemyControllerBase::OnTargetDetectedDelegated);
-}
-
-void ARaidBossEnemyControllerBase::OnPossess(APawn* inPawn)
-{
-	Super::OnPossess(inPawn);
-
-	if (IsValid(Blackboard.Get()) && IsValid(BehaviourTree.Get()))
-	{
-		Blackboard->InitializeBlackboard(*BehaviourTree.Get()->BlackboardAsset.Get());
-	}
-}
-
-void ARaidBossEnemyControllerBase::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (IsValid(BehaviourTree.Get()) && IsValid(BehaviourTreeComponent))
-	{
-		RunBehaviorTree(BehaviourTree.Get());
-
-		BehaviourTreeComponent->StartTree(*BehaviourTree.Get());
-	}
-}
-
-void ARaidBossEnemyControllerBase::UpdateWalkSpeed(float speed)
-{
-	ARaidBossEnemyBase* ControlledCharacter = GetControlledCharacter();
-	if (IsValid(ControlledCharacter) == false)
-		return;
-
-	ControlledCharacter->GetCharacterMovement()->MaxWalkSpeed = speed;
 }
 
 void ARaidBossEnemyControllerBase::OnTargetDetectedDelegated(AActor* Actor, FAIStimulus Stimulus)
@@ -72,9 +41,13 @@ void ARaidBossEnemyControllerBase::OnTargetDetectedDelegated(AActor* Actor, FAIS
 	ARaidBossEnemyBase* ControlledCharacter = GetControlledCharacter();
 	
 	if (IsValid(Actor) == false || IsValid(Blackboard) == false || IsValid(ControlledCharacter) == false)
+	{
 		return;
+	}
 	if (Actor->ActorHasTag(FName("Enemy")))
+	{
 		return;
+	}
 
 	if (Actor->ActorHasTag(FName("Player")) && Stimulus.WasSuccessfullySensed())
 	{
@@ -92,11 +65,23 @@ void ARaidBossEnemyControllerBase::OnTargetDetectedDelegated(AActor* Actor, FAIS
 void ARaidBossEnemyControllerBase::StopChasePlayer()
 {
 	if (IsValid(Blackboard) == false)
+	{
 		return;
+	}
 
 	Blackboard->SetValueAsBool(BBKey::HAS_LINE_OF_SIGHT, false);
 	Blackboard->SetValueAsObject(BBKey::TARGET_ACTOR, nullptr);
 	GetWorldTimerManager().ClearTimer(TimerHandle);
+}
+
+void ARaidBossEnemyControllerBase::UpdateWalkSpeed(float Speed)
+{
+	ARaidBossEnemyBase* ControlledCharacter = GetControlledCharacter();
+	
+	if (IsValid(ControlledCharacter) == false)
+		return;
+
+	ControlledCharacter->GetCharacterMovement()->MaxWalkSpeed = Speed;
 }
 
 ARaidBossEnemyBase* ARaidBossEnemyControllerBase::GetControlledCharacter() const
@@ -104,7 +89,24 @@ ARaidBossEnemyBase* ARaidBossEnemyControllerBase::GetControlledCharacter() const
 	return Cast<ARaidBossEnemyBase>(GetCharacter());
 }
 
-TArray<TSubclassOf<URaidBossSkillBase>> ARaidBossEnemyControllerBase::GetSkillClasses() const
+void ARaidBossEnemyControllerBase::OnPossess(APawn* InPawn)
 {
-	return EnemySkillClasses;
+	Super::OnPossess(InPawn);
+
+	if (IsValid(Blackboard.Get()) && IsValid(BehaviourTree.Get()))
+	{
+		Blackboard->InitializeBlackboard(*BehaviourTree.Get()->BlackboardAsset.Get());
+	}
+}
+
+void ARaidBossEnemyControllerBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (IsValid(BehaviourTree.Get()) && IsValid(BehaviourTreeComponent))
+	{
+		RunBehaviorTree(BehaviourTree.Get());
+
+		BehaviourTreeComponent->StartTree(*BehaviourTree.Get());
+	}
 }
