@@ -105,12 +105,12 @@ const int32& URaidBossStoreSystem::GetGoldFromPlayer() const
 	return InventorySystem->GetGold();
 }
 
-const TArray<FItemInfomation>& URaidBossStoreSystem::GetEquipItemsFromPlayer() const
+const TArray<FItemInformation>& URaidBossStoreSystem::GetEquipItemsFromPlayer() const
 {
 	return InventorySystem->GetEquipItems();
 }
 
-const TArray<FItemInfomation>& URaidBossStoreSystem::GetConsumableItemsFromPlayer() const
+const TArray<FItemInformation>& URaidBossStoreSystem::GetConsumableItemsFromPlayer() const
 {
 	return InventorySystem->GetConsumableItems();
 }

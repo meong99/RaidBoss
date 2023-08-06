@@ -44,7 +44,7 @@ public:
 	void	SetShownItemCategory(EITemCategory Category);
 	void	SetWeakStoreSystem(URaidBossStoreSystem* InWeakStoreSystem);
 private:
-	const TArray<FItemInfomation>&	GetCurrentBelonging();
+	const TArray<FItemInformation>&	GetCurrentBelonging();
 /*
 *	----------- Member Variables
 */
@@ -63,6 +63,6 @@ private:
 	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Store Widget", meta=(BindWidget, AllowPrivateAccess))
 	TObjectPtr<UScrollBox>	InventoryScroll;
 
-	const TArray<FItemInfomation>* EquipItems;
-	const TArray<FItemInfomation>* ConsumableItems;
+	const TArray<FItemInformation>* EquipItems;
+	const TArray<FItemInformation>* ConsumableItems;
 };

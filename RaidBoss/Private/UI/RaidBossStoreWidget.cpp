@@ -104,7 +104,7 @@ void URaidBossStoreWidget::UpdateInventory()
 	if (WeakStoreSystem == nullptr)
 		return;
 	
-	const TArray<FItemInfomation>&	CurrentBelonging = GetCurrentBelonging();
+	const TArray<FItemInformation>&	CurrentBelonging = GetCurrentBelonging();
 	TArray<UWidget*>				Slots = InventoryScroll->GetAllChildren();
 
 	GoldPlayerHas = WeakStoreSystem->GetGoldFromPlayer();
@@ -145,7 +145,7 @@ void URaidBossStoreWidget::SetWeakStoreSystem(URaidBossStoreSystem* InWeakStoreS
 	WeakStoreSystem = InWeakStoreSystem;
 }
 
-const TArray<FItemInfomation>& URaidBossStoreWidget::GetCurrentBelonging()
+const TArray<FItemInformation>& URaidBossStoreWidget::GetCurrentBelonging()
 {
 	if (ShownItemCategory == EITemCategory::Equip)
 		return *EquipItems;
