@@ -13,22 +13,6 @@ class RAIDBOSS_API URaidBossStoreSlotWidget : public URaidBossUserWidgetBase
 {
 	GENERATED_BODY()
 
-/*
-*	----------- Override
-*/
-/*
-*	----------- Used on delegate
-*/
-/*
-*	----------- Process Method
-*/
-	UFUNCTION(BlueprintCallable, Category="Raid Boss | Store Slot Widget")
-	void	BuyItem();
-	UFUNCTION(BlueprintCallable, Category="Raid Boss | Store Slot Widget")
-	void	SellItem();
-/*
-*	----------- Access(Get, Set, Check)
-*/
 public:
 	void	SetWeakStoreWidget(IN URaidBossStoreWidget*	InWeakStoreWidget);
 	void	SetItemTexture(IN UTexture2D* Texture);
@@ -36,10 +20,14 @@ public:
 	void	SetItemAmount(int32 InAmount);
 	void	SetItemName(FString InItemName);
 	void	SetItemPrice(int32 InItemPrice);
-	void	SetIsProduct(bool InIsProduct);
-/*
-*	----------- Member Variables
-*/
+	void	SetIsProduct(bool bInIsProduct);
+
+private:
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Store Slot Widget")
+	void	BuyItem() const;
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Store Slot Widget")
+	void	SellItem() const;
+
 private:
 	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Store Slot Widget", meta=(AllowPrivateAccess))
 	TWeakObjectPtr<URaidBossStoreWidget>	WeakStoreWidget;
