@@ -8,9 +8,10 @@ ARaidBossEnemyBase::ARaidBossEnemyBase()
 
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 	GetCharacterMovement()->MaxWalkSpeed = 300;
 	GetCharacterMovement()->MaxWalkSpeedCrouched = 100;
+
+	bUseControllerRotationYaw = false;
 	
 	Tags.Add("Enemy");
 }
