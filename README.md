@@ -40,5 +40,3 @@ https://github.com/meong99/RaidBoss/assets/57436863/e06b8903-c48a-4040-8b2d-3b7f
 - 레벨 전환
 - 미니맵
 
-## 기간
-- 6월 3일 시작 ~ 8월 5일 (현재 약 2개월)
