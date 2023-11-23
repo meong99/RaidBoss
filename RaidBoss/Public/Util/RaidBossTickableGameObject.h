@@ -7,7 +7,7 @@ class RAIDBOSS_API FRaidBossTickableGameObject : public FTickableGameObject
 {
 public:
 	FRaidBossTickableGameObject();
-	~FRaidBossTickableGameObject();
+	virtual ~FRaidBossTickableGameObject() override;
 
 	void			SetIsTickable(bool Tickable);
 	virtual bool	IsTickable() const override;

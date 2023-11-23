@@ -4,6 +4,7 @@
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 
@@ -32,13 +33,13 @@ ARaidBossEnemyControllerBase::ARaidBossEnemyControllerBase()
 
 		PerceptionComponent->ConfigureSense(*Sight);
 	}
-	
-	PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ARaidBossEnemyControllerBase::OnTargetDetectedDelegated);
+
+	// PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ARaidBossEnemyControllerBase::OnTargetDetectedDelegated);
 }
 
 void ARaidBossEnemyControllerBase::OnTargetDetectedDelegated(AActor* Actor, FAIStimulus Stimulus)
 {
-	ARaidBossEnemyBase* ControlledCharacter = GetControlledCharacter();
+	ARaidBossCharacterBase* ControlledCharacter = GetControlledCharacter();
 	
 	if (IsValid(Actor) == false || IsValid(Blackboard) == false || IsValid(ControlledCharacter) == false)
 	{
@@ -76,7 +77,7 @@ void ARaidBossEnemyControllerBase::StopChasePlayer()
 
 void ARaidBossEnemyControllerBase::UpdateWalkSpeed(float Speed)
 {
-	ARaidBossEnemyBase* ControlledCharacter = GetControlledCharacter();
+	ARaidBossCharacterBase* ControlledCharacter = GetControlledCharacter();
 	
 	if (IsValid(ControlledCharacter) == false)
 		return;
@@ -84,9 +85,9 @@ void ARaidBossEnemyControllerBase::UpdateWalkSpeed(float Speed)
 	ControlledCharacter->GetCharacterMovement()->MaxWalkSpeed = Speed;
 }
 
-ARaidBossEnemyBase* ARaidBossEnemyControllerBase::GetControlledCharacter() const
+ARaidBossCharacterBase* ARaidBossEnemyControllerBase::GetControlledCharacter() const
 {
-	return Cast<ARaidBossEnemyBase>(GetCharacter());
+	return Cast<ARaidBossCharacterBase>(GetCharacter());
 }
 
 void ARaidBossEnemyControllerBase::OnPossess(APawn* InPawn)
@@ -108,5 +109,12 @@ void ARaidBossEnemyControllerBase::BeginPlay()
 		RunBehaviorTree(BehaviourTree.Get());
 
 		BehaviourTreeComponent->StartTree(*BehaviourTree.Get());
+	}
+	
+	ACharacter*	CurrentPlayer = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	if (CurrentPlayer)
+	{
+		Blackboard->SetValueAsBool(BBKey::HAS_LINE_OF_SIGHT, true);
+		Blackboard->SetValueAsObject(BBKey::TARGET_ACTOR, CurrentPlayer);
 	}
 }

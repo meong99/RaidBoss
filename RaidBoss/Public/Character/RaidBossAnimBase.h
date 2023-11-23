@@ -46,7 +46,11 @@ private:
 	float		Pitch;
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
 	float		Yaw;
-
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
+	bool		bIsDuringAlign;
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
+	bool		bIsTurnLeft = false;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
 	TObjectPtr<UAnimMontage>	DeathMontage;
 };

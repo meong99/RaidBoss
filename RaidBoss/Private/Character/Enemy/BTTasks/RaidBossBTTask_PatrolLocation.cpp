@@ -11,7 +11,7 @@ URaidBossBTTask_PatrolLocation::URaidBossBTTask_PatrolLocation()
 
 EBTNodeResult::Type URaidBossBTTask_PatrolLocation::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	ARaidBossEnemyControllerBase* AIController = Cast<ARaidBossEnemyControllerBase>(OwnerComp.GetAIOwner());
+	AAIController* AIController = Cast<AAIController>(OwnerComp.GetAIOwner());
 
 	if (IsValid(AIController) == false)
 		return EBTNodeResult::Failed;

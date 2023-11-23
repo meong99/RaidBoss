@@ -27,6 +27,7 @@ public:
 	ATTRIBUTE_ACCESSORS(URaidBossCharacterStatusAttributeSet, AdditionalAttackPower)
 	ATTRIBUTE_ACCESSORS(URaidBossCharacterStatusAttributeSet, AdditionalDefencePower)
 	ATTRIBUTE_ACCESSORS(URaidBossCharacterStatusAttributeSet, MoveSpeed)
+	ATTRIBUTE_ACCESSORS(URaidBossCharacterStatusAttributeSet, AttackSpeed)
 	
 protected:
 	void	AdjustAttributeForMaxChange(FGameplayAttributeData& AffectedAttribute, const FGameplayAttributeData& MaxAttribute,
@@ -54,4 +55,6 @@ public:
 	FGameplayAttributeData	AdditionalDefencePower;
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute", meta=(AllowPrivateAccess))
 	FGameplayAttributeData	MoveSpeed;
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute", meta=(AllowPrivateAccess))
+	FGameplayAttributeData	AttackSpeed;
 };

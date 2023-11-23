@@ -9,20 +9,42 @@
 class UAbilityTask_PlayMontageAndWait;
 class UAbilityTask_WaitGameplayEvent;
 
+enum ESkillRequestType
+{
+	None,
+	IncreaseSkillLevel,
+	DecreaseSkillLevel
+};
+
 UCLASS()
 class RAIDBOSS_API URaidBossSkillBase : public URaidBossAbilityBase
 {
 	GENERATED_BODY()
 public:
+	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const override;
+
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill Base")
 	const FRaidBossSkillInfo&	GetSkillInfo() const;
 	
-	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill Base")
-	bool	IncreaseSkillLevel();
-	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill Base")
-	bool	DecreaseSkillLevel();
 	
 protected:
+	bool	CanLevelIncrease();
+	
+	bool	CanLevelDecrease();
+	
+	void	IncreaseSkillLevel();
+	
+	void	DecreaseSkillLevel();
+
+	ESkillRequestType		GetRequestType(const FGameplayTagContainer* InstigatorTags) const;
+
+	void	NotifySkillLevelChanged();
+
+	
 	FGameplayAbilityTargetDataHandle	CreateAbilityTargetDataFromActor(AActor* Target) const;
 	UAbilityTask_PlayMontageAndWait*	CreatePlayMontageAndWaitTask(int32 MontageIndex = 0);
 	UAbilityTask_WaitGameplayEvent*		CreateWaitGameplayEventTask(FGameplayTag EventTag, bool OnlyTriggerOnce = true);

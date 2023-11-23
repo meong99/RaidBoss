@@ -2,6 +2,7 @@
 #include "Abilities/RaidBossAbilitySystemComponent.h"
 #include "Character/RaidBossCharacterBase.h"
 #include "GameplayEffectExtension.h"
+#include "Management/RaidBossGameplayTags.h"
 
 URaidBossCharacterStatusAttributeSet::URaidBossCharacterStatusAttributeSet()
 	: Health(1.f)
@@ -9,11 +10,12 @@ URaidBossCharacterStatusAttributeSet::URaidBossCharacterStatusAttributeSet()
 	, Mana(0.f)
 	, MaxMana(0.f)
 	, AttackPower(1.0f)
-	, AttackRange(0.0f)
+	, AttackRange(1.0f)
 	, DefensePower(1.0f)
 	, AdditionalAttackPower(0.0f)
 	, AdditionalDefencePower(0.0f)
-	, MoveSpeed(0.0f)
+	, MoveSpeed(1.0f)
+	, AttackSpeed(1.0f)
 {
 }
 
@@ -62,10 +64,13 @@ void URaidBossCharacterStatusAttributeSet::AdjustAttributeForMaxChange(FGameplay
 
 void URaidBossCharacterStatusAttributeSet::CheckHealthAndToDeath() const
 {
-	ARaidBossCharacterBase* OwnerCharacter = GetOwnerCharacter();
+	URaidBossAbilitySystemComponent* AbilitySystemComponent =
+		Cast<URaidBossAbilitySystemComponent>(GetOwningAbilitySystemComponent());
 	
-	if (GetHealth() <= 0 && IsValid(OwnerCharacter) == true)
+	if (AbilitySystemComponent && GetHealth() <= 0)
 	{
-		OwnerCharacter->OnDeath();
+		FGameplayEventData Payload;
+
+		AbilitySystemComponent->HandleGameplayEvent(RaidBossGameplayTags::Get().Character_Death, &Payload);
 	}
 }

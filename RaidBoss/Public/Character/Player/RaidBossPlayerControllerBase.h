@@ -1,9 +1,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Abilities/Item/RaidBossItemBase.h"
 #include "GameFramework/PlayerController.h"
 #include "RaidBossPlayerControllerBase.generated.h"
 
+class UInteractionalUISystem;
+class UInteractionalUI;
 class URaidBossRewardSystem;
 class ARaidBossPlayerBase;
 class URaidBossInventorySystem;
@@ -26,28 +29,34 @@ public:
 	void	JumpCharacter() const;
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
 	void	StopJumpCharacter() const;
-	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
-	void	ToggleInventoryWidget() const;
-	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
-	void	ToggleSkillWidget() const;
-	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
-	void	AttemptDropItem(EITemCategory ItemCategory, int32 Index);
 
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
 	ARaidBossPlayerBase*				GetRaidBossPlayerBase() const;
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
 	URaidBossAbilitySystemComponent*	GetRaidBossAbilitySystemComponent() const;
-	UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
-	URaidBossInventorySystem*			GetInventorySystem() const;
+
+
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | UI")
+	void	SendUIEventTagToController(FGameplayTag TriggerTag) const;
+	
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | UI")
+	UInteractionalUISystem*	GetInteractionalUISystem() const { return InteractionalUISystem; }
+	
+	const TArray<TSubclassOf<UInteractionalUI>>&	GetInteractionalUIArray() const { return InteractionalUIArray; }
 
 protected:
-	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Player Controller")
-	TObjectPtr<URaidBossInventorySystem>	InventorySystem;
-	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Player Controller")
-	TObjectPtr<URaidBossSkillSystem>		SkillSystem;
-	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Player Controller")
-	TObjectPtr<URaidBossRewardSystem>		RewardSystem;
+	virtual void OnPossess(APawn* InPawn) override;
 	
+protected:
 	UPROPERTY(EditDefaultsOnly, Category="Raid Boss | Player Controller")
 	TArray<TSubclassOf<URaidBossAbilityBase>>	DefaultAbilities;
+
+
+
+
+	
+	UPROPERTY(EditDefaultsOnly, Category="Raid Boss | UI")
+	TObjectPtr<UInteractionalUISystem>		InteractionalUISystem;
+	UPROPERTY(EditDefaultsOnly, Category="Raid Boss | UI")
+	TArray<TSubclassOf<UInteractionalUI>>	InteractionalUIArray;
 };

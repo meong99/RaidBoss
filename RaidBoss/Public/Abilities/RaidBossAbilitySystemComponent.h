@@ -17,9 +17,14 @@ public:
 				OUT FGameplayAbilitySpecHandle& OutSpecHandle, int32 InputID = INDEX_NONE);
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Ability Component")
 	bool	TryActivateAbilityByInputID(int32 InputID);
-
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Ability Component")
 	URaidBossAbilityBase*	GetAbilityByClass(TSubclassOf<URaidBossAbilityBase> AbilityClass);
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Ability Component")
 	URaidBossAbilityBase*	GetAbilityByInputID(int32 InputID);
+
+	//임시
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Ability Component")
+	FGameplayAbilitySpecHandle	GiveAbilityToASC(TSubclassOf<URaidBossAbilityBase> AbilityClass, UObject* SourceObject, FGameplayTagContainer TagContainer);
+
+	
 };

@@ -1,9 +1,7 @@
 #include "Character/Enemy/BTTasks/RaidBossBTTask_AttackPlayer.h"
-#include "Character/Enemy/RaidBossEnemyBase.h"
 #include "Character/Enemy/RaidBossEnemyControllerBase.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Abilities/RaidBossAbilitySystemComponent.h"
-#include "Global/RaidBoss.h"
+#include "Character/RaidBossCharacterBase.h"
 
 URaidBossBTTask_AttackPlayer::URaidBossBTTask_AttackPlayer()
 {
@@ -12,17 +10,12 @@ URaidBossBTTask_AttackPlayer::URaidBossBTTask_AttackPlayer()
 
 EBTNodeResult::Type URaidBossBTTask_AttackPlayer::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	ARaidBossEnemyBase*	OwnerCharacter = Cast<ARaidBossEnemyBase>(OwnerComp.GetAIOwner()->GetCharacter());
-	URaidBossAbilitySystemComponent*	AbilityCom = OwnerCharacter? OwnerCharacter->GetRaidBossAbilitySystemComponent() : nullptr;
+	ARaidBossCharacterBase*	OwnerCharacter = Cast<ARaidBossCharacterBase>(OwnerComp.GetAIOwner()->GetCharacter());
+
+	if (OwnerCharacter)
+	{
+		OwnerCharacter->Attack();
+	}
 	
-	if (IsValid(AbilityCom) == false)
-		return EBTNodeResult::Failed;
-
-	AbilityCom->PressInputID(static_cast<int32>(ERaidBossAbilityInputID::DefaultAttack));
-	AbilityCom->OnAbilityEnded.AddLambda([&] (const FAbilityEndedData& AbilityEndedData)-> void
-		{
-			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-		});
-
-	return EBTNodeResult::InProgress;
+	return EBTNodeResult::Succeeded;
 }

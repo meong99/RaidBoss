@@ -18,15 +18,13 @@ public:
 
 	virtual void	BeginPlay() override;
 
-	void			MoveCharacter(const FVector2D& Value);
-	void			LookCharacter(const FVector2D& Value);
 	virtual void	JumpCharacter();
 	virtual void	StopJumpCharacter();
 	
 	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Player Base")
 	ARaidBossPlayerControllerBase*		GetRaidBossPlayerController() const;
 	UCameraComponent*					GetFollowCamera() const;
-	
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Raid Boss | Player Base", meta=(AllowPrivateAccess))
 	TObjectPtr<USpringArmComponent>		CameraBoom;

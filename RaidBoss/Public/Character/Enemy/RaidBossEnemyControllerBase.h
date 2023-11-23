@@ -4,6 +4,8 @@
 #include "AIController.h"
 #include "RaidBossEnemyControllerBase.generated.h"
 
+class ARaidBossCharacterBase;
+
 namespace BBKey
 {
 	TCHAR const* const TARGET_ACTOR = TEXT("EnermyActor");
@@ -28,14 +30,14 @@ class RAIDBOSS_API ARaidBossEnemyControllerBase : public AAIController
 	GENERATED_BODY()
 public:
 	ARaidBossEnemyControllerBase();
-	
+
 	UFUNCTION()
 	void	OnTargetDetectedDelegated(AActor* Actor, struct FAIStimulus Stimulus);
 	UFUNCTION()
 	void	StopChasePlayer();
 	void	UpdateWalkSpeed(float Speed);
 
-	ARaidBossEnemyBase*	GetControlledCharacter() const;
+	ARaidBossCharacterBase*	GetControlledCharacter() const;
 	
 protected:
 	virtual	void	OnPossess(APawn* InPawn) override;

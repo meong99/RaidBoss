@@ -7,7 +7,7 @@ void URaidBossAnimBase::NativeUpdateAnimation(float deltaTime)
 {
 	Super::NativeUpdateAnimation(deltaTime);
 	
-	ACharacter* Character = Cast<ACharacter>(GetOwningActor());
+	ARaidBossCharacterBase* Character = GetOwningCharacter();
 	
 	if (IsValid(Character) == false)
 		return;
@@ -32,6 +32,9 @@ void URaidBossAnimBase::NativeUpdateAnimation(float deltaTime)
 	MoveForward = RotatedVector.X;
 	MoveRight = RotatedVector.Y;
 
+	bIsDuringAlign = Character->IsDuringAlign();
+	bIsTurnLeft = Character->IsTurnLeft();
+		
 	if (IsAccelerating() == true)
 	{
 		SetRootMotionMode(ERootMotionMode::IgnoreRootMotion);

@@ -2,6 +2,7 @@
 #include "Abilities/RaidBossAbilitySystemComponent.h"
 #include "Character/RaidBossCharacterBase.h"
 #include "Abilities/RaidBossCharacterStatusAttributeSet.h"
+#include "Management/RaidBossGameplayTags.h"
 
 URaidBossAbilityBase::URaidBossAbilityBase()
 {
@@ -13,6 +14,36 @@ void URaidBossAbilityBase::OnGiveAbility(const FGameplayAbilityActorInfo* ActorI
 	Super::OnGiveAbility(ActorInfo, Spec);
 
 	OwnerCharacter = Cast<ARaidBossCharacterBase>(ActorInfo->OwnerActor);
+
+	if (OwnerCharacter)
+	{
+		float AttackSpeed = OwnerCharacter->GetCharacterStatusAttributeSet()->AttackSpeed.GetCurrentValue();
+	}
+}
+
+void URaidBossAbilityBase::ApplyCooldown(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const
+{
+	UGameplayEffect* CooldownGE = GetCooldownGameplayEffect();
+	
+	if (CooldownGE && OwnerCharacter)
+	{
+		float AttackSpeed = OwnerCharacter->GetCharacterStatusAttributeSet()->AttackSpeed.GetCurrentValue();
+		FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(CooldownGE->GetClass(), GetAbilityLevel());
+		
+		SpecHandle.Data.Get()->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().CoolDown_ByAttackSpeed, AttackSpeed);
+		ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, SpecHandle);
+	}
+}
+
+FGameplayTagContainer URaidBossAbilityBase::GetAbilityTags()
+{
+	return AbilityTags;
+}
+
+FGameplayTagContainer URaidBossAbilityBase::GetBlockAbilityTags()
+{
+	return BlockAbilitiesWithTag;
 }
 
 bool URaidBossAbilityBase::UseAbility() const
@@ -27,6 +58,23 @@ bool URaidBossAbilityBase::UseAbility() const
 	}
 
 	return bAbilityActivated;
+}
+
+bool URaidBossAbilityBase::CanActivateAbilityForBP() const
+{
+	return CanActivateAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo());
+}
+
+FGameplayTag URaidBossAbilityBase::GetAbilityTriggerTag() const
+{
+	if (AbilityTriggers.IsEmpty())
+	{
+		return FGameplayTag{};
+	}
+	
+	FAbilityTriggerData TriggerData = *AbilityTriggers.begin();
+
+	return TriggerData.TriggerTag;
 }
 
 FGameplayEffectSpecHandle URaidBossAbilityBase::CreateEffectSpecHandle()
@@ -80,7 +128,7 @@ const URaidBossCharacterStatusAttributeSet* URaidBossAbilityBase::GetOwnerCharac
 	return nullptr;
 }
 
-ERaidBossAbilityInputID URaidBossAbilityBase::GetAbilityInputID() const
+ECharacterAbilityInputs URaidBossAbilityBase::GetAbilityInputID() const
 {
 	return AbilityInputID;
 }

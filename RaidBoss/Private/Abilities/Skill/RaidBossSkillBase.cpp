@@ -2,32 +2,115 @@
 #include "Character/RaidBossCharacterBase.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "Management/RaidBossGameplayTags.h"
+
+bool URaidBossSkillBase::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
+                                            const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
+                                            const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
+{
+	bool bIsItForLeveling = GetRequestType(SourceTags) == ESkillRequestType::IncreaseSkillLevel ||
+							GetRequestType(SourceTags) == ESkillRequestType::DecreaseSkillLevel;
+	
+	bool bIsItLearned = bIsItForLeveling == true ||
+						SkillInfo.SkillLevel > 0;
+	
+	return bIsItLearned &&
+		Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
+}
+
+void URaidBossSkillBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+	const FGameplayEventData* TriggerEventData)
+{
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
+	ESkillRequestType RequestType = GetRequestType(&TriggerEventData->InstigatorTags);
+
+	switch (RequestType)
+	{
+	case ESkillRequestType::IncreaseSkillLevel :
+	{
+		IncreaseSkillLevel();
+		break;
+	}
+	case ESkillRequestType::DecreaseSkillLevel :
+	{
+		DecreaseSkillLevel();
+		break;
+	}
+	default:
+		break;
+	}
+}
 
 const FRaidBossSkillInfo& URaidBossSkillBase::GetSkillInfo() const
 {
 	return SkillInfo;
 }
 
-bool URaidBossSkillBase::IncreaseSkillLevel()
+void URaidBossSkillBase::IncreaseSkillLevel()
 {
-	if (SkillInfo.SkillLevel + 1 <= SkillInfo.MaximumSkillLevel)
+	if (CanLevelIncrease())
 	{
 		SkillInfo.SkillLevel++;
+		NotifySkillLevelChanged();
+	}
+}
 
-		return  true;
+void URaidBossSkillBase::DecreaseSkillLevel()
+{
+	if (CanLevelDecrease())
+	{
+		SkillInfo.SkillLevel--;
+		NotifySkillLevelChanged();
+	}
+}
+
+ESkillRequestType URaidBossSkillBase::GetRequestType(const FGameplayTagContainer* InstigatorTags) const
+{
+	if (InstigatorTags)
+	{
+		const RaidBossGameplayTags& AllTags = RaidBossGameplayTags::Get();
+		
+		if (InstigatorTags->HasTag(AllTags.Event_Skill_IncreaseLevel))
+		{
+			return ESkillRequestType::IncreaseSkillLevel;
+		}
+		
+		if (InstigatorTags->HasTag(AllTags.Event_Skill_DecreaseLevel))
+		{
+			return ESkillRequestType::DecreaseSkillLevel;
+		}
+	}
+
+	return None;
+}
+
+void URaidBossSkillBase::NotifySkillLevelChanged()
+{
+	if (OwnerCharacter)
+	{
+		OwnerCharacter->NotifySkillLevelChanged.Broadcast(GetAbilityTriggerTag(), SkillInfo.SkillLevel);
+	}
+}
+
+bool URaidBossSkillBase::CanLevelIncrease()
+{
+	if (SkillInfo.SkillLevel < SkillInfo.MaximumSkillLevel)
+	{
+		return true;
 	}
 
 	return false;
 }
 
-bool URaidBossSkillBase::DecreaseSkillLevel()
+bool URaidBossSkillBase::CanLevelDecrease()
 {
-	if ( SkillInfo.SkillLevel - 1 >= SkillInfo.MinimumSkillLevel)
+	if (SkillInfo.SkillLevel > SkillInfo.MinimumSkillLevel)
 	{
-		SkillInfo.SkillLevel--;
-		return  true;
+		return true;
 	}
-	
+
 	return false;
 }
 

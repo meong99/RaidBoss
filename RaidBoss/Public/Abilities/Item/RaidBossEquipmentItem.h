@@ -41,4 +41,6 @@ private:
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Equipment Item", meta=(AllowPrivateAccess))
 	EEquipType EquipType = EEquipType::Size;
+	
+	bool bIsThisArmed = false;
 };

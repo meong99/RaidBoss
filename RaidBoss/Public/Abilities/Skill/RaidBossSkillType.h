@@ -31,6 +31,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int						SkillCost = 0;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	int						RequirePoint = 1;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int						SkillLevel = 0;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int						MaximumSkillLevel = 1;

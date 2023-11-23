@@ -1,4 +1,6 @@
 #include "Character/Player/RaidBossPlayerBase.h"
+
+#include "Abilities/RaidBossAbilitySystemComponent.h"
 #include "Character/Player/RaidBossPlayerControllerBase.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -11,12 +13,12 @@ ARaidBossPlayerBase::ARaidBossPlayerBase()
 	PrimaryActorTick.bCanEverTick = true;
 
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
+	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -98.f));
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
-	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
 	GetCharacterMovement()->JumpZVelocity = 400.f;
 	GetCharacterMovement()->AirControl = 0.5f;
@@ -40,25 +42,12 @@ void ARaidBossPlayerBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	const TCHAR* AnimDataLink =
+		TEXT("/Script/Engine.DataTable'/Game/Data/DataTables/DT_Player_AnimationByWeaponType.DT_Player_AnimationByWeaponType'");
+	const UDataTable*	AnimDataTable = LoadObject<UDataTable>(nullptr, AnimDataLink);
+
+	SetAnimationData(AnimDataTable);
 	ApplyCharacterStatusEffect();
-}
-
-void ARaidBossPlayerBase::MoveCharacter(const FVector2D& Value)
-{
-	if (IsCharacterStateTurnOn(ECharacterState::CanMove))
-	{
-		FVector Forward = UKismetMathLibrary::GetForwardVector(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
-		FVector Right = UKismetMathLibrary::GetRightVector(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
-
-		AddMovementInput(Forward, Value.Y);
-		AddMovementInput(Right, Value.X);
-	}
-}
-
-void ARaidBossPlayerBase::LookCharacter(const FVector2D& Value)
-{
-	AddControllerYawInput(Value.X * 0.4);
-	AddControllerPitchInput(Value.Y * 0.4);
 }
 
 void ARaidBossPlayerBase::JumpCharacter()

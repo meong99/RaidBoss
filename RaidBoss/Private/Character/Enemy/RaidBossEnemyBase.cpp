@@ -1,4 +1,6 @@
 #include "Character/Enemy/RaidBossEnemyBase.h"
+
+#include "Abilities/RaidBossAbilitySystemComponent.h"
 #include "Character/Enemy/RaidBossEnemyControllerBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 

@@ -39,6 +39,7 @@ void URaidBossDamageCalculation::Execute_Implementation(const FGameplayEffectCus
                                                         FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
 {
 	FAggregatorEvaluateParameters EvaluateParameters;
+	AActor* Test = ExecutionParams.GetTargetAbilitySystemComponent()->GetOwnerActor();
 
 	float SourceTotalAttackPower = 0;
 	float SourceAdditionalAttackPower = 0;

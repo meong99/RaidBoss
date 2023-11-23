@@ -1,12 +1,10 @@
 #include "Character/Player/RaidBossPlayerControllerBase.h"
 #include "Character/Player/RaidBossPlayerBase.h"
-#include "Management/RaidBossSkillSystem.h"
-#include "Management/RaidBossInventorySystem.h"
-#include "Management/RaidBossRewardSystem.h"
+#include "UI/InteractionalUISystem.h"
 
 ARaidBossPlayerControllerBase::ARaidBossPlayerControllerBase()
 {
-	RewardSystem = CreateDefaultSubobject<URaidBossRewardSystem>(TEXT("Reward System"));
+	InteractionalUISystem = CreateDefaultSubobject<UInteractionalUISystem>(TEXT("Interactional UI System"));
 }
 
 void ARaidBossPlayerControllerBase::MoveCharacter(FVector2D Value) const
@@ -53,25 +51,20 @@ URaidBossAbilitySystemComponent* ARaidBossPlayerControllerBase::GetRaidBossAbili
 	return PlayerBase ? PlayerBase->GetRaidBossAbilitySystemComponent() : nullptr;
 }
 
-URaidBossInventorySystem* ARaidBossPlayerControllerBase::GetInventorySystem() const
+void ARaidBossPlayerControllerBase::SendUIEventTagToController(FGameplayTag TriggerTag) const
 {
-	return InventorySystem;
-}
-
-void ARaidBossPlayerControllerBase::ToggleInventoryWidget() const
-{
-	InventorySystem->ToggleInventoryWidget();
-}
-
-void ARaidBossPlayerControllerBase::ToggleSkillWidget() const
-{
-	SkillSystem->ToggleSkillWidget();
-}
-
-void ARaidBossPlayerControllerBase::AttemptDropItem(EITemCategory ItemCategory, int32 Index)
-{
-	if (InventorySystem)
+	if (InteractionalUISystem)
 	{
-		InventorySystem->RemoveItem(ItemCategory, Index);
+		int32 AddedUI = InteractionalUISystem->HandleUITriggerEvent(TriggerTag);
+	}
+}
+
+void ARaidBossPlayerControllerBase::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+	
+	if (InteractionalUISystem)
+	{
+		InteractionalUISystem->TriggerTagParsing();
 	}
 }

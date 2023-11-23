@@ -25,6 +25,15 @@ bool URaidBossAbilitySystemComponent::TryActivateAbilityByInputID(int32 InputID)
 	return false;
 }
 
+FGameplayAbilitySpecHandle URaidBossAbilitySystemComponent::GiveAbilityToASC(TSubclassOf<URaidBossAbilityBase> AbilityClass,UObject* SourceObject, FGameplayTagContainer TagContainer)
+{
+	FGameplayAbilitySpec abilitySpec(AbilityClass.GetDefaultObject(), 1);
+	abilitySpec.SourceObject = SourceObject;
+	abilitySpec.DynamicAbilityTags.AppendTags(TagContainer);
+
+	return GiveAbility(abilitySpec);
+}
+
 URaidBossAbilityBase* URaidBossAbilitySystemComponent::GetAbilityByClass(TSubclassOf<URaidBossAbilityBase> AbilityClass)
 {
 	URaidBossAbilityBase*	Ret = nullptr;

@@ -30,7 +30,7 @@ struct FItemAbilityInformation
 	int32					SellingPrice;
 };
 
-UCLASS(Blueprintable)
+UCLASS(Blueprintable, EditInlineNew, DefaultToInstanced)
 class RAIDBOSS_API URaidBossItemBase : public URaidBossAbilityBase
 {
 	GENERATED_BODY()
@@ -39,7 +39,7 @@ public:
 	UTexture2D*				GetItemTexture() const;
 	EITemCategory			GetItemCategory() const;
 	FItemAbilityInformation	GetItemInfo() const;
-
+	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Item Base")
 	FItemAbilityInformation			ITemInfo;

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
+#include "Abilities/AbilityType.h"
 #include "Global/RaidBoss.h"
 #include "RaidBossAbilityBase.generated.h"
 
@@ -17,10 +18,21 @@ public:
 	URaidBossAbilityBase();
 
 	virtual void OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
+	virtual void ApplyCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const override;
 
+	UFUNCTION(BlueprintCallable)
+	FGameplayTagContainer GetAbilityTags();
+	UFUNCTION(BlueprintCallable)
+	FGameplayTagContainer GetBlockAbilityTags();
+	
+	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Ability base")
+	bool	CanActivateAbilityForBP() const;
+	
 	bool	UseAbility() const;
 	
-	ERaidBossAbilityInputID						GetAbilityInputID() const;
+	ECharacterAbilityInputs						GetAbilityInputID() const;
+	FGameplayTagContainer						GetAbilityInputTags() const { return AbilityInputTags; }
+	FGameplayTag								GetAbilityTriggerTag() const;
 	
 protected:
 	FGameplayEffectSpecHandle					CreateEffectSpecHandle();
@@ -33,7 +45,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<ARaidBossCharacterBase>			OwnerCharacter;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Raid Boss | Ability base")
-	ERaidBossAbilityInputID						AbilityInputID = ERaidBossAbilityInputID::None;
+	FGameplayTagContainer						AbilityInputTags;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Raid Boss | Ability base")
+	ECharacterAbilityInputs						AbilityInputID = ECharacterAbilityInputs::None;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Ability base")
 	TObjectPtr<UTexture2D>						AbilityTexture;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Ability base")
