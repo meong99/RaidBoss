@@ -44,7 +44,7 @@ protected:
 	virtual	void	BeginPlay() override;
 
 protected:
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Enermy Controller", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Enermy Controller", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UBehaviorTree>			BehaviourTree;
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Enermy Controller", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UBehaviorTreeComponent>	BehaviourTreeComponent;

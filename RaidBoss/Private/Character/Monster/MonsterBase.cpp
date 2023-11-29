@@ -1,11 +1,9 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Character/Monster/MonsterBase.h"
-#include "Abilities/RaidBossAbilitySystemComponent.h"
 #include "Character/RaidBossAnimBase.h"
 #include "Character/Enemy/RaidBossEnemyControllerBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Management/RaidBossGameplayTags.h"
 
 AMonsterBase::AMonsterBase()
 {
@@ -31,37 +29,57 @@ void AMonsterBase::BeginPlay()
 	Super::BeginPlay();
 }
 
+void AMonsterBase::PossessedBy(AController* NewController)
+{
+	if (MonsterKey != INDEX_NONE)
+	{
+		FMonsterInfo* MonsterInfo = GetMonsterInfo();
+	
+		if (MonsterInfo)
+		{
+			InitMonster(*MonsterInfo);
+			ApplyCharacterDefaultSpecEffectToSelf();
+			EquipWeapon(MonsterInfo->MonsterWeaponKey);
+		}
+	}
+	
+	Super::PossessedBy(NewController);
+}
+
 void AMonsterBase::InitMonster(const FMonsterInfo& MonsterInfoRow)
 {
 	GetMesh()->SetSkeletalMesh(MonsterInfoRow.SkeletalMesh);
 	GetMesh()->SetAnimClass(MonsterInfoRow.AnimBP);
 	MonsterType = MonsterInfoRow.MonsterType;
-	MonsterSpec = MonsterInfoRow.MonsterSpec;
+	CharacterDefaultSpec = MonsterInfoRow.MonsterSpec;
 	MonsterReward = MonsterInfoRow.MonsterReward;
 	CurrentPlayerState = EPlayerState::Alive;
 
-	SetAnimationData(MonsterInfoRow.MonsterAnimationTable);
+	InitAnimationData(MonsterInfoRow.MonsterAnimationTable);
 }
 
-void AMonsterBase::ApplyMonsterEffectSpec()
+FMonsterInfo* AMonsterBase::GetMonsterInfo() const
 {
-	if (AbilitySystemComponent)
-	{
-		FGameplayEffectContextHandle ContextHandle = AbilitySystemComponent->MakeEffectContext();
-		ContextHandle.AddSourceObject(this);
-		
-		FGameplayEffectSpecHandle OutGoingSpec = AbilitySystemComponent->MakeOutgoingSpec(CharacterStatusEffect, 1, ContextHandle);
-		
-		OutGoingSpec.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Init_Character_MaxHealth, MonsterSpec.MaxHealth);
-		OutGoingSpec.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Init_Character_MaxMana, MonsterSpec.MaxMana);
-		OutGoingSpec.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Init_Character_AttackPower, MonsterSpec.AttackPower);
-		OutGoingSpec.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Init_Character_AttackRange, MonsterSpec.AttackRange);
-		OutGoingSpec.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Init_Character_DefensePower, MonsterSpec.DefencePower);
-		OutGoingSpec.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Init_Character_MoveSpeed, MonsterSpec.MoveSpeed);
-		OutGoingSpec.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Init_Character_AttackSpeed, MonsterSpec.AttackSpeed);
+	const TCHAR*	MonsterDataTablePath = MONSTER_DATATABLE_PATH;
+	
+	UDataTable* MonsterDataTable = LoadObject<UDataTable>(nullptr, MonsterDataTablePath);
 
-		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*OutGoingSpec.Data);
+	if (MonsterDataTable)
+	{
+		TArray<FMonsterInfo*> MonsterInfos;
+		FMonsterInfo* MonsterData = nullptr;
+
+		MonsterDataTable->GetAllRows<FMonsterInfo>(FString(), MonsterInfos);
+
+		if (MonsterInfos.IsValidIndex(MonsterKey))
+		{
+			MonsterData = MonsterInfos[MonsterKey];
+		}
+		
+		return MonsterData;
 	}
+
+	return nullptr;
 }
 
 ARaidBossEnemyControllerBase* AMonsterBase::GetRiadBossEnemyController() const

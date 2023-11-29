@@ -1,6 +1,7 @@
 ﻿#include "Abilities/Item/RaidBossConsumableItem.h"
 #include "Abilities/RaidBossAbilitySystemComponent.h"
 #include "Character/RaidBossCharacterBase.h"
+#include "Management/RaidBossGameplayTags.h"
 
 bool URaidBossConsumableItem::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                                  const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
@@ -18,19 +19,25 @@ void URaidBossConsumableItem::ActivateAbility(const FGameplayAbilitySpecHandle H
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	FGameplayAbilitySpec*		AbilitySpec;
-
-	AbilitySpec = GetCurrentAbilitySpec();
-	FGameplayEffectSpecHandle EffectSpecHandle = CreateEffectSpecHandle();
+	FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(ItemEffect);
+	
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Item_SetByCaller_Health, Health);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Item_SetByCaller_MaxHealth, MaxHealth);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Item_SetByCaller_Mana, Mana);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Item_SetByCaller_MaxMana, MaxMana);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Item_SetByCaller_AttackPower, AttackPower);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Item_SetByCaller_DefensePower, DefensePower);
+	
+	FGameplayAbilitySpec* AbilitySpec = GetCurrentAbilitySpec();
 	
 	if (AbilitySpec && CommitAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo) == true)
 	{
 		AbilitySpec->GameplayEffectHandle = ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle);
-	}
-
-	if (OwnerCharacter)
-	{
-		OwnerCharacter->DecreaseOrRemoveInventoryData(GetAbilityTriggerTag());
+	
+		if (OwnerCharacter)
+		{
+			OwnerCharacter->DecreaseOrRemoveInventoryData(GetAbilityTriggerTag());
+		}
 	}
 	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);

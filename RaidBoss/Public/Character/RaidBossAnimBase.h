@@ -28,6 +28,18 @@ public:
 	void	SetMoveRight(float Right) { MoveRight = Right; }
 
 private:
+	
+	/*
+	 *	Changed on Initialize * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	//
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
+	float InterpSpeed = 5;
+	
+	/*
+	 *	Changed on every cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	//
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
 	bool		bIsInAir;
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
@@ -41,6 +53,10 @@ private:
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
 	float		MoveRight;
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
+	float		InputMoveForward;
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
+	float		InputMoveRight;
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
 	float		Roll;
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
 	float		Pitch;
@@ -50,8 +66,7 @@ private:
 	bool		bIsDuringAlign;
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
 	bool		bIsTurnLeft = false;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
-	TObjectPtr<UAnimMontage>	DeathMontage;
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
+	bool		bIsAttacking = false;
 };
 

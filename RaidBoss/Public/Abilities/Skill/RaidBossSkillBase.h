@@ -26,10 +26,13 @@ public:
 
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+
+	virtual const FGameplayTagContainer* GetCooldownTags() const override;
 	
-	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill Base")
+	virtual void ApplyCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo) const override;
+	
 	const FRaidBossSkillInfo&	GetSkillInfo() const;
-	
 	
 protected:
 	bool	CanLevelIncrease();
@@ -50,10 +53,33 @@ protected:
 	UAbilityTask_WaitGameplayEvent*		CreateWaitGameplayEventTask(FGameplayTag EventTag, bool OnlyTriggerOnce = true);
 	bool								IsTargetInRangeXY(AActor* Target, float Range) const;
 	bool								IsTargetInAngleXY(FVector StandardVector, FVector TargetVector, float MaxAngle) const;
-	void								BlockOwnerCharacterMovement() const;
-	void								ReleaseOwnerCharacterMovement() const;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category="Raid Boss | Skill Base")
+	
+	/*
+	 *	Changed on Initialize * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	
+	//
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Skill Base")
+	TSubclassOf<UGameplayEffect>	EffectClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Skill Base")
+	float	SkillRange = 100;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Skill Base")
+	float	SkillCoolTime = 1;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Skill Base")
+	FGameplayTagContainer	CooldownTags;
+
+	UPROPERTY(Transient)
+	FGameplayTagContainer	TempCooldownTags;
+	/*
+	 *	Changed on every cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	
+	//
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Skill Base")
 	FRaidBossSkillInfo	SkillInfo;
 };

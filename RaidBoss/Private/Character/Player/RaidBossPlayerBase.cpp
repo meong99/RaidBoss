@@ -28,12 +28,13 @@ ARaidBossPlayerBase::ARaidBossPlayerBase()
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 400.0f;
+	CameraBoom->TargetArmLength = 800.0f;
 	CameraBoom->bUsePawnControlRotation = true;
 
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
+	FollowCamera->SetRelativeLocation(FVector{0, 0, 100});
 
 	Tags.Add("Player");
 }
@@ -46,16 +47,12 @@ void ARaidBossPlayerBase::BeginPlay()
 		TEXT("/Script/Engine.DataTable'/Game/Data/DataTables/DT_Player_AnimationByWeaponType.DT_Player_AnimationByWeaponType'");
 	const UDataTable*	AnimDataTable = LoadObject<UDataTable>(nullptr, AnimDataLink);
 
-	SetAnimationData(AnimDataTable);
-	ApplyCharacterStatusEffect();
+	InitAnimationData(AnimDataTable);
 }
 
 void ARaidBossPlayerBase::JumpCharacter()
 {
-	if (IsCharacterStateTurnOn(ECharacterState::CanMove))
-	{
-		Super::Jump();
-	}
+	Super::Jump();
 }
 
 void ARaidBossPlayerBase::StopJumpCharacter()
@@ -66,9 +63,4 @@ void ARaidBossPlayerBase::StopJumpCharacter()
 ARaidBossPlayerControllerBase* ARaidBossPlayerBase::GetRaidBossPlayerController() const
 {
 	return Cast<ARaidBossPlayerControllerBase>(GetController());
-}
-
-UCameraComponent* ARaidBossPlayerBase::GetFollowCamera() const
-{
-	return FollowCamera;
 }

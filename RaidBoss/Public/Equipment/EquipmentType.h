@@ -23,6 +23,9 @@ enum class EWeaponType : uint8
 	Bow UMETA(DisplayName = "Bow"),
 	NoWeapon UMETA(DisplayName = "NoWeapon"),
 
+	Monster UMETA(DisplayName = "Monster"),
+	Player UMETA(DisplayName = "Player"),
+	
 	LastIndex UMETA(DisplayName = "LastIndex"),
 };
 

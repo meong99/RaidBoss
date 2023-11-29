@@ -21,8 +21,6 @@ ARaidBossEnemyBase::ARaidBossEnemyBase()
 void ARaidBossEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
-
-	ApplyCharacterStatusEffect();
 }
 
 ARaidBossEnemyControllerBase* ARaidBossEnemyBase::GetRiadBossEnemyController() const

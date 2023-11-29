@@ -20,25 +20,41 @@ public:
 
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	
 protected:
+	void	RotateToForward();
+	
+	void	RotateByMovementInput(FRotator NewRotator);
 
-	FRotator	GetNewRotation() const;
-	FRotator	GetAlignedRotation();
-	void		GetMoveDirection(OUT float& OutMoveForward, OUT float& OutMoveRight) const;
+	void	RotateToForwardWithThreshold();
+
+	FRotator	GetRotationByMovementInput() const;
+	
+	FRotator	GetAlignedRotationByForwardVector();
+	
+	void		GetMovementInput(OUT float& OutMoveForward, OUT float& OutMoveRight) const;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	float InterpSpeed = 5;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	float AlignSpeed = 250;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	float AlignThreshold = 0.7f;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	
+	/*
+	 *	Changed on Initialize * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+
+	//
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid boss")
+	float InterpSpeedAtAttack = 15;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid boss")
+	float InterpSpeed = 8;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid boss")
+	float AlignSpeed = 100;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid boss")
+	float AlignThreshold = 0.5f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid boss")
 	float PlayLate = 1.0f;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TObjectPtr<UAnimMontage>	TurnRight;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TObjectPtr<UAnimMontage>	TurnLeft;
+
+	/*
+	 *	Changed on every cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
 
 	bool	bIsDuringAlign = false;
 };

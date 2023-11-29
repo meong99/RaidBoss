@@ -1,10 +1,12 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Abilities/Character/Ability_MeleeAttack.h"
+#include "Abilities/Skill/Ability_MeleeAttack.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Abilities/RaidBossCharacterStatusAttributeSet.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Character/RaidBossCharacterBase.h"
+#include "Character/Monster/MonsterBase.h"
 #include "Character/Player/RaidBossPlayerBase.h"
 #include "Equipment/Weapon/Weapon.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -37,6 +39,11 @@ void UAbility_MeleeAttack::OnGiveAbility(const FGameplayAbilityActorInfo* ActorI
 	Super::OnGiveAbility(ActorInfo, Spec);
 	
 	CurrentWeapon = Cast<AWeapon>(Spec.SourceObject);
+
+	if (OwnerCharacter)
+	{
+		SkillRange = OwnerCharacter->GetCharacterStatusAttributeSet()->GetAttackRange();
+	}
 }
 
 void UAbility_MeleeAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -44,8 +51,6 @@ void UAbility_MeleeAttack::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
-	CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, false);
 
 	if (CurrentCombo == MaximumCombo)
 	{
@@ -56,9 +61,13 @@ void UAbility_MeleeAttack::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	
 	if (CurrentWeapon->GetWeaponData().WeaponAnimations.UseAnims.IsValidIndex(CurrentCombo))
 	{
+		float AttackSpeed = OwnerCharacter->GetCharacterStatusAttributeSet()->GetAttackSpeed();
 		PlayMontageAndWait = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-			this, FName(GetName()), CurrentWeapon->GetWeaponData().WeaponAnimations.UseAnims[CurrentCombo], true);
+			this, FName(GetName()), CurrentWeapon->GetWeaponData().WeaponAnimations.UseAnims[CurrentCombo], 1 * AttackSpeed);
 	}
+	
+	CurrentCombo++;
+	bCanActivateNextAttack = false;
 	
 	UAbilityTask_WaitGameplayEvent* WaitCanActivateNextAttackEvent = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
 		this, RaidBossGameplayTags::Get().Animation_Notify_CanActivateNextAttack, OwnerCharacter, true);
@@ -68,9 +77,6 @@ void UAbility_MeleeAttack::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	
 	UAbilityTask_WaitGameplayEvent* WaitResetComboEvent = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
 		this, RaidBossGameplayTags::Get().Animation_Notify_ComboReset, OwnerCharacter, true);
-	
-	CurrentCombo++;
-	bCanActivateNextAttack = false;
 	
 	if (PlayMontageAndWait && WaitAttackPointEvent && WaitResetComboEvent && WaitCanActivateNextAttackEvent)
 	{
@@ -104,7 +110,10 @@ void UAbility_MeleeAttack::NotifyMontageCanceledCallBack()
 {
 	HitActors.Reset();
 	bCanActivateNextAttack = true;
-	CurrentCombo = ComboInitValue;
+	if (Cast<ARaidBossPlayerBase>(OwnerCharacter))
+	{
+		CurrentCombo = ComboInitValue;
+	}
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 
@@ -125,13 +134,17 @@ void UAbility_MeleeAttack::NotifyAttackPointComesCallBack(FGameplayEventData Pay
 
 void UAbility_MeleeAttack::NotifyComboResetCallBack(FGameplayEventData Payload)
 {
-	CurrentCombo = ComboInitValue;
+	if (Cast<ARaidBossPlayerBase>(OwnerCharacter))
+	{
+		CurrentCombo = ComboInitValue;
+	}
 	NotifyMontageCanceledCallBack();
 }
 
 void UAbility_MeleeAttack::NotifyCanActivateNextAttackCallBack(FGameplayEventData Payload)
 {
 	bCanActivateNextAttack = true;
+	OwnerCharacter->SetIsMovementBlocked(false);
 }
 
 void UAbility_MeleeAttack::SetTracePoints(FVector& OutStartPoint, FVector& OutEndPoint)
@@ -151,7 +164,7 @@ void UAbility_MeleeAttack::SetTracePoints(FVector& OutStartPoint, FVector& OutEn
 bool UAbility_MeleeAttack::StartTracing(const FVector& StartPoint, const FVector& EndPoint, TArray<FHitResult>& OutHitResults)
 {
 	float	TraceRadius = 100;
-	float	DrawDebugDuration = 0;
+	float	DrawDebugDuration = 2;
 	TArray<AActor*> IgnoreActors = { OwnerCharacter };
 	EDrawDebugTrace::Type drawDebugTrace = 0.f < DrawDebugDuration ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None;
 	TArray<FHitResult> TempHitResults;

@@ -1,4 +1,6 @@
 #include "Abilities/Skill/RaidBossSkillBase.h"
+
+#include "AbilitySystemComponent.h"
 #include "Character/RaidBossCharacterBase.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
@@ -13,9 +15,10 @@ bool URaidBossSkillBase::CanActivateAbility(const FGameplayAbilitySpecHandle Han
 	
 	bool bIsItLearned = bIsItForLeveling == true ||
 						SkillInfo.SkillLevel > 0;
+
+	bool bCanActivateAbility = Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
 	
-	return bIsItLearned &&
-		Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
+	return bIsItLearned && bCanActivateAbility;
 }
 
 void URaidBossSkillBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -40,6 +43,38 @@ void URaidBossSkillBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 	}
 	default:
 		break;
+	}
+}
+
+const FGameplayTagContainer* URaidBossSkillBase::GetCooldownTags() const
+{
+	FGameplayTagContainer* MutableTags = const_cast<FGameplayTagContainer*>(&TempCooldownTags);
+	MutableTags->Reset();
+	
+	const FGameplayTagContainer* ParentTags = Super::GetCooldownTags();
+	if (ParentTags)
+	{
+		MutableTags->AppendTags(*ParentTags);
+	}
+	MutableTags->AppendTags(CooldownTags);
+	
+	return MutableTags;
+}
+
+void URaidBossSkillBase::ApplyCooldown(const FGameplayAbilitySpecHandle Handle,
+                                       const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const
+{
+	UGameplayEffect* CooldownGE = GetCooldownGameplayEffect();
+	
+	if (CooldownGE)
+	{
+		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(CooldownGE->GetClass());
+
+		EffectSpecHandle.Data->DynamicGrantedTags.AppendTags(CooldownTags);
+		
+		EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().CoolDown, SkillCoolTime);
+		
+		ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, EffectSpecHandle);
 	}
 }
 
@@ -68,7 +103,7 @@ void URaidBossSkillBase::DecreaseSkillLevel()
 
 ESkillRequestType URaidBossSkillBase::GetRequestType(const FGameplayTagContainer* InstigatorTags) const
 {
-	if (InstigatorTags)
+	if (InstigatorTags && InstigatorTags->IsValid())
 	{
 		const RaidBossGameplayTags& AllTags = RaidBossGameplayTags::Get();
 		
@@ -168,16 +203,4 @@ bool URaidBossSkillBase::IsTargetInAngleXY(FVector StandardVector, FVector Targe
 		return true;
 
 	return false;
-}
-
-void URaidBossSkillBase::BlockOwnerCharacterMovement() const
-{
-	if (IsValid(OwnerCharacter) == true)
-		OwnerCharacter->TurnOffCharacterStateBitMap(ECharacterState::CanMove);
-}
-
-void URaidBossSkillBase::ReleaseOwnerCharacterMovement() const
-{
-	if (IsValid(OwnerCharacter) == true)
-		OwnerCharacter->TurnOnCharacterStateBitMap(ECharacterState::CanMove);
 }

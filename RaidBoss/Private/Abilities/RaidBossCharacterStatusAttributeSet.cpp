@@ -2,6 +2,8 @@
 #include "Abilities/RaidBossAbilitySystemComponent.h"
 #include "Character/RaidBossCharacterBase.h"
 #include "GameplayEffectExtension.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/PawnMovementComponent.h"
 #include "Management/RaidBossGameplayTags.h"
 
 URaidBossCharacterStatusAttributeSet::URaidBossCharacterStatusAttributeSet()
@@ -33,6 +35,19 @@ void URaidBossCharacterStatusAttributeSet::PreAttributeChange(const FGameplayAtt
 	}
 }
 
+void URaidBossCharacterStatusAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue,
+	float NewValue)
+{
+	Super::PostAttributeChange(Attribute, OldValue, NewValue);
+
+	ARaidBossCharacterBase*	OwnerCharacter = GetOwnerCharacter();
+	
+	if (Attribute == GetMoveSpeedAttribute() && OwnerCharacter)
+	{
+		GetOwnerCharacter()->GetCharacterMovement()->MaxWalkSpeed = NewValue;
+	}
+}
+
 bool URaidBossCharacterStatusAttributeSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data)
 {
 	Super::PreGameplayEffectExecute(Data);
@@ -43,7 +58,7 @@ bool URaidBossCharacterStatusAttributeSet::PreGameplayEffectExecute(FGameplayEff
 void URaidBossCharacterStatusAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
-
+	
 	CheckHealthAndToDeath();
 }
 

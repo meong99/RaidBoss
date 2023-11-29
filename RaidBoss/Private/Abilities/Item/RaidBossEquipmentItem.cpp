@@ -53,7 +53,10 @@ void URaidBossEquipmentItem::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 void URaidBossEquipmentItem::EquipItem()
 {
 	FGameplayAbilitySpec* CurrentAbilitySpec = GetCurrentAbilitySpec();
-	FGameplayEffectSpecHandle EffectSpecHandle = CreateEffectSpecHandle();
+
+	FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(ItemEffect);
+	
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Item_SetByCaller_AdditionalAttackPower, AdditiveAttackPower);
 	
 	if (CurrentAbilitySpec && OwnerCharacter)
 	{

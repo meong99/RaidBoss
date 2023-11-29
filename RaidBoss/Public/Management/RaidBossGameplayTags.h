@@ -10,6 +10,7 @@ struct RaidBossGameplayTags
 private:
 	static RaidBossGameplayTags GameplayTags;
 public:
+	FGameplayTag Attack;
 	FGameplayTag Attack_BasicAttack;
 	FGameplayTag Attack_RangeAttack;
 	
@@ -33,7 +34,7 @@ public:
 	FGameplayTag Event_Weapon_Attack_CollisionEnable;
 	FGameplayTag Event_Weapon_Attack_CollisionDisable;
 	
-	FGameplayTag CoolDown_ByAttackSpeed;
+	FGameplayTag CoolDown;
 
 	FGameplayTag Animation_Notify_AttackPoint;
 	FGameplayTag Animation_Notify_ComboReset;
@@ -48,6 +49,14 @@ public:
 	FGameplayTag Event_Skill_DecreaseLevel;
 
 	FGameplayTag StatusEffect_KnockBack;
+
+	FGameplayTag Item_SetByCaller_Health;
+	FGameplayTag Item_SetByCaller_MaxHealth;
+	FGameplayTag Item_SetByCaller_Mana;
+	FGameplayTag Item_SetByCaller_MaxMana;
+	FGameplayTag Item_SetByCaller_AttackPower;
+	FGameplayTag Item_SetByCaller_DefensePower;
+	FGameplayTag Item_SetByCaller_AdditionalAttackPower;
 public:
 	static void InitializeTags();
 	static const RaidBossGameplayTags& Get() { return GameplayTags; }

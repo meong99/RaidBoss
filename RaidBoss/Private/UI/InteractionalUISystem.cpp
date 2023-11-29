@@ -24,6 +24,11 @@ int32 UInteractionalUISystem::HandleUITriggerEvent(FGameplayTag TriggerTag) cons
 	
 	for (const auto InteractionalUI : UIArray)
 	{
+		if (IsValid(InteractionalUI) == false)
+		{
+			continue;
+		}
+		
 		if (InteractionalUI->IsInViewport())
 		{
 			InteractionalUI->RemoveFromParent();
@@ -85,6 +90,11 @@ void UInteractionalUISystem::InteractionalUIParsing(const TArray<TSubclassOf<UIn
 	
 	for (const auto& InteractionalUIClass : InteractionalUIArray)
 	{
+		if (IsValid(InteractionalUIClass) == false)
+		{
+			continue;
+		}
+		
 		UInteractionalUI*	InteractionalUI = Cast<UInteractionalUI>(CreateWidget(ControllerBase, InteractionalUIClass));
 
 		if (InteractionalUI && InteractionalUI->GetUITriggerTag().IsValid())

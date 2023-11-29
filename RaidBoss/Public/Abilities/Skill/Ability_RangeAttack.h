@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Abilities/RaidBossAbilityBase.h"
+#include "RaidBossSkillBase.h"
 #include "Ability_RangeAttack.generated.h"
 
 class AWeapon;
@@ -11,7 +11,7 @@ class AWeapon;
  * 
  */
 UCLASS()
-class RAIDBOSS_API UAbility_RangeAttack : public URaidBossAbilityBase
+class RAIDBOSS_API UAbility_RangeAttack : public URaidBossSkillBase
 {
 	GENERATED_BODY()
 public:

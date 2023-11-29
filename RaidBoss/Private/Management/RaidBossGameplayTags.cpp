@@ -11,6 +11,7 @@ void RaidBossGameplayTags::InitializeTags()
 
 void RaidBossGameplayTags::InitTags()
 {
+	Attack = TAG("Attack");
 	Attack_BasicAttack = TAG("Attack.BasicAttack");
 	Attack_RangeAttack = TAG("Attack.RangeAttack");
 	
@@ -35,7 +36,7 @@ void RaidBossGameplayTags::InitTags()
 	Character_Death = TAG("Character.Death");
 	Character_Movement = TAG("Character.Movement");
 	
-	CoolDown_ByAttackSpeed = TAG("CoolDown.ByAttackSpeed");
+	CoolDown = TAG("CoolDown");
 
 	Animation_Notify_AttackPoint = TAG("Animation.Notify.AttackPoint");
 	Animation_Notify_ComboReset = TAG("Animation.Notify.ComboReset");
@@ -50,4 +51,12 @@ void RaidBossGameplayTags::InitTags()
 	Event_Skill_DecreaseLevel = TAG("Event.Skill.DecreaseLevel");
 
 	StatusEffect_KnockBack = TAG("StatusEffect.Knockback");
+	
+	Item_SetByCaller_Health = TAG("Item.SetByCaller.Health");;
+	Item_SetByCaller_MaxHealth = TAG("Item.SetByCaller.MaxHealth");;
+	Item_SetByCaller_Mana = TAG("Item.SetByCaller.Mana");;
+	Item_SetByCaller_MaxMana = TAG("Item.SetByCaller.MaxMana");;
+	Item_SetByCaller_AttackPower = TAG("Item.SetByCaller.AttackPower");;
+	Item_SetByCaller_DefensePower = TAG("Item.SetByCaller.DefensePower");;
+	Item_SetByCaller_AdditionalAttackPower = TAG("Item.SetByCaller.AdditionalAttackPower");;
 }

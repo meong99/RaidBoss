@@ -38,9 +38,19 @@ private:
 	void	EquipItem();
 	void	UnEquipItem();
 
-private:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Equipment Item", meta=(AllowPrivateAccess))
+protected:
+	/*
+	 *	Changed on Initialize * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Item")
 	EEquipType EquipType = EEquipType::Size;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Item")
+	float	AdditiveAttackPower = 0;
+
+	/*
+	 *	Changed on every cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
 	
 	bool bIsThisArmed = false;
 };

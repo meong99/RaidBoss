@@ -54,5 +54,5 @@ struct FInventoryData
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Character | Item")
 	URaidBossItemBase*	Item;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Character | Item")
-	int32							Amount;
+	int32				Amount;
 };

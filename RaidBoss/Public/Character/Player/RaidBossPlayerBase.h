@@ -23,11 +23,4 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Player Base")
 	ARaidBossPlayerControllerBase*		GetRaidBossPlayerController() const;
-	UCameraComponent*					GetFollowCamera() const;
-
-private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Raid Boss | Player Base", meta=(AllowPrivateAccess))
-	TObjectPtr<USpringArmComponent>		CameraBoom;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Raid Boss | Player Base", meta=(AllowPrivateAccess))
-	TObjectPtr<UCameraComponent>		FollowCamera;
 };

@@ -1,13 +1,14 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Abilities/Character/Ability_ControlMovementDirection.h"
-#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "AbilitySystemComponent.h"
 #include "Character/RaidBossCharacterBase.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Management/RaidBossGameplayTags.h"
 
 bool UAbility_ControlMovementDirection::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
-                                                  const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
-                                                  const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
+                                                           const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
+                                                           const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
 {
 	bool bIsValidOwner = OwnerCharacter ? true : false;
 	
@@ -20,35 +21,60 @@ void UAbility_ControlMovementDirection::ActivateAbility(const FGameplayAbilitySp
 	const FGameplayEventData* TriggerEventData)
 {
 	AlignThreshold = FMath::Clamp(AlignThreshold, 0, 1);
-
-	FRotator NewRotator = GetNewRotation();
-
-	if (NewRotator.IsZero() == false)
-	{
-		bIsDuringAlign = false;
-		NewRotator = FMath::RInterpTo(OwnerCharacter->GetActorRotation(), NewRotator, GetWorld()->DeltaTimeSeconds, InterpSpeed);
-		OwnerCharacter->SetActorRotation(NewRotator);
-	}
 	
-	if (NewRotator.IsZero())
+	UAbilitySystemComponent* AbilitySystemComponent = GetAbilitySystemComponentFromActorInfo();
+	FRotator NewRotator = GetRotationByMovementInput();
+
+	if (AbilitySystemComponent && AbilitySystemComponent->HasMatchingGameplayTag(RaidBossGameplayTags::Get().Attack))
 	{
-		NewRotator = GetAlignedRotation();
-		
-		if (NewRotator.IsZero() == false)
-		{
-			NewRotator = FMath::RInterpConstantTo(OwnerCharacter->GetActorRotation(), NewRotator, GetWorld()->DeltaTimeSeconds, AlignSpeed);
-			OwnerCharacter->SetActorRotation(NewRotator);
-		}
+		RotateToForward();
+	}
+	else if (NewRotator.IsZero() == false)
+	{
+		RotateByMovementInput(NewRotator);
+	}
+	else if (NewRotator.IsZero())
+	{
+		RotateToForwardWithThreshold();
 	}
 
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 }
 
-FRotator UAbility_ControlMovementDirection::GetNewRotation() const
+void UAbility_ControlMovementDirection::RotateToForward()
+{
+	FRotator NewRotator = FRotator{0, OwnerCharacter->GetControlRotation().Yaw, 0};
+		
+	if (NewRotator.IsZero() == false)
+	{
+		NewRotator = FMath::RInterpTo(OwnerCharacter->GetActorRotation(), NewRotator, GetWorld()->DeltaTimeSeconds, InterpSpeedAtAttack);
+		OwnerCharacter->SetActorRotation(NewRotator);
+	}
+}
+
+void UAbility_ControlMovementDirection::RotateByMovementInput(FRotator NewRotator)
+{
+	bIsDuringAlign = false;
+	NewRotator = FMath::RInterpTo(OwnerCharacter->GetActorRotation(), NewRotator, GetWorld()->DeltaTimeSeconds, InterpSpeed);
+	OwnerCharacter->SetActorRotation(NewRotator);
+}
+
+void UAbility_ControlMovementDirection::RotateToForwardWithThreshold()
+{
+	FRotator NewRotator = GetAlignedRotationByForwardVector();
+		
+	if (NewRotator.IsZero() == false)
+	{
+		NewRotator = FMath::RInterpConstantTo(OwnerCharacter->GetActorRotation(), NewRotator, GetWorld()->DeltaTimeSeconds, AlignSpeed);
+		OwnerCharacter->SetActorRotation(NewRotator);
+	}
+}
+
+FRotator UAbility_ControlMovementDirection::GetRotationByMovementInput() const
 {
 	float OutMoveForward, OutMoveRight;
 
-	GetMoveDirection(OutMoveForward, OutMoveRight);
+	GetMovementInput(OutMoveForward, OutMoveRight);
 
 	FRotator Result = {0, 0, 0};
 	
@@ -84,7 +110,7 @@ FRotator UAbility_ControlMovementDirection::GetNewRotation() const
 	return Result;
 }
 
-FRotator UAbility_ControlMovementDirection::GetAlignedRotation()
+FRotator UAbility_ControlMovementDirection::GetAlignedRotationByForwardVector()
 {
 	FVector		ControlForward = UKismetMathLibrary::GetForwardVector(OwnerCharacter->GetControlRotation());
 	float		ForwardByForwardCosine = UKismetMathLibrary::Vector_CosineAngle2D(ControlForward, OwnerCharacter->GetActorForwardVector());
@@ -117,7 +143,7 @@ FRotator UAbility_ControlMovementDirection::GetAlignedRotation()
 	return Result;
 }
 
-void UAbility_ControlMovementDirection::GetMoveDirection(float& OutMoveForward, float& OutMoveRight) const
+void UAbility_ControlMovementDirection::GetMovementInput(float& OutMoveForward, float& OutMoveRight) const
 {
 	OutMoveForward = OwnerCharacter->GetInputMoveForward();
 	OutMoveRight = OwnerCharacter->GetInputMoveRight();

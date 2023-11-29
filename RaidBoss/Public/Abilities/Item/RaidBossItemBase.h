@@ -41,8 +41,17 @@ public:
 	FItemAbilityInformation	GetItemInfo() const;
 	
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Item Base")
+		
+	/*
+	 *	Changed on Initialize * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Item")
 	FItemAbilityInformation			ITemInfo;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Consumable Item")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Item")
 	TSubclassOf<UGameplayEffect>	ItemEffect;
+	
+	/*
+	 *	Changed on every cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
 };

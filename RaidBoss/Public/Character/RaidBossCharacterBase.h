@@ -5,17 +5,19 @@
 #include "AbilitySystemInterface.h"
 #include "CharacterTpye.h"
 #include "GameplayAbilitySpecHandle.h"
+#include "Camera/CameraComponent.h"
 #include "Equipment/EquipManagement.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "RaidBossCharacterBase.generated.h"
 
 class URaidBossSkillBase;
-class	URaidBossAbilityBase;
-class	URaidBossAbilitySystemComponent;
-class	URaidBossCharacterStatusAttributeSet;
-class	UGameplayEffect;
+class URaidBossAbilityBase;
+class URaidBossAbilitySystemComponent;
+class URaidBossCharacterStatusAttributeSet;
+class UGameplayEffect;
 
 UENUM(BlueprintType)
-enum class ECharacterState : uint8
+enum class ECharacterState : uint8 // 변경 필요 - 제거 예정
 {
 	Peaceful = 0 UMETA(DisplayName = "Peaceful"),
 	TwoHandWeapon = 0 UMETA(DisplayName = "TwoHandWeapon"),
@@ -43,47 +45,17 @@ public:
 	virtual void	BeginPlay() override;
 	virtual void	PossessedBy(AController* NewController) override;
 	virtual void	SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-	UFUNCTION(BlueprintImplementableEvent, Category = "Raid Boss | Character Base")
-	void			OnDeath();
 
 	void			MoveCharacter(const FVector2D& Value);
 	void			LookCharacter(const FVector2D& Value);
-	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
-	virtual UAbilitySystemComponent*			GetAbilitySystemComponent() const override;
-	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
-	URaidBossAbilitySystemComponent*			GetRaidBossAbilitySystemComponent() const;
-	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
-	const URaidBossCharacterStatusAttributeSet*	GetCharacterStatusAttributeSet() const;
-	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
-	double	GetExperience() const;
-	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
-	double	GetMaxExperience() const;
-	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
-	bool	IsCharacterStateTurnOn(ECharacterState CharacterState) const;
-	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
-	float	GetHealth() const;
-	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
-	float	GetAttackPower() const;
-	
-	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
-	void			TurnOnCharacterStateBitMap(ECharacterState CharacterState);
-	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
-	void			TurnOffCharacterStateBitMap(ECharacterState CharacterState);
-	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
-	virtual void	GiveExperience(double Exp);
-	virtual void	CharacterLevelUp(float IncrementNum);
 
-
-	const FItemAnimations* GetAnimationsByWeaponType(EWeaponType WeaponType) const { return AnimationsByWeaponType.Find(WeaponType); }
-	/*
-	 *	New
-	 */
 	UFUNCTION(BlueprintCallable)
 	void	EquipWeapon(FWeaponKey WeaponKey);
 	UFUNCTION(BlueprintCallable)
 	void	UnEquipWeapon();
 	UFUNCTION(BlueprintCallable)
 	void	Attack() const;
+	
 	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
 	void	SetCurrentCharacterState(EPlayerState State);
 	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Inventory")
@@ -91,49 +63,61 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Inventory")
 	int32	IncreaseOrAddInventoryData_ForBlueprint(TSubclassOf<URaidBossItemBase> NewItem = nullptr, int32 Amount = 1);
 	int32	IncreaseOrAddInventoryData(URaidBossItemBase* NewItem = nullptr, int32 Amount = 1);
-	void	RemoveAbilityData(FGameplayTag InAbilityTriggerTag);
 	
-	void	SetCurrentPlayerState(const EPlayerState InPlayerState) { CurrentPlayerState = InPlayerState; }
+	/*
+	 *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
 	
+	virtual UAbilitySystemComponent*			GetAbilitySystemComponent() const override;
+	URaidBossAbilitySystemComponent*			GetRaidBossAbilitySystemComponent() const;
+	const URaidBossCharacterStatusAttributeSet*	GetCharacterStatusAttributeSet() const;
+	
+	UCameraComponent*								GetFollowCamera() const { return FollowCamera; };
+	const TMap<FGameplayTag, FInventoryData>&		GetInventoryData() const { return InventoryData; }
+	const TArray<TSubclassOf<URaidBossSkillBase>>*	GetPlayerSkills() const { return &PlayerSkills; }
 	FCharacterAnimations	GetCharacterAnimations() const { return CharacterAnimations; }
 	EPlayerState			GetCurrentPlayerState() const { return CurrentPlayerState; }
-	float					GetMovementMagnitude() const { return MovementMagnitude; }
-	FVector					GetMovementDirection() const { return MovementDirection; }
-	const TMap<FGameplayTag, FInventoryData>&	GetInventoryData() const { return InventoryData; }
-	int32					GetItemAmount(FGameplayTag InAbilityTriggerTag) const;
-	const TArray<TSubclassOf<URaidBossSkillBase>>*	GetPlayerSkills() const { return &PlayerSkills; }
-	float	GetInputMoveForward() const { return InputMoveForward; }
-	float	GetInputMoveRight() const { return InputMoveRight; }
-	bool	IsDuringAlign() const { return bIsDuringAlign; }
-	bool	IsTurnLeft() const { return bIsTurnLeft; }
+	int32					GetItemAmount(FGameplayTag InAbilityTriggerTag) const { return InventoryData.FindRef(InAbilityTriggerTag).Amount; };
+	float					GetInputMoveForward() const { return InputMoveForward; }
+	float					GetInputMoveRight() const { return InputMoveRight; }
+	bool					IsDuringAlign() const { return bIsDuringAlign; }
+	bool					IsTurnLeft() const { return bIsTurnLeft; }
+	bool					IsMovementBlocked() const { return bIsMovementBlocked; }
+	bool					CanActivateNormalAttack() const { return bCanActivateNormalAttack; }
 
-	UFUNCTION(BlueprintCallable)
-	bool	IsMovementBlocked() const { return bIsMovementBlocked; }
-	bool	CanActivateNormalAttack() const { return bCanActivateNormalAttack; }
+	//  변경 필요 - 제거 예정
+	const FItemAnimations* GetAnimationsByWeaponType(EWeaponType WeaponType) const { return AnimationsByWeaponType.Find(WeaponType); }
 
+	void	SetCurrentPlayerState(const EPlayerState InPlayerState) { CurrentPlayerState = InPlayerState; }
 	void	SetIsTurnLeft(bool bInIsTurnLeft) { bIsTurnLeft = bInIsTurnLeft; }
 	void	SetIsDuringAlign(bool bInIsDuringAlign) { bIsDuringAlign = bInIsDuringAlign; }
-	UFUNCTION(BlueprintCallable)
 	void	SetIsMovementBlocked(bool bInIsMovementBlocked) { bIsMovementBlocked = bInIsMovementBlocked; }
 	void	SetCanActivateNormalAttack(bool	bInCanActivateNormalAttack) { bCanActivateNormalAttack = bInCanActivateNormalAttack; }
 	
 protected:
-	
+	void	ApplyCharacterDefaultSpecEffectToSelf();
+
 	bool	IsItEquipment(const URaidBossItemBase* NewItem) const;
 	
 	void	GiveDefaultAbilities() const;
 
 	void	GiveAndActivateAbilities() const;
 	
-	void	ApplyCharacterStatusEffect() const;
-	
-	void	SetAnimationData(const UDataTable* AnimDataTable);
+	void	InitAnimationData(const UDataTable* AnimDataTable);
 	
 	void	AddNewItemData(URaidBossItemBase* NewItem, FInventoryData& Data);
 
 	void	GiveSkillAbilities();
+
+	// 부여된 아이템 어빌리티 제거
+	void	RemoveItemAbility(FGameplayTag InAbilityTriggerTag);
+	
 public:
 
+	/*
+	 *	Delegate * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	
 	UPROPERTY(BlueprintAssignable ,BlueprintReadWrite, Category="Raid Boss | Delegate")
 	FNotifyNewItemAddedDelegate			NotifyNewItemAdded;
 	UPROPERTY(BlueprintAssignable ,BlueprintReadWrite, Category="Raid Boss | Delegate")
@@ -146,64 +130,83 @@ public:
 	FNotifyNewWeaponEquippedDelegate	NotifyNewWeaponEquipped;
 	
 protected:
+
+	/*
+	 *	Changed on Initialize * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	
+	//
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Raid Boss | Player Base", meta=(AllowPrivateAccess))
+	TObjectPtr<USpringArmComponent>		CameraBoom;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Raid Boss | Player Base", meta=(AllowPrivateAccess))
+	TObjectPtr<UCameraComponent>		FollowCamera;
+	
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Character Base")
 	TObjectPtr<URaidBossAbilitySystemComponent>	AbilitySystemComponent;
-	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Base")
+	
+	UPROPERTY()
+	UEquipManagement*	EquipManager;  
+
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Base", SaveGame)
 	const URaidBossCharacterStatusAttributeSet*	CharacterStatusAttributeSet;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Raid Boss | Character Base")
 	TArray<TSubclassOf<URaidBossAbilityBase>>	DefaultAbilities;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Raid Boss | Character Base")
 	TSubclassOf<UGameplayEffect>				CharacterStatusEffect;
 	
-	int32	CharacterStateBitMask;
-	double	Experience = 0;// 경험치 어트리뷰트로 ㄱㄱ
-	double	MaxExperience = 100;
-	float	CharacterLevel = 1;
-
-
-
-	/*
-	 *	New
-	 */
-	UPROPERTY()
-	UEquipManagement*	EquipManager;  
-	UPROPERTY(BlueprintReadWrite, Category = "Raid Boss | Weapon")
-	EWeaponType	CurrentEquippedWeaponType;
-	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Weapon")
-	TObjectPtr<AWeapon>	EquippedWeapon;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Weapon | Animations")
-	FCharacterAnimations	CharacterAnimations;
-	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Weapon | Animations")
-	TMap<EWeaponType, FItemAnimations>	AnimationsByWeaponType;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Raid Boss | Character Base", meta=(AllowPrivateAccess))
-	EPlayerState	CurrentPlayerState = EPlayerState::None;
+	FCharacterAnimations	CharacterAnimations; // 변경 필요 - 기본적인 애니메이션은 애니메이션쪽에서 관리하자. 무기가 있으니 무기도 관리하고
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Raid Boss | Character Movement", meta=(AllowPrivateAccess))
-	float	MovementMagnitude;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Raid Boss | Character Movement", meta=(AllowPrivateAccess))
-	FVector	MovementDirection;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Raid Boss | Item")
-	TMap<FGameplayTag, FInventoryData>				InventoryData;
-	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Item")
-	TMap<FGameplayTag, FGameplayAbilitySpecHandle>	OwningItemSpecHandle;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Skill");
-	TArray<TSubclassOf<URaidBossSkillBase>>			PlayerSkills;
-
+	// 부여하자마자 실행할 어빌리티들
 	UPROPERTY(EditDefaultsOnly, Category = "Raid Boss | Character Base")
 	TArray<TSubclassOf<URaidBossAbilityBase>>	DefaultActivateAbilities;
 
-	
-	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Weapon")
-	float InputMoveForward = 0;
-	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Weapon")
-	float InputMoveRight = 0;
-	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Weapon")
-	bool bIsDuringAlign = false;
-	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Weapon")
-	bool bIsTurnLeft = false;
+	//플레이어가 배울 수 있는 스킬들
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Skill", SaveGame);
+	TArray<TSubclassOf<URaidBossSkillBase>>			PlayerSkills;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Character Spec")
+	FCharacterSpec	CharacterDefaultSpec;
+	/*
+	 *	Changed on every cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	
+	//
+	UPROPERTY(BlueprintReadWrite, Category = "Raid Boss | Weapon", SaveGame)
+	EWeaponType	CurrentEquippedWeaponType; // 변경 필요 - 무기 자체가 아이덴티티가 됨. 타입 말고 이름같은걸로?
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Weapon", SaveGame)// 변경 예상 - 게임 저장할 때 타입만 할 수도?
+	TObjectPtr<AWeapon>	EquippedWeapon;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Weapon | Animations")
+	TMap<EWeaponType, FItemAnimations>	AnimationsByWeaponType; // 변경 필요 - 무기 자체에 애니메이션 추가해서 사용
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Raid Boss | Character Base", meta=(AllowPrivateAccess))
+	EPlayerState	CurrentPlayerState = EPlayerState::None; // 변경 예상 - 뭔가 깔끔하게 상태 변경이 필요할수도?
+
+	// 플레이어가 소지하고있는 아이템들
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Raid Boss | Item", SaveGame)
+	TMap<FGameplayTag, FInventoryData>				InventoryData;
+
+	// 아이템들에대한 어빌리티 스펙들
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Item")
+	TMap<FGameplayTag, FGameplayAbilitySpecHandle>	OwningItemSpecHandle;
+
+	// 플레이어 움직임 및 회전
+	UPROPERTY(BlueprintReadWrite, Category = "Raid Boss | Weapon")
+	float	InputMoveForward = 0;
+	UPROPERTY(BlueprintReadWrite, Category = "Raid Boss | Weapon")
+	float	InputMoveRight = 0;
+	UPROPERTY(BlueprintReadWrite, Category = "Raid Boss | Weapon")
+	bool	bIsDuringAlign = false;
+	UPROPERTY(BlueprintReadWrite, Category = "Raid Boss | Weapon")
+	bool	bIsTurnLeft = false;
+	UPROPERTY(BlueprintReadWrite, Category = "Raid Boss | Weapon")
 	bool	bIsMovementBlocked = false;
+
+	// 플레이어 기본 공격
 	UPROPERTY(BlueprintReadWrite, Category = "Raid Boss | Weapon")
 	bool	bCanActivateNormalAttack = true;
 };

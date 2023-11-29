@@ -85,6 +85,11 @@ URaidBossAbilitySystemComponent* AWeapon::GetRaidBossAbilitySystemComponent() co
 
 const TCHAR* AWeapon::GetDataTableLink(FWeaponKey InWeaponKey) const
 {
+	if (InWeaponKey.WeaponType == EWeaponType::Monster)
+	{
+		return TEXT("/Script/Engine.DataTable'/Game/Data/DataTables/DT_MonsterWeaponData.DT_MonsterWeaponData'");
+	}
+	
 	return TEXT("/Script/Engine.DataTable'/Game/Data/DataTables/DT_WeaponData.DT_WeaponData'");
 }
 
@@ -102,6 +107,12 @@ void AWeapon::GiveAbilityToAsc()
 
 			if (URaidBossSkillBase* NewSkill = Cast<URaidBossSkillBase>(AbilityCDO))
 			{
+				if (NewSkill->GetAbilityTriggerTag() == RaidBossGameplayTags::Get().Attack_BasicAttack ||
+					NewSkill->GetAbilityTriggerTag() == RaidBossGameplayTags::Get().Attack_RangeAttack)
+				{
+					continue;
+				}
+				
 				CurrentSkills.Add(NewSkill);
 			}
 		}
@@ -155,17 +166,17 @@ void AWeapon::ApplyWeaponStatToOwner()
 
 void AWeapon::GetAnimDataFromOwner()
 {
-	ARaidBossCharacterBase*	OwnerCharacter = Cast<ARaidBossCharacterBase>(Owner);
-
-	if (OwnerCharacter)
-	{
-		const FItemAnimations* FoundAnimations =  OwnerCharacter->GetAnimationsByWeaponType(WeaponData.WeaponKey.WeaponType);
-		
-		if (FoundAnimations)
-		{
-			WeaponData.WeaponAnimations = *FoundAnimations;
-		}
-	}
+	// ARaidBossCharacterBase*	OwnerCharacter = Cast<ARaidBossCharacterBase>(Owner);
+	//
+	// if (OwnerCharacter)
+	// {
+	// 	const FItemAnimations* FoundAnimations =  OwnerCharacter->GetAnimationsByWeaponType(WeaponData.WeaponKey.WeaponType);
+	// 	
+	// 	if (FoundAnimations)
+	// 	{
+	// 		WeaponData.WeaponAnimations = *FoundAnimations;
+	// 	}
+	// }
 }
 
 void AWeapon::NotifyNewWeaponEquipped()

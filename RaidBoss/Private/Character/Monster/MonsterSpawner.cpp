@@ -31,7 +31,6 @@ bool AMonsterSpawner::RequestSpawningMonster(FMonsterInfo MonsterInfoToSpawn)
 		SpawnedMonster->InitMonster(MonsterInfoToSpawn);
 		SpawnedMonsters.Add(SpawnedMonster);
 		SpawnedMonster->FinishSpawning(GetTransform());
-		SpawnedMonster->ApplyMonsterEffectSpec();
 		SpawnedMonster->SpawnDefaultController();
 
 		if (MonsterInfoToSpawn.MonsterWeaponKey.WeaponType != EWeaponType::None)

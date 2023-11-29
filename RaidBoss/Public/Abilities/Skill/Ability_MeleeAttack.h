@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Abilities/RaidBossAbilityBase.h"
+#include "RaidBossSkillBase.h"
 #include "Ability_MeleeAttack.generated.h"
 
 #define ComboInitValue 0
@@ -14,7 +14,7 @@ class AWeapon;
  * 
  */
 UCLASS()
-class RAIDBOSS_API UAbility_MeleeAttack : public URaidBossAbilityBase
+class RAIDBOSS_API UAbility_MeleeAttack : public URaidBossSkillBase
 {
 	GENERATED_BODY()
 

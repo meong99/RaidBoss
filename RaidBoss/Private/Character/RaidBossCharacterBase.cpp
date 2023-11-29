@@ -7,6 +7,7 @@
 #include "Equipment/Weapon/Weapon.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Management/RaidBossGameplayTags.h"
 
 ARaidBossCharacterBase::ARaidBossCharacterBase()
 {
@@ -18,10 +19,6 @@ ARaidBossCharacterBase::ARaidBossCharacterBase()
 	AbilitySystemComponent = CreateDefaultSubobject<URaidBossAbilitySystemComponent>(TEXT("Ability Component"));
 	CharacterStatusAttributeSet = CreateDefaultSubobject<URaidBossCharacterStatusAttributeSet>(TEXT("Character Status AttributeSet"));
 	EquipManager = CreateDefaultSubobject<UEquipManagement>(TEXT("Equip Manager"));
-	
-	CharacterStateBitMask |= static_cast<int32>(ECharacterState::Alive);
-	CharacterStateBitMask |= static_cast<int32>(ECharacterState::CanMove);
-	CharacterStateBitMask |= static_cast<int32>(ECharacterState::CanUsingAttack);
 }
 
 void ARaidBossCharacterBase::Tick(float DeltaSeconds)
@@ -37,20 +34,21 @@ void ARaidBossCharacterBase::Tick(float DeltaSeconds)
 void ARaidBossCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	GiveDefaultAbilities();
-	GiveAndActivateAbilities();
-	GiveSkillAbilities();
 }
 
 void ARaidBossCharacterBase::PossessedBy(AController* NewController)
 {
-	Super::PossessedBy(NewController);
+	ApplyCharacterDefaultSpecEffectToSelf();
+	GiveDefaultAbilities();
+	GiveAndActivateAbilities();
+	GiveSkillAbilities();
 
 	if (EquippedWeapon)
 	{
 		EquippedWeapon->NotifyNewWeaponEquipped();
 	}
+	
+	Super::PossessedBy(NewController);
 }
 
 void ARaidBossCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -67,20 +65,9 @@ void ARaidBossCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerIn
 
 void ARaidBossCharacterBase::MoveCharacter(const FVector2D& Value)
 {
-	FVector Forward = UKismetMathLibrary::GetForwardVector(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
-	FVector Right = UKismetMathLibrary::GetRightVector(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
-
 	InputMoveForward = Value.Y;
-	MovementDirection = Forward;
-	MovementMagnitude = Value.Y;
-	if (AbilitySystemComponent && bIsMovementBlocked == false)
-	{
-		AbilitySystemComponent->AbilityLocalInputPressed(static_cast<int32>(ECharacterAbilityInputs::Move));
-	}
-
 	InputMoveRight = Value.X;
-	MovementDirection = Right;
-	MovementMagnitude = Value.X;
+	
 	if (AbilitySystemComponent && bIsMovementBlocked == false)
 	{
 		AbilitySystemComponent->AbilityLocalInputPressed(static_cast<int32>(ECharacterAbilityInputs::Move));
@@ -93,9 +80,25 @@ void ARaidBossCharacterBase::LookCharacter(const FVector2D& Value)
 	AddControllerPitchInput(Value.Y * 0.4);
 }
 
-int32 ARaidBossCharacterBase::GetItemAmount(FGameplayTag InAbilityTriggerTag) const
+void ARaidBossCharacterBase::ApplyCharacterDefaultSpecEffectToSelf()
 {
-	return InventoryData.FindRef(InAbilityTriggerTag).Amount;
+	if (AbilitySystemComponent)
+	{
+		FGameplayEffectContextHandle ContextHandle = AbilitySystemComponent->MakeEffectContext();
+		ContextHandle.AddSourceObject(this);
+		
+		FGameplayEffectSpecHandle OutGoingSpec = AbilitySystemComponent->MakeOutgoingSpec(CharacterStatusEffect, 1, ContextHandle);
+		
+		OutGoingSpec.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Init_Character_MaxHealth, CharacterDefaultSpec.MaxHealth);
+		OutGoingSpec.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Init_Character_MaxMana, CharacterDefaultSpec.MaxMana);
+		OutGoingSpec.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Init_Character_AttackPower, CharacterDefaultSpec.AttackPower);
+		OutGoingSpec.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Init_Character_AttackRange, CharacterDefaultSpec.AttackRange);
+		OutGoingSpec.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Init_Character_DefensePower, CharacterDefaultSpec.DefencePower);
+		OutGoingSpec.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Init_Character_MoveSpeed, CharacterDefaultSpec.MoveSpeed);
+		OutGoingSpec.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Init_Character_AttackSpeed, CharacterDefaultSpec.AttackSpeed);
+
+		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*OutGoingSpec.Data);
+	}
 }
 
 bool ARaidBossCharacterBase::IsItEquipment(const URaidBossItemBase* NewItem) const
@@ -143,18 +146,7 @@ void ARaidBossCharacterBase::GiveAndActivateAbilities() const
 	}
 }
 
-void ARaidBossCharacterBase::ApplyCharacterStatusEffect() const
-{
-	if (AbilitySystemComponent)
-	{
-		FGameplayEffectContextHandle ContextHandle = AbilitySystemComponent->MakeEffectContext();
-
-		ContextHandle.AddSourceObject(this);
-		AbilitySystemComponent->ApplyGameplayEffectToSelf(CharacterStatusEffect.GetDefaultObject(), 1, ContextHandle);
-	}
-}
-
-void ARaidBossCharacterBase::SetAnimationData(const UDataTable*	AnimDataTable)
+void ARaidBossCharacterBase::InitAnimationData(const UDataTable*	AnimDataTable)
 {
 	if (AnimDataTable == nullptr)
 	{
@@ -213,62 +205,6 @@ URaidBossAbilitySystemComponent* ARaidBossCharacterBase::GetRaidBossAbilitySyste
 const URaidBossCharacterStatusAttributeSet* ARaidBossCharacterBase::GetCharacterStatusAttributeSet() const
 {
 	return CharacterStatusAttributeSet;
-}
-
-double ARaidBossCharacterBase::GetExperience() const
-{
-	return Experience;
-}
-
-double ARaidBossCharacterBase::GetMaxExperience() const
-{
-	return MaxExperience;
-}
-
-bool ARaidBossCharacterBase::IsCharacterStateTurnOn(ECharacterState CharacterState) const
-{
-	return CharacterStateBitMask & static_cast<int32>(CharacterState);
-}
-
-float ARaidBossCharacterBase::GetHealth() const
-{
-	return CharacterStatusAttributeSet->GetHealth();
-}
-
-float ARaidBossCharacterBase::GetAttackPower() const
-{
-	return CharacterStatusAttributeSet->GetAttackPower();
-}
-
-void ARaidBossCharacterBase::TurnOnCharacterStateBitMap(ECharacterState CharacterState)
-{
-	int32	Bit = static_cast<int32>(CharacterState);
-	
-	CharacterStateBitMask |= Bit;
-}
-
-void ARaidBossCharacterBase::TurnOffCharacterStateBitMap(ECharacterState CharacterState)
-{
-	int32	Bit = static_cast<int32>(CharacterState);
-	
-	CharacterStateBitMask &= ~Bit;
-}
-
-void ARaidBossCharacterBase::GiveExperience(double Exp)
-{
-	Experience += Exp;
-
-	if (Experience >= MaxExperience)
-	{
-		CharacterLevelUp(floor(Experience / MaxExperience));
-	}
-}
-
-void ARaidBossCharacterBase::CharacterLevelUp(float IncrementNum)
-{
-	Experience = fmod(Experience, MaxExperience);
-	MaxExperience = MaxExperience * IncrementNum * 2;
-	CharacterLevel += IncrementNum;
 }
 
 void ARaidBossCharacterBase::EquipWeapon(FWeaponKey WeaponKey)
@@ -353,7 +289,7 @@ int32 ARaidBossCharacterBase::DecreaseOrRemoveInventoryData(FGameplayTag InAbili
 	{
 		if (IsItEquipment(Data->Item) == false)
 		{
-			RemoveAbilityData(InAbilityTriggerTag);
+			RemoveItemAbility(InAbilityTriggerTag);
 		}
 
 		InventoryData.Remove(InAbilityTriggerTag);
@@ -416,7 +352,7 @@ int32 ARaidBossCharacterBase::IncreaseOrAddInventoryData(URaidBossItemBase* NewI
 	return Data.Amount;
 }
 
-void ARaidBossCharacterBase::RemoveAbilityData(FGameplayTag InAbilityTriggerTag)
+void ARaidBossCharacterBase::RemoveItemAbility(FGameplayTag InAbilityTriggerTag)
 {
 	FGameplayAbilitySpecHandle	SpecHandle = OwningItemSpecHandle.FindRef(InAbilityTriggerTag);
 	FGameplayAbilitySpec*	Spec = AbilitySystemComponent->FindAbilitySpecFromHandle(SpecHandle);
