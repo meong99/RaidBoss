@@ -13,7 +13,7 @@ UTexture2D* URaidBossSlotWidget::GetTexture() const
 
 int32 URaidBossSlotWidget::GetItemAmount() const
 {
-	return FCString::Atoi(*ItemAmount);
+	return ItemAmount;
 }
 
 void URaidBossSlotWidget::SetTexture(UTexture2D* InTexture)
@@ -26,10 +26,7 @@ void URaidBossSlotWidget::SetTexture(UTexture2D* InTexture)
 
 void URaidBossSlotWidget::SetItemAmount(int32 Amount)
 {
-	if (Amount > 0)
-		ItemAmount = FString::FromInt(Amount);
-	else
-		ItemAmount = "";
+	ItemAmount = Amount;
 }
 
 void URaidBossSlotWidget::SetSlotType(ESlotType InSlotType)

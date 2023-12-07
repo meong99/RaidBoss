@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "InteractionalUIAction.h"
 #include "Blueprint/UserWidget.h"
 #include "InteractionalUI.generated.h"
 
@@ -22,7 +23,10 @@ public:
 	FGameplayTagContainer	GetUIRemoveTags() const { return UIRemoveTags; }
 	
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | UI")
-	void	SendUIActionEventToController(FGameplayTag ActionTriggerTag) const;
+	void	SendUIActionEventToController(FGameplayTag ActionTriggerTag, FUIActionData ActionData) const;
+	
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | UI")
+	void	SendUIEventToController() const;
 	
 	const TArray<UInteractionalUIAction*>&	GetInteractionalUIActionArray() const { return InteractionalUIActionArray; }
 	

@@ -8,6 +8,7 @@ class ARaidBossPlayerControllerBase;
 class USpringArmComponent;
 class UCameraComponent;
 
+
 UCLASS(Abstract)
 class RAIDBOSS_API ARaidBossPlayerBase : public ARaidBossCharacterBase
 {

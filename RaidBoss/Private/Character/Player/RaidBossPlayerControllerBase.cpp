@@ -65,6 +65,6 @@ void ARaidBossPlayerControllerBase::OnPossess(APawn* InPawn)
 	
 	if (InteractionalUISystem)
 	{
-		InteractionalUISystem->TriggerTagParsing();
+		InteractionalUISystem->InteractionalUIParsing(InteractionalUIArray);
 	}
 }

@@ -2,6 +2,12 @@
 
 #include "Character/Monster/BTTask/BTT_MoveToWithTimer.h"
 
+#include "AIController.h"
+#include "Abilities/RaidBossAbilitySystemComponent.h"
+#include "Abilities/Skill/RaidBossSkillBase.h"
+#include "Character/RaidBossCharacterBase.h"
+#include "Management/RaidBossGameplayTags.h"
+
 UBTT_MoveToWithTimer::UBTT_MoveToWithTimer()
 {
 	NodeName = "Move to target with timer";
@@ -25,6 +31,29 @@ EBTNodeResult::Type UBTT_MoveToWithTimer::ExecuteTask(UBehaviorTreeComponent& Ow
 {
 	bNotifyTick = true;
 
+	ARaidBossCharacterBase*				CharacterBase = Cast<ARaidBossCharacterBase>(OwnerComp.GetAIOwner()->GetCharacter());
+	URaidBossAbilitySystemComponent*	AbilitySystemComponent = CharacterBase ? CharacterBase->GetRaidBossAbilitySystemComponent() : nullptr;
+	UBlackboardComponent*				BlackboardComponent = OwnerComp.GetAIOwner()->GetBlackboardComponent();
+	
+	if (CharacterBase == nullptr || AbilitySystemComponent == nullptr || BlackboardComponent == nullptr)
+	{
+		AcceptableRadius = 5;
+	}
+	else
+	{
+		URaidBossSkillBase*	BasicAttack = Cast<URaidBossSkillBase>(
+			AbilitySystemComponent->GetInstanceAbilitiesByTag().FindRef(RaidBossGameplayTags::Get().Attack_BasicAttack));
+
+		if (BasicAttack)
+		{
+			AcceptableRadius = BasicAttack->GetSkillRange() * 0.55f;
+		}
+		else
+		{
+			AcceptableRadius = 5;
+		}
+	}
+	
 	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NodeMemory);
 
 	return Result;

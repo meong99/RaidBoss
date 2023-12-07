@@ -128,8 +128,6 @@ bool ARaidBossGameStateBase::SpawnMonsterAtRandomSpawner()
 	
 	if (SpawnerToSpawn)
 	{
-		bSpawnSuccess = SpawnerToSpawn->RequestSpawningMonster(SpawnableMonsterInfos[PickedMonster]);
-
 		if (bSpawnSuccess)
 		{
 			PickedSpawner++;

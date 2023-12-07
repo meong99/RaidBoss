@@ -5,9 +5,12 @@
 #include "CoreMinimal.h"
 #include "MonsterType.h"
 #include "Character/RaidBossCharacterBase.h"
+#include "Components/WidgetComponent.h"
 #include "MonsterBase.generated.h"
 
 #define MONSTER_DATATABLE_PATH TEXT("/Script/Engine.DataTable'/Game/Data/DataTables/DT_Monsters.DT_Monsters'")
+
+class AMonsterSpawner;
 
 UCLASS()
 class RAIDBOSS_API AMonsterBase : public ARaidBossCharacterBase
@@ -18,29 +21,68 @@ public:
 	AMonsterBase();
 
 	virtual void Tick(float DeltaSeconds) override;
+	
 protected:
-	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
+
+	virtual void BeginPlay() override;
+	
+	virtual void Destroyed() override;
+
 	
 public:
 	void	InitMonster(const FMonsterInfo& MonsterInfoRow);
 
-protected:
-	FMonsterInfo*	GetMonsterInfo() const;
-public:
+	FVector	GetSpawnerLocation() const;
+
+	float	GetDistanceBetweenSpawner() const;
+
+	void	SetMonsterHealthBarVisibility(bool	NewVisible) const;
+	
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Monster")
 	ARaidBossEnemyControllerBase* GetRiadBossEnemyController() const;
 	EPlayerState	GetMonsterState() const { return CurrentPlayerState; }
 	EMonsterType	GetMonsterType() const { return MonsterType; }
 	
+	// 플레이어 추격 종료 조건 달성했을 때부터 이 시간이 지나면 추격 종료
+	float	GetTimerForStopChase() const { return TimerForStopChase; }
+	float	GetMaxChasingDistance() const { return MaxChasingDistance; }
+	
 protected:
-	UPROPERTY(EditDefaultsOnly, Category="Raid Boss")
-	int32	MonsterKey = INDEX_NONE;
-	UPROPERTY(BlueprintReadOnly, Category="Raid Boss")
+	
+protected:
+	/*
+	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	
+	//
+	TWeakObjectPtr<ARaidBossEnemyControllerBase>	MonsterController;
+	
+	TWeakObjectPtr<AMonsterSpawner>	OwnerSpawner;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Monster")
+	TObjectPtr<UWidgetComponent>	HealthBar;
+
+	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Monster")
 	EMonsterType					MonsterType;
-	UPROPERTY(BlueprintReadOnly, Category="Raid Boss")
+	
+	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Monster")
 	FMonsterAnimations				MonsterAnimations;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss")
-	FCharacterSpec					MonsterSpec;
-	UPROPERTY(BlueprintReadWrite, Category="Raid Boss")
+	
+	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Monster")
 	FMonsterReward					MonsterReward;
+
+	// 플레이어 추격 종료 조건 달성했을 때부터 이 시간이 지나면 추격 종료
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Monster")
+	float	TimerForStopChase = 10;
+
+	// 스포너에서 떨어질 수 있는 최대 거리
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Monster")
+	float	MaxChasingDistance = 1500;
+	
+	/*
+	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	
+	//
 };

@@ -26,6 +26,14 @@ void RaidBossGameplayTags::InitTags()
 	Init_Character_MoveSpeed = TAG("Init.Character.MoveSpeed");
 	Init_Character_AttackSpeed = TAG("Init.Character.AttackSpeed");
 	
+	Character_Stat_MaxHealth = TAG("Character.Stat.MaxHealth");
+	Character_Stat_MaxMana = TAG("Character.Stat.MaxMana");
+	Character_Stat_AttackPower = TAG("Character.Stat.AttackPower");
+	Character_Stat_AttackRange = TAG("Character.Stat.AttackRange");
+	Character_Stat_DefensePower = TAG("Character.Stat.DefensePower");
+	Character_Stat_MoveSpeed = TAG("Character.Stat.MoveSpeed");
+	Character_Stat_AttackSpeed = TAG("Character.Stat.AttackSpeed");
+	
 	Character_Additive_MaxHealth = TAG("Character.Additive.MaxHealth");
 	Character_Additive_MaxMana = TAG("Character.Additive.MaxMana");
 	Character_Additive_AttackPower = TAG("Character.Additive.AttackPower");
@@ -52,11 +60,15 @@ void RaidBossGameplayTags::InitTags()
 
 	StatusEffect_KnockBack = TAG("StatusEffect.Knockback");
 	
-	Item_SetByCaller_Health = TAG("Item.SetByCaller.Health");;
-	Item_SetByCaller_MaxHealth = TAG("Item.SetByCaller.MaxHealth");;
-	Item_SetByCaller_Mana = TAG("Item.SetByCaller.Mana");;
-	Item_SetByCaller_MaxMana = TAG("Item.SetByCaller.MaxMana");;
-	Item_SetByCaller_AttackPower = TAG("Item.SetByCaller.AttackPower");;
-	Item_SetByCaller_DefensePower = TAG("Item.SetByCaller.DefensePower");;
-	Item_SetByCaller_AdditionalAttackPower = TAG("Item.SetByCaller.AdditionalAttackPower");;
+	Item_SetByCaller_Health = TAG("Item.SetByCaller.Health");
+	Item_SetByCaller_MaxHealth = TAG("Item.SetByCaller.MaxHealth");
+	Item_SetByCaller_Mana = TAG("Item.SetByCaller.Mana");
+	Item_SetByCaller_MaxMana = TAG("Item.SetByCaller.MaxMana");
+	Item_SetByCaller_AttackPower = TAG("Item.SetByCaller.AttackPower");
+	Item_SetByCaller_DefensePower = TAG("Item.SetByCaller.DefensePower");
+	Item_SetByCaller_AdditionalAttackPower = TAG("Item.SetByCaller.AdditionalAttackPower");
+
+	Damage_SetByCaller = TAG("Damage.SetByCaller");
+	
+	GameplayCue_DestroyActor = TAG("GameplayCue.DestroyActor");
 }

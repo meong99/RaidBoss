@@ -39,6 +39,8 @@ struct FMonsterReward
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Monster | Reward")
 	float	Gold;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Monster | Reward")
+	TArray<uint8>	ItemKeys;
 };
 
 USTRUCT(BlueprintType)
@@ -59,6 +61,6 @@ struct FMonsterInfo : public FTableRowBase
 	FCharacterSpec					MonsterSpec;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FWeaponKey						MonsterWeaponKey;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FMonsterReward					MonsterReward;
 };

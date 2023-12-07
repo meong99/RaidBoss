@@ -3,6 +3,7 @@
 #include "UI/QuickSlot.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Abilities/GameplayAbilityTypes.h"
+#include "Abilities/RaidBossAbilitySystemComponent.h"
 #include "Abilities/Skill/RaidBossSkillBase.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Character/RaidBossCharacterBase.h"
@@ -94,10 +95,69 @@ void UQuickSlot::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 		{
 			RemoveOtherSlot();
 		}
+		else if (ARaidBossCharacterBase* CharacterBase = Cast<ARaidBossCharacterBase>(GetOwningPlayerPawn()))
+		{
+			URaidBossAbilitySystemComponent*	AbilitySystemComponent = CharacterBase->GetRaidBossAbilitySystemComponent();
+
+			if (AbilitySystemComponent)
+			{
+				auto AbilityMap = AbilitySystemComponent->GetInstanceAbilitiesByTag();
+
+				URaidBossAbilityBase*	AbilityBase = AbilityMap.FindRef(OwningSlot->GetAbilityTriggerTag());
+
+				if (AbilityBase)
+				{
+					AbilityBase->GetCooldownTimeRemainingAndDuration(AbilityBase->GetCurrentAbilitySpecHandle(),
+						AbilityBase->GetCurrentActorInfo(), RemainingCoolDown, OriginCoolDown);
+				}
+				else
+				{
+					RemainingCoolDown = 0;
+					OriginCoolDown = 0;
+				}
+			}
+		}
+	}
+	else if (ARaidBossCharacterBase* CharacterBase = Cast<ARaidBossCharacterBase>(GetOwningPlayerPawn()))
+	{
+		URaidBossAbilitySystemComponent*	AbilitySystemComponent = CharacterBase->GetRaidBossAbilitySystemComponent();
+
+		if (AbilitySystemComponent && AbilityTriggerTag.IsValid())
+		{
+			auto AbilityMap = AbilitySystemComponent->GetInstanceAbilitiesByTag();
+
+			URaidBossAbilityBase*	AbilityBase = AbilityMap.FindRef(AbilityTriggerTag);
+
+			if (AbilityBase)
+			{
+				AbilityBase->GetCooldownTimeRemainingAndDuration(AbilityBase->GetCurrentAbilitySpecHandle(),
+						AbilityBase->GetCurrentActorInfo(), RemainingCoolDown, OriginCoolDown);
+			}
+			else
+			{
+				RemainingCoolDown = 0;
+				OriginCoolDown = 0;
+			}
+		}
+	}
+	
+	if (RemainingCoolDown && OriginCoolDown)
+	{
+		bShouldPlayFinishAnimation = true;
+		CooldownBar->SetPercent(RemainingCoolDown / OriginCoolDown);
+		CoolTime->SetText(FText::FromString(FString::FromInt(RemainingCoolDown)));
+		CooldownBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		CoolTime->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	}
+	else if (RemainingCoolDown <= 0 && bShouldPlayFinishAnimation)
+	{
+		PlayAnimation(CooldownFinishedAnimation);
+		bShouldPlayFinishAnimation = false;
+		CoolTime->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 
-void UQuickSlot::SendGameplayEventWithTag(const FGameplayTag& TagToAdd) const
+void UQuickSlot::SendGameplayEventWithTag(const FGameplayTag& TagToAdd)
 {
 	ARaidBossCharacterBase*	CharacterBase = Cast<ARaidBossCharacterBase>(GetOwningPlayerPawn());
 	

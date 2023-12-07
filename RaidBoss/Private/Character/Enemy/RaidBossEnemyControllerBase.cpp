@@ -1,10 +1,8 @@
 #include "Character/Enemy/RaidBossEnemyControllerBase.h"
-#include "Character/Enemy/RaidBossEnemyBase.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "Kismet/GameplayStatics.h"
+#include "Character/Monster/MonsterBase.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 
@@ -21,82 +19,51 @@ ARaidBossEnemyControllerBase::ARaidBossEnemyControllerBase()
 	Blackboard = CreateDefaultSubobject<UBlackboardComponent>(TEXT("Blackboard Component"));
 	PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AI Perception Component"));
 	Sight = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sight Sense"));
-
+	
 	if (IsValid(Sight))
 	{
 		Sight->SightRadius = 3000;
 		Sight->LoseSightRadius = 3500;
-		Sight->PeripheralVisionAngleDegrees = 150.0f;
+		Sight->PeripheralVisionAngleDegrees = 180.0f;
 		Sight->DetectionByAffiliation.bDetectEnemies = true;
-		Sight->DetectionByAffiliation.bDetectNeutrals = true;
-		Sight->DetectionByAffiliation.bDetectFriendlies = false;
-
+		
 		PerceptionComponent->ConfigureSense(*Sight);
 	}
-
-	// PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ARaidBossEnemyControllerBase::OnTargetDetectedDelegated);
+	PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ARaidBossEnemyControllerBase::OnTargetDetectedDelegated);
 }
 
-void ARaidBossEnemyControllerBase::OnTargetDetectedDelegated(AActor* Actor, FAIStimulus Stimulus)
+void ARaidBossEnemyControllerBase::Tick(float DeltaSeconds)
 {
-	ARaidBossCharacterBase* ControlledCharacter = GetControlledCharacter();
+	Super::Tick(DeltaSeconds);
+
+	if (ControlledMonster.IsValid() == false)
+	{
+		return;
+	}
 	
-	if (IsValid(Actor) == false || IsValid(Blackboard) == false || IsValid(ControlledCharacter) == false)
+	float bIsNotInChasingRange = ControlledMonster->GetDistanceBetweenSpawner() > ControlledMonster->GetMaxChasingDistance();
+
+	if (bIsNotInChasingRange)
 	{
-		return;
-	}
-	if (Actor->ActorHasTag(FName("Enemy")))
-	{
-		return;
+		TimeSinceOutChasingRange += DeltaSeconds;
 	}
 
-	if (Actor->ActorHasTag(FName("Player")) && Stimulus.WasSuccessfullySensed())
+	if (TimeSinceOutChasingRange >= ControlledMonster->GetTimerForStopChase())
 	{
-		GetWorldTimerManager().ClearTimer(TimerHandle);
-		Blackboard->SetValueAsBool(BBKey::HAS_LINE_OF_SIGHT, true);
-		Blackboard->SetValueAsObject(BBKey::TARGET_ACTOR, Actor);
+		StopChasePlayer();
 	}
-	else if (Stimulus.WasSuccessfullySensed() == false && ControlledCharacter->GetDistanceTo(Actor) > 300.f)
-	{
-		GetWorldTimerManager().SetTimer(TimerHandle, this, &ARaidBossEnemyControllerBase::StopChasePlayer,
-			3.f, false);
-	}
-}
-
-void ARaidBossEnemyControllerBase::StopChasePlayer()
-{
-	if (IsValid(Blackboard) == false)
-	{
-		return;
-	}
-
-	Blackboard->SetValueAsBool(BBKey::HAS_LINE_OF_SIGHT, false);
-	Blackboard->SetValueAsObject(BBKey::TARGET_ACTOR, nullptr);
-	GetWorldTimerManager().ClearTimer(TimerHandle);
-}
-
-void ARaidBossEnemyControllerBase::UpdateWalkSpeed(float Speed)
-{
-	ARaidBossCharacterBase* ControlledCharacter = GetControlledCharacter();
-	
-	if (IsValid(ControlledCharacter) == false)
-		return;
-
-	ControlledCharacter->GetCharacterMovement()->MaxWalkSpeed = Speed;
-}
-
-ARaidBossCharacterBase* ARaidBossEnemyControllerBase::GetControlledCharacter() const
-{
-	return Cast<ARaidBossCharacterBase>(GetCharacter());
 }
 
 void ARaidBossEnemyControllerBase::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
+	ControlledMonster = Cast<AMonsterBase>(InPawn);
+	
 	if (IsValid(Blackboard.Get()) && IsValid(BehaviourTree.Get()))
 	{
 		Blackboard->InitializeBlackboard(*BehaviourTree.Get()->BlackboardAsset.Get());
+		Blackboard->SetValueAsObject(BBKey::SELF_ACTOR, InPawn);
 	}
 }
 
@@ -110,11 +77,55 @@ void ARaidBossEnemyControllerBase::BeginPlay()
 
 		BehaviourTreeComponent->StartTree(*BehaviourTree.Get());
 	}
-	
-	ACharacter*	CurrentPlayer = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	if (CurrentPlayer)
+}
+
+void ARaidBossEnemyControllerBase::OnTargetDetectedDelegated(AActor* Actor, FAIStimulus Stimulus)
+{
+	if (IsValid(Actor) == false || IsValid(Blackboard) == false || ControlledMonster.IsValid() == false)
 	{
-		Blackboard->SetValueAsBool(BBKey::HAS_LINE_OF_SIGHT, true);
-		Blackboard->SetValueAsObject(BBKey::TARGET_ACTOR, CurrentPlayer);
+		PerceptionComponent->ForgetActor(Actor);
+		return;
 	}
+
+	bool bIsNotPlayer = Cast<AMonsterBase>(Actor) != nullptr;
+	bool bIsNotInChasingRange = ControlledMonster->GetDistanceBetweenSpawner() > ControlledMonster->GetMaxChasingDistance();
+	
+	if (bIsNotPlayer || bIsNotInChasingRange)
+	{
+		PerceptionComponent->ForgetActor(Actor);
+		return;
+	}
+
+	if (Stimulus.WasSuccessfullySensed())
+	{
+		TimeSinceOutChasingRange = 0;
+		Blackboard->SetValueAsBool(BBKey::FOUND_PLAYER, true);
+		Blackboard->SetValueAsBool(BBKey::RETURN_TO_SPAWNER, false);
+		Blackboard->SetValueAsObject(BBKey::TARGET_ACTOR, Actor);
+		ControlledMonster->SetMonsterHealthBarVisibility(true);
+	}
+}
+
+void ARaidBossEnemyControllerBase::StopChasePlayer()
+{
+	if (IsValid(Blackboard) == false || ControlledMonster.IsValid() == false)
+	{
+		return;
+	}
+
+	TimeSinceOutChasingRange = 0;
+	
+	ControlledMonster->SetMonsterHealthBarVisibility(false);
+	
+	PerceptionComponent->ForgetAll();
+	
+	Blackboard->SetValueAsBool(BBKey::RETURN_TO_SPAWNER, true);
+	Blackboard->SetValueAsVector(BBKey::DESTINATION, ControlledMonster->GetSpawnerLocation());
+	Blackboard->SetValueAsBool(BBKey::FOUND_PLAYER, false);
+	Blackboard->SetValueAsObject(BBKey::TARGET_ACTOR, nullptr);
+}
+
+AMonsterBase* ARaidBossEnemyControllerBase::GetControlledCharacter() const
+{
+	return ControlledMonster.Get();
 }

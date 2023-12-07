@@ -9,13 +9,13 @@
 #include "Kismet/KismetSystemLibrary.h"
 
 UAT_FloatingActor* UAT_FloatingActor::CreateFloatingActorTask(UGameplayAbility* OwningAbility, float InHeight,
-                                                              float InFloatingSpeed, float InFloatingTime, float InFallingSpeed)
+                                                              float InRisingSpeed, float InFloatingTime, float InFallingSpeed)
 {
 	UAT_FloatingActor* MyObj = NewAbilityTask<UAT_FloatingActor>(OwningAbility);
 
 	MyObj->Height = InHeight;
 	MyObj->FloatingTime = InFloatingTime;
-	MyObj->FloatingSpeed = InFloatingSpeed;
+	MyObj->RisingSpeed = InRisingSpeed;
 	MyObj->FallingSpeed = InFallingSpeed;
 	
 	return MyObj;
@@ -35,7 +35,7 @@ void UAT_FloatingActor::TickTask(float DeltaTime)
 		InterpolateDestinationXY();
 		
 		FVector	NextDestination = FMath::VInterpConstantTo(OwnerCharacter->GetActorLocation(), Destination,
-			DeltaTime, FloatingSpeed);
+			DeltaTime, RisingSpeed);
 		
 		OwnerCharacter->SetActorLocation(NextDestination);
 

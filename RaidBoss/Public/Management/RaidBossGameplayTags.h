@@ -21,6 +21,14 @@ public:
 	FGameplayTag Init_Character_DefensePower;
 	FGameplayTag Init_Character_MoveSpeed;
 	FGameplayTag Init_Character_AttackSpeed;
+
+	FGameplayTag Character_Stat_MaxHealth;
+	FGameplayTag Character_Stat_MaxMana;
+	FGameplayTag Character_Stat_AttackPower;
+	FGameplayTag Character_Stat_AttackRange;
+	FGameplayTag Character_Stat_DefensePower;
+	FGameplayTag Character_Stat_MoveSpeed;
+	FGameplayTag Character_Stat_AttackSpeed;
 	
 	FGameplayTag Character_Additive_MaxHealth;
 	FGameplayTag Character_Additive_MaxMana;
@@ -57,6 +65,11 @@ public:
 	FGameplayTag Item_SetByCaller_AttackPower;
 	FGameplayTag Item_SetByCaller_DefensePower;
 	FGameplayTag Item_SetByCaller_AdditionalAttackPower;
+	
+	FGameplayTag Damage_SetByCaller;
+
+	FGameplayTag GameplayCue_DestroyActor;
+	
 public:
 	static void InitializeTags();
 	static const RaidBossGameplayTags& Get() { return GameplayTags; }

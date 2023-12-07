@@ -1,4 +1,6 @@
 #include "Abilities/RaidBossAbilityBase.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Abilities/RaidBossAbilitySystemComponent.h"
 #include "Character/RaidBossCharacterBase.h"
 #include "Abilities/RaidBossCharacterStatusAttributeSet.h"
@@ -26,6 +28,11 @@ FGameplayTag URaidBossAbilityBase::GetAbilityTriggerTag() const
 	FAbilityTriggerData TriggerData = *AbilityTriggers.begin();
 
 	return TriggerData.TriggerTag;
+}
+
+void URaidBossAbilityBase::SendGameplayEventToActor(AActor* Target, FGameplayTag EventTag, FGameplayEventData Payload)
+{
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Target, EventTag, Payload);
 }
 
 URaidBossAbilitySystemComponent* URaidBossAbilityBase::GetOwnerAbilityComponent() const

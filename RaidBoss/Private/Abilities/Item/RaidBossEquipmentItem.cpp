@@ -5,7 +5,6 @@
 
 URaidBossEquipmentItem::URaidBossEquipmentItem()
 {
-	bRetriggerInstancedAbility = true;
 }
 
 bool URaidBossEquipmentItem::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -47,7 +46,7 @@ void URaidBossEquipmentItem::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 		bIsThisArmed = true;
 	}
 	
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 
 void URaidBossEquipmentItem::EquipItem()
@@ -56,7 +55,7 @@ void URaidBossEquipmentItem::EquipItem()
 
 	FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(ItemEffect);
 	
-	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Item_SetByCaller_AdditionalAttackPower, AdditiveAttackPower);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_AttackPower, AdditiveAttackPower);
 	
 	if (CurrentAbilitySpec && OwnerCharacter)
 	{
@@ -79,6 +78,6 @@ void URaidBossEquipmentItem::UnEquipItem()
 		AbilitySystemComponent->RemoveActiveGameplayEffect(EffectHandle);
 		
 		OwnerCharacter->NotifyEquipmentChanged.Broadcast(FGameplayTag{}, static_cast<int32>(EquipType), nullptr);
-		OwnerCharacter->IncreaseOrAddInventoryData(this);
+		OwnerCharacter->IncreaseOrAddInventoryData(GetItemKey());
 	}
 }

@@ -1,5 +1,4 @@
 #include "Abilities/Skill/RaidBossSkillBase.h"
-
 #include "AbilitySystemComponent.h"
 #include "Character/RaidBossCharacterBase.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
@@ -10,6 +9,8 @@ bool URaidBossSkillBase::CanActivateAbility(const FGameplayAbilitySpecHandle Han
                                             const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
                                             const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
 {
+	bool bHasValidOwner = OwnerCharacter != nullptr;
+	
 	bool bIsItForLeveling = GetRequestType(SourceTags) == ESkillRequestType::IncreaseSkillLevel ||
 							GetRequestType(SourceTags) == ESkillRequestType::DecreaseSkillLevel;
 	
@@ -18,17 +19,15 @@ bool URaidBossSkillBase::CanActivateAbility(const FGameplayAbilitySpecHandle Han
 
 	bool bCanActivateAbility = Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
 	
-	return bIsItLearned && bCanActivateAbility;
+	return bIsItLearned && bCanActivateAbility && bHasValidOwner;
 }
 
 void URaidBossSkillBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	const FGameplayEventData* TriggerEventData)
 {
-	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
 	ESkillRequestType RequestType = GetRequestType(&TriggerEventData->InstigatorTags);
-
+	
 	switch (RequestType)
 	{
 	case ESkillRequestType::IncreaseSkillLevel :
@@ -44,6 +43,18 @@ void URaidBossSkillBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 	default:
 		break;
 	}
+}
+
+void URaidBossSkillBase::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+{
+	if (OwnerCharacter)
+	{
+		OwnerCharacter->SetIsMovementBlocked(false);
+		OwnerCharacter->SetCanActivateNormalAttack(true);
+	}
+	
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
 const FGameplayTagContainer* URaidBossSkillBase::GetCooldownTags() const
@@ -129,6 +140,10 @@ void URaidBossSkillBase::NotifySkillLevelChanged()
 	}
 }
 
+void URaidBossSkillBase::SetIndicator()
+{
+}
+
 bool URaidBossSkillBase::CanLevelIncrease()
 {
 	if (SkillInfo.SkillLevel < SkillInfo.MaximumSkillLevel)
@@ -159,13 +174,13 @@ FGameplayAbilityTargetDataHandle URaidBossSkillBase::CreateAbilityTargetDataFrom
 	return Handle;
 }
 
-UAbilityTask_PlayMontageAndWait* URaidBossSkillBase::CreatePlayMontageAndWaitTask(int32 MontageIndex)
+UAbilityTask_PlayMontageAndWait* URaidBossSkillBase::CreatePlayMontageAndWaitTask(int32 MontageIndex, float Rate, FName StartSection)
 {
 	if (Montages.IsValidIndex(MontageIndex) == false)
 		return nullptr;
 		
 	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-		this, FName(GetName()), Montages[MontageIndex]);
+		this, FName(GetName()), Montages[MontageIndex], Rate, StartSection);
 	
 	return PlayMontageTask;
 }

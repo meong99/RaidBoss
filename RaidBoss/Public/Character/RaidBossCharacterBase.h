@@ -5,6 +5,7 @@
 #include "AbilitySystemInterface.h"
 #include "CharacterTpye.h"
 #include "GameplayAbilitySpecHandle.h"
+#include "GenericTeamAgentInterface.h"
 #include "Camera/CameraComponent.h"
 #include "Equipment/EquipManagement.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -26,6 +27,9 @@ enum class ECharacterState : uint8 // 변경 필요 - 제거 예정
 	CanUsingAttack = 4 UMETA(DisplayName = "CanUsingAttack"),
 };
 
+#define MONSTER_TEAM_ID 1
+#define PLAYER_TEAM_ID 0
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FNotifyNewItemAddedDelegate, URaidBossItemBase*, NewItemCDO, int32, Amount);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FNotifyItemAmountChangedDelegate, FGameplayTag, InAbilityTriggerTag, int32, Amount);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FNotifyEquipmentChangedDelegate, FGameplayTag, InAbilityTriggerTag, int32, EquipmentType,
@@ -34,7 +38,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FNotifySkillLevelChangedDelegate, F
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FNotifyNewWeaponEquippedDelegate, const TArray<URaidBossSkillBase*>& ,NewSkillsg);
 
 UCLASS(Abstract)
-class RAIDBOSS_API ARaidBossCharacterBase : public ACharacter, public IAbilitySystemInterface
+class RAIDBOSS_API ARaidBossCharacterBase : public ACharacter, public IAbilitySystemInterface, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 	
@@ -45,25 +49,28 @@ public:
 	virtual void	BeginPlay() override;
 	virtual void	PossessedBy(AController* NewController) override;
 	virtual void	SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-
+	
 	void			MoveCharacter(const FVector2D& Value);
 	void			LookCharacter(const FVector2D& Value);
 
 	UFUNCTION(BlueprintCallable)
 	void	EquipWeapon(FWeaponKey WeaponKey);
+	
 	UFUNCTION(BlueprintCallable)
 	void	UnEquipWeapon();
+	
 	UFUNCTION(BlueprintCallable)
 	void	Attack() const;
 	
 	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Character Base")
 	void	SetCurrentCharacterState(EPlayerState State);
+	
 	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Inventory")
 	int32	DecreaseOrRemoveInventoryData(FGameplayTag InAbilityTriggerTag, bool bRemoveAll = false, int32 Amount = 1);
-	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Inventory")
-	int32	IncreaseOrAddInventoryData_ForBlueprint(TSubclassOf<URaidBossItemBase> NewItem = nullptr, int32 Amount = 1);
-	int32	IncreaseOrAddInventoryData(URaidBossItemBase* NewItem = nullptr, int32 Amount = 1);
 	
+	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Inventory")
+	int32	IncreaseOrAddInventoryData(uint8 ItemKey, int32 Amount = 1);
+
 	/*
 	 *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
@@ -84,7 +91,9 @@ public:
 	bool					IsTurnLeft() const { return bIsTurnLeft; }
 	bool					IsMovementBlocked() const { return bIsMovementBlocked; }
 	bool					CanActivateNormalAttack() const { return bCanActivateNormalAttack; }
-
+	virtual FGenericTeamId	GetGenericTeamId() const override { return TeamID; }
+	float					GetGold() const { return Gold; }
+	
 	//  변경 필요 - 제거 예정
 	const FItemAnimations* GetAnimationsByWeaponType(EWeaponType WeaponType) const { return AnimationsByWeaponType.Find(WeaponType); }
 
@@ -93,7 +102,8 @@ public:
 	void	SetIsDuringAlign(bool bInIsDuringAlign) { bIsDuringAlign = bInIsDuringAlign; }
 	void	SetIsMovementBlocked(bool bInIsMovementBlocked) { bIsMovementBlocked = bInIsMovementBlocked; }
 	void	SetCanActivateNormalAttack(bool	bInCanActivateNormalAttack) { bCanActivateNormalAttack = bInCanActivateNormalAttack; }
-	
+	virtual void	SetGenericTeamId(const FGenericTeamId& NewTeamID) override { TeamID = NewTeamID; };
+
 protected:
 	void	ApplyCharacterDefaultSpecEffectToSelf();
 
@@ -105,7 +115,7 @@ protected:
 	
 	void	InitAnimationData(const UDataTable* AnimDataTable);
 	
-	void	AddNewItemData(URaidBossItemBase* NewItem, FInventoryData& Data);
+	void	AddNewItemData(URaidBossItemBase* NewItem, OUT FInventoryData& OutData, uint8 ItemKey);
 
 	void	GiveSkillAbilities();
 
@@ -136,16 +146,22 @@ protected:
 	 */
 	
 	//
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Raid Boss | Player Base", meta=(AllowPrivateAccess))
+	FGenericTeamId TeamID;
+
+	UPROPERTY(EditDefaultsOnly, Category="Raid Boss")
+	TObjectPtr<UDataTable>	ItemDataTable;
+	
+	UPROPERTY()
+	UEquipManagement*	EquipManager;  
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Raid Boss | Character Base", meta=(AllowPrivateAccess))
 	TObjectPtr<USpringArmComponent>		CameraBoom;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Raid Boss | Player Base", meta=(AllowPrivateAccess))
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Raid Boss | Character Base", meta=(AllowPrivateAccess))
 	TObjectPtr<UCameraComponent>		FollowCamera;
 	
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Character Base")
 	TObjectPtr<URaidBossAbilitySystemComponent>	AbilitySystemComponent;
-	
-	UPROPERTY()
-	UEquipManagement*	EquipManager;  
 
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Base", SaveGame)
 	const URaidBossCharacterStatusAttributeSet*	CharacterStatusAttributeSet;
@@ -187,9 +203,13 @@ protected:
 	EPlayerState	CurrentPlayerState = EPlayerState::None; // 변경 예상 - 뭔가 깔끔하게 상태 변경이 필요할수도?
 
 	// 플레이어가 소지하고있는 아이템들
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Raid Boss | Item", SaveGame)
-	TMap<FGameplayTag, FInventoryData>				InventoryData;
+	UPROPERTY(BlueprintReadWrite, Category = "Raid Boss | Item", SaveGame)
+	TMap<FGameplayTag, FInventoryData>	InventoryData;
 
+	//플레이어 소지 골드
+	UPROPERTY(BlueprintReadWrite, Category = "Raid Boss | Item", SaveGame)
+	float	Gold = 0;
+	
 	// 아이템들에대한 어빌리티 스펙들
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Item")
 	TMap<FGameplayTag, FGameplayAbilitySpecHandle>	OwningItemSpecHandle;

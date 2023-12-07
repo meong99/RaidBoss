@@ -45,7 +45,10 @@ bool URaidBossAbilitySystemComponent::GiveAbilityWithoutDuplication(TSubclassOf<
 		FGameplayAbilitySpec Spec {AbilityClass, 1, InputID};
 
 		OutSpecHandle = GiveAbility(Spec);
+
+		return true;
 	}
+	
 	return false;
 }
 

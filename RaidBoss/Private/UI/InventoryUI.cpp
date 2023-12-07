@@ -8,8 +8,14 @@
 #include "Components/WrapBox.h"
 #include "UI/InventorySlot.h"
 
+UInventoryUI::UInventoryUI()
+{
+}
+
 void UInventoryUI::NativeOnInitialized()
 {
+	Super::NativeOnInitialized();
+	
 	ARaidBossCharacterBase*	CharacterBase = Cast<ARaidBossCharacterBase>(GetOwningPlayerPawn());
 
 	if (CharacterBase)
@@ -20,6 +26,8 @@ void UInventoryUI::NativeOnInitialized()
 
 void UInventoryUI::NativeConstruct()
 {
+	Super::NativeConstruct();
+	
 	ARaidBossPlayerControllerBase*	ControllerBase = Cast<ARaidBossPlayerControllerBase>(GetOwningPlayer());
 
 	if (ControllerBase)
@@ -37,6 +45,22 @@ void UInventoryUI::NativeDestruct()
 	{
 		ControllerBase->SetInputMode(FInputModeGameOnly{});
 		ControllerBase->SetShowMouseCursor(false);
+	}
+	
+	Super::NativeDestruct();
+}
+
+void UInventoryUI::CreateItemSlots(TArray<UWidget*> InventoryWrapBox, ESlotType SlotType)
+{
+	for (int i = 0; i < SlotCount; i++)
+	{
+		UInventorySlot* NewSlot = CreateWidget<UInventorySlot>(this, InventorySlotClass);
+		
+		if (NewSlot)
+		{
+			NewSlot->SetSlotType(SlotType);
+			InventoryWrapBox.Add(NewSlot);
+		}
 	}
 }
 
@@ -58,16 +82,16 @@ void UInventoryUI::NotifyNewItemAddedCallBack(URaidBossItemBase* NewItemCDO, int
 	}
 }
 
-void UInventoryUI::AddNewItemToSlot(TArray<UWidget*> InventorySlots, URaidBossItemBase* NewItemCDO, int32 Amount) const
+void UInventoryUI::AddNewItemToSlot(TArray<UWidget*> InventoryWrapBox, URaidBossItemBase* NewItemCDO, int32 Amount) const
 {
-	if (InventorySlots.IsEmpty() || NewItemCDO == nullptr || Amount <= 0)
+	if (InventoryWrapBox.IsEmpty() || NewItemCDO == nullptr || Amount <= 0)
 	{
 		return;
 	}
 	
-	for (int  i = 0; i < InventorySlots.Num(); i++)
+	for (int  i = 0; i < InventoryWrapBox.Num(); i++)
 	{
-		UInventorySlot*	InventorySlot = Cast<UInventorySlot>(InventorySlots[i]);
+		UInventorySlot*	InventorySlot = Cast<UInventorySlot>(InventoryWrapBox[i]);
 
 		if (InventorySlot == nullptr)
 		{
@@ -77,8 +101,17 @@ void UInventoryUI::AddNewItemToSlot(TArray<UWidget*> InventorySlots, URaidBossIt
 		{
 			continue;
 		}
+
+		if (NewItemCDO->GetItemCategory() == EITemCategory::Equip)
+		{
+			InventorySlot->SetSlotType(ESlotType::EquipmentSlot);
+		}
+		else if (NewItemCDO->GetItemCategory() == EITemCategory::Consumable)
+		{
+			InventorySlot->SetSlotType(ESlotType::ConsumableSlot);
+		}
 		
-		InventorySlot->RegisterNewItem(NewItemCDO->GetAbilityTriggerTag(), Amount, NewItemCDO->GetItemTexture());
+		InventorySlot->RegisterNewItem(NewItemCDO, Amount);
 		break;
 	}
 }

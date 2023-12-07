@@ -4,8 +4,10 @@
 #include "Abilities/RaidBossCharacterStatusAttributeSet.h"
 #include "Abilities/Item/RaidBossItemBase.h"
 #include "Abilities/Skill/RaidBossSkillBase.h"
+#include "EnvironmentQuery/EnvQueryDebugHelpers.h"
 #include "Equipment/Weapon/Weapon.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Item/ItemData.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Management/RaidBossGameplayTags.h"
 
@@ -16,9 +18,25 @@ ARaidBossCharacterBase::ARaidBossCharacterBase()
 	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -90.f));
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f).Quaternion());
 	
+	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	CameraBoom->SetupAttachment(RootComponent);
+	CameraBoom->TargetArmLength = 800.0f;
+	CameraBoom->bUsePawnControlRotation = true;
+
+	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+	FollowCamera->bUsePawnControlRotation = false;
+	FollowCamera->SetRelativeLocation(FVector{0, 0, 200});
+
 	AbilitySystemComponent = CreateDefaultSubobject<URaidBossAbilitySystemComponent>(TEXT("Ability Component"));
 	CharacterStatusAttributeSet = CreateDefaultSubobject<URaidBossCharacterStatusAttributeSet>(TEXT("Character Status AttributeSet"));
 	EquipManager = CreateDefaultSubobject<UEquipManagement>(TEXT("Equip Manager"));
+
+	static ConstructorHelpers::FObjectFinder<UDataTable> ItemDataTableObject(TEXT("/Script/Engine.DataTable'/Game/Data/DataTables/DT_ItemData.DT_ItemData'"));
+	if (ItemDataTableObject.Object)
+	{
+		ItemDataTable = ItemDataTableObject.Object;
+	}
 }
 
 void ARaidBossCharacterBase::Tick(float DeltaSeconds)
@@ -166,12 +184,25 @@ void ARaidBossCharacterBase::InitAnimationData(const UDataTable*	AnimDataTable)
 	}
 }
 
-void ARaidBossCharacterBase::AddNewItemData(URaidBossItemBase* NewItem, FInventoryData& Data)
+void ARaidBossCharacterBase::AddNewItemData(URaidBossItemBase* NewItem, FInventoryData& Data, uint8 ItemKey)
 {
-	FGameplayAbilitySpec	Spec { NewItem };
+	FGameplayAbilitySpecHandle	SpecHandle;
 	
 	Data.Item = NewItem;
-	OwningItemSpecHandle.Add(NewItem->GetAbilityTriggerTag(), AbilitySystemComponent->GiveAbility(Spec));
+
+	if (AbilitySystemComponent->GiveAbilityWithoutDuplication(NewItem->GetClass(), SpecHandle))
+	{
+		OwningItemSpecHandle.Add(NewItem->GetAbilityTriggerTag(), SpecHandle);
+	}
+
+	URaidBossItemBase*	NewItemInstance = Cast<URaidBossItemBase>(
+		AbilitySystemComponent->GetInstanceAbilitiesByTag().FindRef(NewItem->GetAbilityTriggerTag()));
+
+	if (NewItemInstance)
+	{
+		NewItemInstance->SetItemKey(ItemKey);
+	}
+	
 	NotifyNewItemAdded.Broadcast(NewItem, Data.Amount);
 }
 
@@ -284,7 +315,7 @@ int32 ARaidBossCharacterBase::DecreaseOrRemoveInventoryData(FGameplayTag InAbili
 	Data->Amount -= Amount;
 
 	int32 RemainingItems = Data->Amount;
-	
+
 	if (RemainingItems <= 0 || bRemoveAll)
 	{
 		if (IsItEquipment(Data->Item) == false)
@@ -300,12 +331,17 @@ int32 ARaidBossCharacterBase::DecreaseOrRemoveInventoryData(FGameplayTag InAbili
 	return RemainingItems;
 }
 
-int32 ARaidBossCharacterBase::IncreaseOrAddInventoryData_ForBlueprint(TSubclassOf<URaidBossItemBase> NewItem,
-	int32 Amount)
+int32 ARaidBossCharacterBase::IncreaseOrAddInventoryData(uint8 ItemKey, int32 Amount)
 {
-	URaidBossItemBase*	ItemCDO = NewItem ? NewItem->GetDefaultObject<URaidBossItemBase>() : nullptr;
-	
-	if (ItemCDO == nullptr || ItemCDO->GetAbilityTriggerTag().IsValid() == false || Amount <= 0)
+	if (ItemDataTable == nullptr)
+	{
+		return 0;
+	}
+
+	FItemDataTable*		ItemData = ItemDataTable->FindRow<FItemDataTable>(FName(FString::FromInt(ItemKey)), "");
+	URaidBossItemBase*	ItemCDO = ItemData ? ItemData->ItemClass->GetDefaultObject<URaidBossItemBase>() : nullptr;
+
+	if (ItemCDO == nullptr || ItemCDO->GetAbilityTriggerTag().IsValid() == false)
 	{
 		return 0;
 	}
@@ -315,7 +351,12 @@ int32 ARaidBossCharacterBase::IncreaseOrAddInventoryData_ForBlueprint(TSubclassO
 	
 	if (OwningItemSpecHandle.Find(ItemCDO->GetAbilityTriggerTag()) == nullptr)
 	{
-		AddNewItemData(ItemCDO, Data);
+		AddNewItemData(ItemCDO, Data, ItemKey);
+	}
+	else if (Data.Amount == 1)
+	{
+		Data.Item = ItemCDO;
+		NotifyNewItemAdded.Broadcast(ItemCDO, Data.Amount);
 	}
 	else
 	{
@@ -324,33 +365,33 @@ int32 ARaidBossCharacterBase::IncreaseOrAddInventoryData_ForBlueprint(TSubclassO
 
 	return Data.Amount;
 }
-
-int32 ARaidBossCharacterBase::IncreaseOrAddInventoryData(URaidBossItemBase* NewItem, int32 Amount/* = 1*/)
-{
-	if (NewItem == nullptr || NewItem->GetAbilityTriggerTag().IsValid() == false || Amount <= 0)
-	{
-		return 0;
-	}
-	
-	FInventoryData& Data = InventoryData.FindOrAdd(NewItem->GetAbilityTriggerTag());
-	Data.Amount += Amount;
-	
-	if (OwningItemSpecHandle.Find(NewItem->GetAbilityTriggerTag()) == nullptr)
-	{
-		AddNewItemData(NewItem, Data);
-	}
-	else if (Data.Amount == 1)
-	{
-		Data.Item = NewItem;
-		NotifyNewItemAdded.Broadcast(NewItem, Data.Amount);//여기서 밸류값 추가해야함
-	}
-	else
-	{
-		NotifyItemAmountChanged.Broadcast(NewItem->GetAbilityTriggerTag(), Data.Amount);
-	}
-
-	return Data.Amount;
-}
+// IncreaseOrAddInventoryData(uint8 ItemKey, int32 Amount)메소드 확인 후 제거 예정
+// int32 ARaidBossCharacterBase::IncreaseOrAddInventoryData(URaidBossItemBase* NewItem, int32 Amount/* = 1*/)
+// {
+// 	if (NewItem == nullptr || NewItem->GetAbilityTriggerTag().IsValid() == false || Amount <= 0)
+// 	{
+// 		return 0;
+// 	}
+// 	
+// 	FInventoryData& Data = InventoryData.FindOrAdd(NewItem->GetAbilityTriggerTag());
+// 	Data.Amount += Amount;
+// 	
+// 	if (OwningItemSpecHandle.Find(NewItem->GetAbilityTriggerTag()) == nullptr)
+// 	{
+// 		AddNewItemData(NewItem, Data);
+// 	}
+// 	else if (Data.Amount == 1)
+// 	{
+// 		Data.Item = NewItem;
+// 		NotifyNewItemAdded.Broadcast(NewItem, Data.Amount);
+// 	}
+// 	else
+// 	{
+// 		NotifyItemAmountChanged.Broadcast(NewItem->GetAbilityTriggerTag(), Data.Amount);
+// 	}
+//
+// 	return Data.Amount;
+// }
 
 void ARaidBossCharacterBase::RemoveItemAbility(FGameplayTag InAbilityTriggerTag)
 {

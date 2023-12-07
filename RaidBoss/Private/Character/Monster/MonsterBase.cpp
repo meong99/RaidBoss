@@ -3,7 +3,9 @@
 #include "Character/Monster/MonsterBase.h"
 #include "Character/RaidBossAnimBase.h"
 #include "Character/Enemy/RaidBossEnemyControllerBase.h"
+#include "Character/Monster/MonsterSpawner.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "UI/HealthBarWidget.h"
 
 AMonsterBase::AMonsterBase()
 {
@@ -15,6 +17,10 @@ AMonsterBase::AMonsterBase()
 	GetCharacterMovement()->MaxWalkSpeedCrouched = 100;
 	GetCharacterMovement()->bRequestedMoveUseAcceleration = true;
 	bUseControllerRotationYaw = false;
+
+	HealthBar = CreateDefaultSubobject<UWidgetComponent>("Health Bar");
+	HealthBar->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+	HealthBar->SetVisibility(false);
 	
 	Tags.Add("Enemy");
 }
@@ -27,23 +33,31 @@ void AMonsterBase::Tick(float DeltaSeconds)
 void AMonsterBase::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	SetGenericTeamId({MONSTER_TEAM_ID});
+	
+	OwnerSpawner = Cast<AMonsterSpawner>(Owner);
+}
+
+void AMonsterBase::Destroyed()
+{
+	if (HealthBar && HealthBar->GetWidget())
+	{
+		HealthBar->GetWidget()->RemoveFromParent();
+	}
+	Super::Destroyed();
 }
 
 void AMonsterBase::PossessedBy(AController* NewController)
 {
-	if (MonsterKey != INDEX_NONE)
-	{
-		FMonsterInfo* MonsterInfo = GetMonsterInfo();
-	
-		if (MonsterInfo)
-		{
-			InitMonster(*MonsterInfo);
-			ApplyCharacterDefaultSpecEffectToSelf();
-			EquipWeapon(MonsterInfo->MonsterWeaponKey);
-		}
-	}
-	
 	Super::PossessedBy(NewController);
+
+	MonsterController = Cast<ARaidBossEnemyControllerBase>(NewController);
+	
+	if (UHealthBarWidget* HealthBarWidget = Cast<UHealthBarWidget>(HealthBar->GetWidget()))
+	{
+		HealthBarWidget->SetWidgetOwner(this);
+	}
 }
 
 void AMonsterBase::InitMonster(const FMonsterInfo& MonsterInfoRow)
@@ -58,31 +72,53 @@ void AMonsterBase::InitMonster(const FMonsterInfo& MonsterInfoRow)
 	InitAnimationData(MonsterInfoRow.MonsterAnimationTable);
 }
 
-FMonsterInfo* AMonsterBase::GetMonsterInfo() const
+FVector AMonsterBase::GetSpawnerLocation() const
 {
-	const TCHAR*	MonsterDataTablePath = MONSTER_DATATABLE_PATH;
-	
-	UDataTable* MonsterDataTable = LoadObject<UDataTable>(nullptr, MonsterDataTablePath);
+	FVector SpawnerLocation = {};
 
-	if (MonsterDataTable)
+	if (OwnerSpawner.IsValid())
 	{
-		TArray<FMonsterInfo*> MonsterInfos;
-		FMonsterInfo* MonsterData = nullptr;
-
-		MonsterDataTable->GetAllRows<FMonsterInfo>(FString(), MonsterInfos);
-
-		if (MonsterInfos.IsValidIndex(MonsterKey))
-		{
-			MonsterData = MonsterInfos[MonsterKey];
-		}
-		
-		return MonsterData;
+		SpawnerLocation = OwnerSpawner->GetActorLocation();
 	}
+	
+	return SpawnerLocation;
+}
 
-	return nullptr;
+float AMonsterBase::GetDistanceBetweenSpawner() const
+{
+	float	DistanceBetweenSpawner = 0;
+
+	if (OwnerSpawner.IsValid())
+	{
+		DistanceBetweenSpawner = (OwnerSpawner->GetActorLocation() - GetActorLocation()).Length();
+	}
+	
+	return DistanceBetweenSpawner;
 }
 
 ARaidBossEnemyControllerBase* AMonsterBase::GetRiadBossEnemyController() const
 {
-	return Cast<ARaidBossEnemyControllerBase>(GetController());
+	return MonsterController.Get();
+}
+
+void AMonsterBase::SetMonsterHealthBarVisibility(bool NewVisible) const
+{
+	if (HealthBar)
+	{
+		if (MonsterType == EMonsterType::BossMonster)
+		{
+			if (HealthBar->GetWidget() && NewVisible)
+			{
+				HealthBar->GetWidget()->AddToViewport();
+			}
+			else if (HealthBar->GetWidget() && !NewVisible)
+			{
+				HealthBar->GetWidget()->RemoveFromParent();
+			}
+		}
+		else if (MonsterType == EMonsterType::NormalMonster)
+		{
+			HealthBar->SetVisibility(NewVisible);
+		}
+	}
 }

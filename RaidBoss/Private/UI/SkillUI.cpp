@@ -14,11 +14,15 @@ void USkillUI::RegisterAllSkillsToUI()
 
 void USkillUI::NativeOnInitialized()
 {
+	Super::NativeOnInitialized();
+	
 	RegisterAllSkillsToUI();
 }
 
 void USkillUI::NativeConstruct()
 {
+	Super::NativeConstruct();
+
 	ARaidBossPlayerControllerBase*	ControllerBase = Cast<ARaidBossPlayerControllerBase>(GetOwningPlayer());
 
 	if (ControllerBase)
@@ -37,6 +41,8 @@ void USkillUI::NativeDestruct()
 		ControllerBase->SetInputMode(FInputModeGameOnly{});
 		ControllerBase->SetShowMouseCursor(false);
 	}
+	
+	Super::NativeDestruct();
 }
 
 const TArray<TSubclassOf<URaidBossSkillBase>>* USkillUI::GetPlayerSkills() const

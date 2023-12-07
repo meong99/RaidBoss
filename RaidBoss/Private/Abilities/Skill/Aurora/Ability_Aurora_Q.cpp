@@ -13,6 +13,7 @@
 
 UAbility_Aurora_Q::UAbility_Aurora_Q()
 {
+	SkillDamageRate = 2.5;
 }
 
 bool UAbility_Aurora_Q::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -64,6 +65,11 @@ void UAbility_Aurora_Q::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 	if (PlayMontageAndWait && DashCharacterTask && WaitAttackPointEvent)
 	{
+		ApplyCooldown(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo);
+		
+		OwnerCharacter->SetCanActivateNormalAttack(false);
+		OwnerCharacter->SetIsMovementBlocked(true);
+		
 		PlayMontageAndWait->OnCancelled.AddDynamic(this, &UAbility_Aurora_Q::NotifyMontageEndedCallBack);
 		PlayMontageAndWait->OnInterrupted.AddDynamic(this, &UAbility_Aurora_Q::NotifyMontageEndedCallBack);
 		PlayMontageAndWait->OnCompleted.AddDynamic(this, &UAbility_Aurora_Q::NotifyMontageEndedCallBack);
@@ -74,6 +80,10 @@ void UAbility_Aurora_Q::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		PlayMontageAndWait->ReadyForActivation();
 		WaitAttackPointEvent->ReadyForActivation();
 	}
+	else
+	{
+		NotifyMontageEndedCallBack();
+	}
 }
 
 void UAbility_Aurora_Q::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -82,6 +92,8 @@ void UAbility_Aurora_Q::EndAbility(const FGameplayAbilitySpecHandle Handle, cons
 	bIsFirstActivation = true;
 	OwnerCharacter->GetCapsuleComponent()->OnComponentBeginOverlap.RemoveDynamic(this, &UAbility_Aurora_Q::NotifyBeginOverlappedCallBack);
 	OwnerCharacter->GetCapsuleComponent()->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
+	OwnerCharacter->SetCanActivateNormalAttack(true);
+	OwnerCharacter->SetIsMovementBlocked(false);
 	TargetActors.Reset();
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
@@ -112,11 +124,15 @@ void UAbility_Aurora_Q::NotifyBeginOverlappedCallBack(UPrimitiveComponent* Overl
 		return;
 	}
 	
-	FGameplayAbilityTargetDataHandle TargetData = UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(SweepResult.GetActor());
+	FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(EffectClass);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Damage_SetByCaller, SkillDamageRate);
+		
+	FGameplayAbilityTargetDataHandle TargetDataHandle = CreateAbilityTargetDataFromActor(SweepResult.GetActor());
+		
+	TArray<FActiveGameplayEffectHandle> AppliedEffectsHandle =
+		ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo,
+			EffectSpecHandle, TargetDataHandle);
 	
-	TArray<FActiveGameplayEffectHandle> EffectHandles =
-		ApplyGameplayEffectToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, TargetData, EffectClass, 1);
-
 	FGameplayEventData EventData;
 
 	EventData.Instigator = OwnerCharacter;

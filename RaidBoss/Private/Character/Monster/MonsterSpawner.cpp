@@ -8,40 +8,78 @@ AMonsterSpawner::AMonsterSpawner()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
+void AMonsterSpawner::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	DestroyDeadMonsters();
+
+	Timer += DeltaTime;
+	
+	if (Timer >= SpawnTimeCycle)
+	{
+		Timer = 0;
+		
+		SpawnMonster();
+	}
+}
+
 void AMonsterSpawner::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	Timer = SpawnTimeCycle;
 
 	SetActorTickEnabled(false);
 }
 
-bool AMonsterSpawner::RequestSpawningMonster(FMonsterInfo MonsterInfoToSpawn)
+void AMonsterSpawner::RequestToSpawnMonster()
+{
+	SetActorTickEnabled(true);
+}
+
+void AMonsterSpawner::RequestToStopSpawning()
+{
+	SetActorTickEnabled(false);
+}
+
+bool AMonsterSpawner::SpawnMonster()
 {
 	UWorld* CurrentWorld = GetWorld();
-	
-	if (CurrentWorld && MonsterInfoToSpawn.MonsterType != EMonsterType::None)
+
+	if (MonsterDataTable == nullptr && MonsterKey == INDEX_NONE)
 	{
-		AMonsterBase*	SpawnedMonster = CurrentWorld->SpawnActorDeferred<AMonsterBase>(MonsterInfoToSpawn.MonsterClass, FTransform::Identity, this);
+		return false;
+	}
+	
+	const FMonsterInfo*	MonsterInfo = MonsterDataTable->FindRow<FMonsterInfo>(
+										  *FString::FromInt(MonsterKey), FString());
+	
+	if (CurrentWorld && MonsterInfo && MonsterInfo->MonsterType != EMonsterType::None)
+	{
+		AMonsterBase*	SpawnedMonster = CurrentWorld->SpawnActorDeferred<AMonsterBase>(MonsterInfo->MonsterClass, FTransform::Identity, this);
 
 		if (SpawnedMonster == nullptr)
 		{
 			return false;
 		}
 
-		SpawnedMonster->InitMonster(MonsterInfoToSpawn);
+		SpawnedMonster->InitMonster(*MonsterInfo);
 		SpawnedMonsters.Add(SpawnedMonster);
+
 		SpawnedMonster->FinishSpawning(GetTransform());
 		SpawnedMonster->SpawnDefaultController();
-
-		if (MonsterInfoToSpawn.MonsterWeaponKey.WeaponType != EWeaponType::None)
+		
+		if (MonsterInfo->MonsterWeaponKey.WeaponType != EWeaponType::None)
 		{
-			SpawnedMonster->EquipWeapon(MonsterInfoToSpawn.MonsterWeaponKey);
+			SpawnedMonster->EquipWeapon(MonsterInfo->MonsterWeaponKey);
 		}
 
 		SetActorTickEnabled(true);
 		
 		return true;
 	}
+	
 	return false;
 }
 
@@ -75,16 +113,3 @@ void AMonsterSpawner::DestroyDeadMonsters()
 		}
 	}
 }
-
-void AMonsterSpawner::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	DestroyDeadMonsters();
-
-	if (SpawnedMonsters.IsEmpty())
-	{
-		SetActorTickEnabled(false);
-	}
-}
-

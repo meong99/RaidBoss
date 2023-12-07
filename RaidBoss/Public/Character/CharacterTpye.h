@@ -23,6 +23,8 @@ struct FCharacterAnimations
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<UAnimMontage>	DeathMontage;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<UAnimMontage>	TookDamage;
 };
 
 USTRUCT(BlueprintType)

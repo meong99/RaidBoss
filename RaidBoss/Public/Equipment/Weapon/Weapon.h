@@ -6,7 +6,6 @@
 #include "GameplayAbilitySpecHandle.h"
 #include "GameplayEffectTypes.h"
 #include "Equipment/Weapon/WeaponInterface.h"
-#include "Item/WeaponDataAsset.h"
 #include "GameFramework/Actor.h"
 #include "Weapon.generated.h"
 
@@ -44,6 +43,8 @@ private:
 	void			GiveAbilityToAsc();
 	void			AttachToOwner();
 	void			DetachToOwner();
+
+	// 변경 필요 -> 스탯이 additive로 별도로 들어가는데 그냥 Duration넣어서 무기 장착 해제시 공격력 낮추는게 나을 듯 
 	void			ApplyWeaponStatToOwner();
 	void			GetAnimDataFromOwner();
 	

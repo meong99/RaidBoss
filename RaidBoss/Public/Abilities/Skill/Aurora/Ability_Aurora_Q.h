@@ -69,7 +69,7 @@ protected:
 	 */
 	
 	UPROPERTY()
-	UAT_DashCharacter*	DashCharacterTask;
+	UAT_DashCharacter*	DashCharacterTask = nullptr;
 
 	bool	bIsFirstActivation = true;
 

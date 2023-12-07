@@ -7,8 +7,9 @@ UInteractionalUIAction::UInteractionalUIAction(const FObjectInitializer& ObjectI
 {
 }
 
-int32 UInteractionalUIAction::ActivateUIAction()
+int32 UInteractionalUIAction::ActivateUIAction(FUIActionData ActionData) const
 {
-	OnActionActivated();
+	OnActionActivated(ActionData);
+	
 	return 0;
 }

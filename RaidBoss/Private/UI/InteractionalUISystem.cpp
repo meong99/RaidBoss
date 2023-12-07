@@ -13,30 +13,30 @@ UInteractionalUISystem::UInteractionalUISystem()
 
 int32 UInteractionalUISystem::HandleUITriggerEvent(FGameplayTag TriggerTag) const
 {
-	const auto& UIArray = InteractionalUIes.FindRef(TriggerTag);
+	const FInteractionalUIHandle& InteractionalUIHandle = InteractionalUIMap.FindRef(TriggerTag);
 
-	if (UIArray.IsEmpty())
+	if (InteractionalUIHandle.InteractionalUI.IsEmpty())
 	{
 		return 0;
 	}
 
 	int32 AddedWidgets = 0;
 	
-	for (const auto InteractionalUI : UIArray)
+	for (int i = 0; i < InteractionalUIHandle.InteractionalUI.Num(); i++)
 	{
-		if (IsValid(InteractionalUI) == false)
+		if (InteractionalUIHandle.InteractionalUI.IsValidIndex(i) == false)
 		{
 			continue;
 		}
 		
-		if (InteractionalUI->IsInViewport())
+		if (InteractionalUIHandle.InteractionalUI[i]->IsInViewport())
 		{
-			InteractionalUI->RemoveFromParent();
+			InteractionalUIHandle.InteractionalUI[i]->RemoveFromParent();
 		}
 		else
 		{
-			RemoveOtherUIWithRemoveTag(InteractionalUI->GetUIRemoveTags());
-			InteractionalUI->AddToViewport();
+			RemoveOtherUIWithRemoveTag(InteractionalUIHandle.InteractionalUI[i]->GetUIRemoveTags());
+			InteractionalUIHandle.InteractionalUI[i]->AddToViewport();
 
 			AddedWidgets++;
 		}
@@ -45,20 +45,20 @@ int32 UInteractionalUISystem::HandleUITriggerEvent(FGameplayTag TriggerTag) cons
 	return AddedWidgets;
 }
 
-int32 UInteractionalUISystem::HandleUIActionTriggerEvent(FGameplayTag TriggerTag) const
+int32 UInteractionalUISystem::HandleUIActionTriggerEvent(FGameplayTag TriggerTag, FUIActionData ActionData) const
 {
-	const auto& UIActionArray = InteractionalUIActions.FindRef(TriggerTag);
+	const FInteractionalUIActionHandle& UIActionHandle = InteractionalUIActionMap.FindRef(TriggerTag);
 
-	if (UIActionArray.IsEmpty())
+	if (UIActionHandle.InteractionalUIActions.IsEmpty())
 	{
 		return 0;
 	}
 
 	int32 ActivatedActions = 0;
 	
-	for (const auto InteractionalAction : UIActionArray)
+	for (const UInteractionalUIAction* InteractionalAction : UIActionHandle.InteractionalUIActions)
 	{
-		ActivatedActions += InteractionalAction->ActivateUIAction();
+		ActivatedActions += InteractionalAction->ActivateUIAction(ActionData);
 	}
 
 	return ActivatedActions;
@@ -67,16 +67,6 @@ int32 UInteractionalUISystem::HandleUIActionTriggerEvent(FGameplayTag TriggerTag
 void UInteractionalUISystem::BeginPlay()
 {
 	Super::BeginPlay();
-}
-
-void UInteractionalUISystem::TriggerTagParsing()
-{
-	ARaidBossPlayerControllerBase*	ControllerBase = Cast<ARaidBossPlayerControllerBase>(GetOwner());
-
-	if (ControllerBase)
-	{
-		InteractionalUIParsing(ControllerBase->GetInteractionalUIArray());
-	}
 }
 
 void UInteractionalUISystem::InteractionalUIParsing(const TArray<TSubclassOf<UInteractionalUI>>& InteractionalUIArray)
@@ -99,8 +89,8 @@ void UInteractionalUISystem::InteractionalUIParsing(const TArray<TSubclassOf<UIn
 
 		if (InteractionalUI && InteractionalUI->GetUITriggerTag().IsValid())
 		{
-			auto& UIArray = InteractionalUIes.FindOrAdd(InteractionalUI->GetUITriggerTag());
-			UIArray.Add(InteractionalUI);
+			FInteractionalUIHandle& InteractionalUIHandle = InteractionalUIMap.FindOrAdd(InteractionalUI->GetUITriggerTag());
+			InteractionalUIHandle.InteractionalUI.Add(InteractionalUI);
 
 			AddRemovalTagKey(InteractionalUI);
 			
@@ -117,19 +107,18 @@ void UInteractionalUISystem::AddRemovalTagKey(UInteractionalUI* InteractionalUI)
 
 	for (auto RemoveTag : RemoveTags)
 	{
-		RemovalUIByTag.Add(RemoveTag);
+		RemovalUIByTagMap.Add(RemoveTag);
 	}
-
 }
 
 void UInteractionalUISystem::InteractionalUIActionParsing(const TArray<UInteractionalUIAction*>& InteractionalUIActionArray)
 {
-	for (const auto& InteractionalUIAction : InteractionalUIActionArray)
+	for (UInteractionalUIAction* InteractionalUIAction : InteractionalUIActionArray)
 	{
 		if (InteractionalUIAction)
 		{
-			auto& UIActionArray = InteractionalUIActions.FindOrAdd(InteractionalUIAction->GetActionTriggerTag());
-			UIActionArray.Add(InteractionalUIAction);
+			FInteractionalUIActionHandle& UIActionHandle = InteractionalUIActionMap.FindOrAdd(InteractionalUIAction->GetActionTriggerTag());
+			UIActionHandle.InteractionalUIActions.Add(InteractionalUIAction);
 		}
 	}
 }
@@ -138,22 +127,24 @@ void UInteractionalUISystem::FindAndAddRemovalUI()
 {
 	TSet<FGameplayTag> OutRemoveTags;
 	
-	RemovalUIByTag.GetKeys(OutRemoveTags);
+	RemovalUIByTagMap.GetKeys(OutRemoveTags);
 
-	for (const auto& RemoveTag : OutRemoveTags)
+	for (const FGameplayTag& RemoveTag : OutRemoveTags)
 	{
-		if (auto RemovalUIArray = RemovalUIByTag.Find(RemoveTag))
+		FRemoveUIHandle* RemoveUIHandle = RemovalUIByTagMap.Find(RemoveTag);
+		
+		if (RemoveUIHandle)
 		{
-			TArray<UInteractionalUI*>* UIesByTag = InteractionalUIes.Find(RemoveTag);
+			FInteractionalUIHandle* InteractionalUIHandle = InteractionalUIMap.Find(RemoveTag);
 
-			if (UIesByTag == nullptr)
+			if (InteractionalUIHandle == nullptr)
 			{
 				break;
 			}
 			
-			for (auto Ui : *UIesByTag)
+			for (UInteractionalUI* Ui : InteractionalUIHandle->InteractionalUI)
 			{
-				RemovalUIArray->Add(Ui);
+				RemoveUIHandle->InteractionalUI.Add(Ui);
 			}
 		}
 	}
@@ -163,18 +154,18 @@ void UInteractionalUISystem::RemoveOtherUIWithRemoveTag(FGameplayTagContainer Re
 {
 	for (auto RemoveTag : RemoveTags)
 	{
-		const TArray<UInteractionalUI*>* UIArray = RemovalUIByTag.Find(RemoveTag);
+		const FRemoveUIHandle* RemoveUIHandle = RemovalUIByTagMap.Find(RemoveTag);
 	
-		if (UIArray == nullptr)
+		if (RemoveUIHandle == nullptr)
 		{
 			return;
 		}
 		
-		for (const auto& UI : *UIArray)
+		for (UInteractionalUI* InteractionalUI : RemoveUIHandle->InteractionalUI)
 		{
-			if (UI)
+			if (InteractionalUI)
 			{
-				UI->RemoveFromParent();
+				InteractionalUI->RemoveFromParent();
 			}
 		}
 	}

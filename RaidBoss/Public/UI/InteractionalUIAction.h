@@ -7,6 +7,14 @@
 #include "UObject/Object.h"
 #include "InteractionalUIAction.generated.h"
 
+USTRUCT(BlueprintType)
+struct FUIActionData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Action Data")
+	UObject*	Object1;
+};
 /**
  * 
  */
@@ -17,10 +25,10 @@ class RAIDBOSS_API UInteractionalUIAction : public UObject
 
 public:
 	UInteractionalUIAction(const FObjectInitializer & ObjectInitializer);
-	virtual int32	ActivateUIAction();
+	virtual int32	ActivateUIAction(FUIActionData ActionData) const;
 
 	UFUNCTION(BlueprintImplementableEvent, Category="Raid Boss | UI Action")
-	void OnActionActivated();
+	void OnActionActivated(FUIActionData ActionData) const;
 	
 	FGameplayTag	GetActionTriggerTag() const { return ActionTriggerTag; }
 	

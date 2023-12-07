@@ -32,7 +32,7 @@ EBTNodeResult::Type URaidBossBTTask_PatrolLocation::ExecuteTask(UBehaviorTreeCom
 	
 	if (navSystem->GetRandomPointInNavigableRadius(origin, SearchRadius, location))
 	{
-		blackboard->SetValueAsVector(BBKey::PATROL_LOCATION, location.Location);
+		blackboard->SetValueAsVector(BBKey::DESTINATION, location.Location);
 		return EBTNodeResult::Succeeded;
 	}
 

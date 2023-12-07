@@ -23,11 +23,13 @@ struct FItemAbilityInformation
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FName					ItemName;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TObjectPtr<UTexture2D>	ItemTexture;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int32					BuyingPrice;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int32					SellingPrice;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<UTexture2D>	ItemTexture;
+	UPROPERTY(BlueprintReadOnly)
+	uint8					ItemKey = INDEX_NONE;
 };
 
 UCLASS(Blueprintable, EditInlineNew, DefaultToInstanced)
@@ -37,21 +39,28 @@ class RAIDBOSS_API URaidBossItemBase : public URaidBossAbilityBase
 
 public:
 	UTexture2D*				GetItemTexture() const;
+	
 	EITemCategory			GetItemCategory() const;
+	
 	FItemAbilityInformation	GetItemInfo() const;
+	
+	uint8					GetItemKey() const { return ITemInfo.ItemKey; }
+
+	void	SetItemKey(uint8 ItemKey) { ITemInfo.ItemKey = ItemKey; }
 	
 protected:
 		
 	/*
-	 *	Changed on Initialize * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Item")
 	FItemAbilityInformation			ITemInfo;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Item")
 	TSubclassOf<UGameplayEffect>	ItemEffect;
-	
+
 	/*
-	 *	Changed on every cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
 };

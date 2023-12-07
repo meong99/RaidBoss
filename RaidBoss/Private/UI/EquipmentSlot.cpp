@@ -34,6 +34,8 @@ void UEquipmentSlot::NotifyEquipmentChangedCallback(FGameplayTag InAbilityTrigge
 
 void UEquipmentSlot::NativeOnInitialized()
 {
+	Super::NativeOnInitialized();
+	
 	BackgroundImage->SetBrushFromTexture(DefaultTexture);
 
 	ARaidBossCharacterBase*	CharacterBase = Cast<ARaidBossCharacterBase>(GetOwningPlayerPawn());
@@ -47,6 +49,8 @@ void UEquipmentSlot::NativeOnInitialized()
 bool UEquipmentSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
 	UDragDropOperation* InOperation)
 {
+	Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
+	
 	if (InOperation == nullptr)
 	{
 		return false;
@@ -63,6 +67,8 @@ bool UEquipmentSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEv
 void UEquipmentSlot::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent,
 	UDragDropOperation*& OutOperation)
 {
+	Super::NativeOnDragDetected(InGeometry, InMouseEvent, OutOperation);
+	
 	if (AbilityTriggerTag.IsValid())
 	{
 		BindImage->SetDesiredSizeOverride(FVector2d(BindImage->Brush.ImageSize.X, BindImage->Brush.ImageSize.Y));
@@ -76,6 +82,8 @@ void UEquipmentSlot::NativeOnDragDetected(const FGeometry& InGeometry, const FPo
 
 FReply UEquipmentSlot::NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
+	Super::NativeOnMouseButtonDoubleClick(InGeometry, InMouseEvent);
+	
 	if (AbilityTriggerTag.IsValid())
 	{
 		UnEquipItem();

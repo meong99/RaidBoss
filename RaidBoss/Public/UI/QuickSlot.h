@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "RaidBossSlotWidget.h"
+#include "Components/ProgressBar.h"
+#include "Components/TextBlock.h"
 #include "QuickSlot.generated.h"
 
 class URaidBossSkillBase;
@@ -33,9 +35,35 @@ protected:
 
 	void	RemoveOtherSlot();
 	
-	void	SendGameplayEventWithTag(const FGameplayTag& TagToAdd = FGameplayTag{}) const;
+	void	SendGameplayEventWithTag(const FGameplayTag& TagToAdd = FGameplayTag{});
 
 protected:
+	/*
+	 *	Changed on Initialize * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	//
+	UPROPERTY(Transient, BlueprintReadOnly, Category="Raid Boss | QuickSlot", meta=(BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation>	CooldownFinishedAnimation;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | QuickSlot", meta=(BindWidget))
+	TObjectPtr<UProgressBar>		CooldownBar;
+
+	/*
+	 *	Changed on every cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	// 스킬 쿨타임을 보여주는 텍스트
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | QuickSlot", meta=(BindWidget))
+	TObjectPtr<UTextBlock>			CoolTime;
+
+	// 해당 퀵슬롯에 등록된 다른 슬롯(스킬, 인벤토리)
 	UPROPERTY()
 	TObjectPtr<URaidBossSlotWidget>	OwningSlot;
+
+	// 현재 슬롯의 남은 쿨타임
+	float	RemainingCoolDown = 0;
+
+	// 현재 슬롯의 전체 쿨타임
+	float	OriginCoolDown = 0;
+
+	bool	bShouldPlayFinishAnimation = false;
 };

@@ -12,10 +12,8 @@ class UImage;
 UENUM(BlueprintType)
 enum class ESlotType : uint8
 {
-	ItemSlot UMETA(DisplayName = "ItemSlot"),
+	ConsumableSlot UMETA(DisplayName = "ItemSlot"),
 	EquipmentSlot UMETA(DisplayName = "EquipSlot"),
-	SkillSlot UMETA(DisplayName = "SkillSlot"),
-	QuickSlot UMETA(DisplayName = "QuickSlot"),
 	None UMETA(DisplayName = "None"),
 };
 
@@ -27,13 +25,14 @@ class RAIDBOSS_API URaidBossSlotWidget : public UUserWidget
 public:
 	virtual void	ActivateThisSlot();
 
+	
 	UTexture2D*	GetTexture() const;
-	int32		GetItemAmount() const;
 	ESlotType	GetSlotType() const { return SlotType; }
+	int32		GetItemAmount() const;
 	const FGameplayTag&	GetAbilityTriggerTag() const { return AbilityTriggerTag; }
 	
+	virtual void	SetItemAmount(IN int32 Amount);
 	void	SetTexture(IN UTexture2D* InTexture);
-	void	SetItemAmount(IN int32 Amount);
 	void	SetSlotType(IN ESlotType InSlotType);
 	
 protected:
@@ -49,7 +48,7 @@ protected:
 	UPROPERTY(EditInstanceOnly, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))
 	TObjectPtr<UTexture2D>		DefaultTexture;
 	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))
-	FString						ItemAmount;
+	int32						ItemAmount;
 	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))
 	ESlotType					SlotType = ESlotType::None;
 	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))

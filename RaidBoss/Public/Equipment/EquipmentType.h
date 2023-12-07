@@ -123,4 +123,6 @@ struct FWeaponData : public FTableRowBase
 	TSubclassOf<UGameplayEffect>				AdditiveEffectToCharacter;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TArray<TSubclassOf<UUserWidget>>			WidgetsToApply;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TObjectPtr<UParticleSystem>					BasicAttackParticle;
 };

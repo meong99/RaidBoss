@@ -4,12 +4,39 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "InteractionalUIAction.h"
 #include "Components/ActorComponent.h"
 #include "InteractionalUISystem.generated.h"
 
-
 class UInteractionalUIAction;
 class UInteractionalUI;
+
+USTRUCT(BlueprintType)
+struct FInteractionalUIHandle
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<UInteractionalUI*> InteractionalUI;
+};
+
+USTRUCT(BlueprintType)
+struct FInteractionalUIActionHandle
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<UInteractionalUIAction*> InteractionalUIActions;
+};
+
+USTRUCT(BlueprintType)
+struct FRemoveUIHandle
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<UInteractionalUI*> InteractionalUI;
+};
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class RAIDBOSS_API UInteractionalUISystem : public UActorComponent
@@ -19,14 +46,19 @@ class RAIDBOSS_API UInteractionalUISystem : public UActorComponent
 public:
 	UInteractionalUISystem();
 
-	int32	HandleUITriggerEvent(FGameplayTag TriggerTag) const;
-	int32	HandleUIActionTriggerEvent(FGameplayTag TriggerTag) const;
+	void	InteractionalUIParsing(const TArray<TSubclassOf<UInteractionalUI>>& InteractionalUIArray);
 	
-	void	TriggerTagParsing();
+	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category="Raid Boss | UI System")
+	int32	HandleUITriggerEvent(FGameplayTag TriggerTag) const;
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category="Raid Boss | UI System")
+	int32	HandleUIActionTriggerEvent(FGameplayTag TriggerTag, FUIActionData ActionData) const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category="Raid Boss | UI System")
+	FInteractionalUIHandle	GetInteractionalUIHandle(FGameplayTag TriggerTag) const {return InteractionalUIMap.FindRef(TriggerTag); }
+	
 protected:
 	virtual void BeginPlay() override;
-	
-	void	InteractionalUIParsing(const TArray<TSubclassOf<UInteractionalUI>>& InteractionalUIArray);
 
 	void	AddRemovalTagKey(UInteractionalUI* InteractionalUI);
 	
@@ -36,11 +68,11 @@ protected:
 	
 	void	RemoveOtherUIWithRemoveTag(FGameplayTagContainer RemoveTags) const;
 	
-	const TMap<FGameplayTag, TArray<UInteractionalUI*>>&		GetInteractionalUIes() const { return InteractionalUIes; }
-	const TMap<FGameplayTag, TArray<UInteractionalUIAction*>>&	GetInteractionalUIActions() const { return InteractionalUIActions; };
-	
 protected:
-	TMap<FGameplayTag, TArray<UInteractionalUI*>>		InteractionalUIes;
-	TMap<FGameplayTag, TArray<UInteractionalUIAction*>> InteractionalUIActions;
-	TMap<FGameplayTag, TArray<UInteractionalUI*>>		RemovalUIByTag;
+	UPROPERTY()
+	TMap<FGameplayTag, FInteractionalUIHandle>	InteractionalUIMap;
+	UPROPERTY()
+	TMap<FGameplayTag, FInteractionalUIActionHandle> InteractionalUIActionMap;
+	UPROPERTY()
+	TMap<FGameplayTag, FRemoveUIHandle>	RemovalUIByTagMap;
 };

@@ -18,7 +18,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category="Ability|Tasks", meta = (DisplayName="FloatingActor",
 		HidePin = "OwningAbility", DefaultToSelf = "OwningAbility", BlueprintInternalUseOnly = "TRUE"))
-	static UAT_FloatingActor* CreateFloatingActorTask(UGameplayAbility* OwningAbility, float InHeight, float InFloatingSpeed,
+	static UAT_FloatingActor* CreateFloatingActorTask(UGameplayAbility* OwningAbility, float InHeight, float InRisingSpeed,
 		float InFloatingTime, float InFallingSpeed);
 
 	virtual void ExternalCancel() override;
@@ -37,7 +37,7 @@ protected:
 	 */
 	
 	float Height;
-	float FloatingSpeed;
+	float RisingSpeed;
 	float FloatingTime;
 	float ActivateTime = 0.f;
 	float FallingSpeed;

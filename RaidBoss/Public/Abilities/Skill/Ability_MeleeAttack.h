@@ -23,7 +23,11 @@ public:
 		const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const override;
 	
 	virtual void OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
-	
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void	OnHitTarget(AActor*	Target);
+
+	virtual float GetSkillRange() const override;
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
@@ -38,17 +42,35 @@ protected:
 	void	NotifyComboResetCallBack(FGameplayEventData Payload);
 	UFUNCTION()
 	void	NotifyCanActivateNextAttackCallBack(FGameplayEventData Payload);
-	
-	void	SetTracePoints(OUT FVector& OutStartPoint,OUT FVector& OutEndPoint);
-	bool	StartTracing(const FVector& StartPoint, const FVector& EndPoint, OUT TArray<FHitResult>& OutHitResults);
-	void	ApplyEffectToTarget();
-	
+
+	void	ApplyEffectToTarget(const TArray<AActor*>& TargetActors);
+
+	void	SetIndicator() override;
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	int32	MaximumCombo = 3;
+	/*
+	 *	Changed at Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	
+	//
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | MeleeAttack")
+	int32	MaximumCombo = 1;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | MeleeAttack")
+	bool	bDrawDebugLine = false;
+	
+	/*
+	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	
+	//
+	UPROPERTY()
+	TArray<UAbilityTask*>	SpawnedIndicatorTasks;
+	
+	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | MeleeAttack")
 	TObjectPtr<AWeapon>			CurrentWeapon;
 	
 	int32	CurrentCombo = ComboInitValue;
-	TArray<TObjectPtr<AActor>>	HitActors;
+	
 	bool	bCanActivateNextAttack = true;
 };

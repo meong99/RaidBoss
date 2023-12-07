@@ -157,8 +157,8 @@ void AWeapon::ApplyWeaponStatToOwner()
 		
 		FGameplayEffectSpecHandle OutGoingSpec = AbilitySystemComponent->MakeOutgoingSpec(WeaponData.AdditiveEffectToCharacter, 1, ContextHandle);
 
-		OutGoingSpec.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Additive_AttackPower, WeaponData.AttackPower);
-		OutGoingSpec.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Additive_AttackRange, WeaponData.AttackRange);
+		OutGoingSpec.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_AttackPower, WeaponData.AttackPower);
+		OutGoingSpec.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_AttackRange, WeaponData.AttackRange);
 
 		AppliedEffectHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*OutGoingSpec.Data);
 	}

@@ -24,7 +24,7 @@ public:
 	FGameplayTag								GetAbilityTriggerTag() const;
 	
 protected:
-	
+	void	SendGameplayEventToActor(AActor* Target, FGameplayTag EventTag, FGameplayEventData Payload);
 	URaidBossAbilitySystemComponent*			GetOwnerAbilityComponent() const;
 	const URaidBossCharacterStatusAttributeSet*	GetOwnerCharacterState() const;
 	
@@ -33,7 +33,8 @@ protected:
 	/*
 	 *	Changed on Initialize * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
-	
+
+	//
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<ARaidBossCharacterBase>			OwnerCharacter;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Raid Boss | Ability base")
@@ -50,5 +51,6 @@ protected:
 	/*
 	 *	Changed on every cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
-	
+
+	//
 };
