@@ -24,6 +24,8 @@ struct FStageData : public FTableRowBase
 	TArray<int32>			MonsterKeysToSpawn;
 };
 
+// 제거 예정
+
 UCLASS()
 class RAIDBOSS_API ARaidBossGameStateBase : public AGameStateBase
 {

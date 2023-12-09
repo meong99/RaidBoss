@@ -10,17 +10,6 @@ UEquipManagement::UEquipManagement()
 	EquipmentFactory = CreateDefaultSubobject<UEquipmentFactory>("Equipment Factory");
 }
 
-void UEquipManagement::TickComponent(float DeltaTime, ELevelTick TickType,
-                                     FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-}
-
-void UEquipManagement::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
 IWeaponInterface* UEquipManagement::Equip(FWeaponKey InWeaponKey)
 {
 	ARaidBossCharacterBase*	OwnerCharacter = Cast<ARaidBossCharacterBase>(GetOwner());

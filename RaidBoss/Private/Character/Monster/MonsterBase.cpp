@@ -2,7 +2,7 @@
 
 #include "Character/Monster/MonsterBase.h"
 #include "Character/RaidBossAnimBase.h"
-#include "Character/Enemy/RaidBossEnemyControllerBase.h"
+#include "Character/Monster/RaidBossEnemyControllerBase.h"
 #include "Character/Monster/MonsterSpawner.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "UI/HealthBarWidget.h"
@@ -25,9 +25,16 @@ AMonsterBase::AMonsterBase()
 	Tags.Add("Enemy");
 }
 
-void AMonsterBase::Tick(float DeltaSeconds)
+void AMonsterBase::PossessedBy(AController* NewController)
 {
-	Super::Tick(DeltaSeconds);
+	Super::PossessedBy(NewController);
+
+	MonsterController = Cast<ARaidBossEnemyControllerBase>(NewController);
+	
+	if (UHealthBarWidget* HealthBarWidget = Cast<UHealthBarWidget>(HealthBar->GetWidget()))
+	{
+		HealthBarWidget->SetWidgetOwner(this);
+	}
 }
 
 void AMonsterBase::BeginPlay()
@@ -48,18 +55,6 @@ void AMonsterBase::Destroyed()
 	Super::Destroyed();
 }
 
-void AMonsterBase::PossessedBy(AController* NewController)
-{
-	Super::PossessedBy(NewController);
-
-	MonsterController = Cast<ARaidBossEnemyControllerBase>(NewController);
-	
-	if (UHealthBarWidget* HealthBarWidget = Cast<UHealthBarWidget>(HealthBar->GetWidget()))
-	{
-		HealthBarWidget->SetWidgetOwner(this);
-	}
-}
-
 void AMonsterBase::InitMonster(const FMonsterInfo& MonsterInfoRow)
 {
 	GetMesh()->SetSkeletalMesh(MonsterInfoRow.SkeletalMesh);
@@ -67,7 +62,7 @@ void AMonsterBase::InitMonster(const FMonsterInfo& MonsterInfoRow)
 	MonsterType = MonsterInfoRow.MonsterType;
 	CharacterDefaultSpec = MonsterInfoRow.MonsterSpec;
 	MonsterReward = MonsterInfoRow.MonsterReward;
-	CurrentPlayerState = EPlayerState::Alive;
+	CurrentCharacterState = ECharacterState::Alive;
 
 	InitAnimationData(MonsterInfoRow.MonsterAnimationTable);
 }
@@ -94,11 +89,6 @@ float AMonsterBase::GetDistanceBetweenSpawner() const
 	}
 	
 	return DistanceBetweenSpawner;
-}
-
-ARaidBossEnemyControllerBase* AMonsterBase::GetRiadBossEnemyController() const
-{
-	return MonsterController.Get();
 }
 
 void AMonsterBase::SetMonsterHealthBarVisibility(bool NewVisible) const

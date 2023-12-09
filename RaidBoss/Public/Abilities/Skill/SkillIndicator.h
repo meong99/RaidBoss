@@ -14,16 +14,28 @@ class RAIDBOSS_API ASkillIndicator : public AActor
 public:
 	ASkillIndicator();
 
-	virtual void Tick(float DeltaTime) override;
-
+public:
+/*
+ *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ */
 	void	SetIndicatorColor(FColor InColor) { IndicatorColor = InColor; }
+	
 protected:
-	virtual void BeginPlay() override;
+	
+/*
+ *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ */
 
-protected:
+	//
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Skill Indicator")
 	TObjectPtr<UDecalComponent>	IndicatorDecal;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Skill Indicator")
-	FColor IndicatorColor = FColor::Blue;
+	FColor						IndicatorColor = FColor::Blue;
+	
+/*
+ *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ */
+	
+	//
 };

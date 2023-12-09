@@ -17,10 +17,10 @@ class RAIDBOSS_API AMonsterSpawner : public AActor
 public:
 	AMonsterSpawner();
 	
-	virtual void Tick(float DeltaTime) override;
+	virtual void	Tick(float DeltaTime) override;
 	
 protected:
-	virtual void BeginPlay() override;
+	virtual void	BeginPlay() override;
 
 public:
 
@@ -29,13 +29,16 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Monster Spawner")
 	void	RequestToStopSpawning();
+
+	void	ResetSpawner();
 	
-	UFUNCTION(BlueprintCallable)
 	int32	GetCurrentSpawnedMonsterNumber() const;
 	
-	int32	GetDeadMonsterNumber() const;
-	
-	void	ResetSpawner();
+/*
+ *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ */
+	UFUNCTION(BlueprintCallable)
+	int32	GetDeadMonsterNumber() const { return DeadMonsterNumber; }
 	
 protected:
 	bool	SpawnMonster();
@@ -44,13 +47,16 @@ protected:
 
 protected:
 	/*
-	 *	Changed on Initialize * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
 	
 	//
 	UPROPERTY(EditDefaultsOnly, Category="Raid Boss | Monster Spawner")
 	TObjectPtr<UDataTable>	MonsterDataTable;
 
+	UPROPERTY(EditAnywhere, Category="Raid Boss | Monster Spawner")
+	int32	MaximumSpawnMonster = 2;
+	
 	UPROPERTY(EditAnywhere, Category="Raid Boss | Monster Spawner")
 	int32	MonsterKey = INDEX_NONE;
 	
@@ -59,13 +65,14 @@ protected:
 	float	SpawnTimeCycle = 30;
 	
 	/*
-	 *	Changed on every cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
 	
 	//
+	UPROPERTY()
 	TArray<AMonsterBase*>	SpawnedMonsters;
 
-	int32					DeadMonsterNumber = 0;
+	int32	DeadMonsterNumber = 0;
 
 	float	Timer;
 };

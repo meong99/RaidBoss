@@ -10,6 +10,7 @@
 
 class UAbilityTask_WaitGameplayEvent;
 class AWeapon;
+
 /**
  * 
  */
@@ -19,36 +20,45 @@ class RAIDBOSS_API UAbility_MeleeAttack : public URaidBossSkillBase
 	GENERATED_BODY()
 
 public:
-	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	virtual bool	CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const override;
 	
-	virtual void OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
+	virtual void	OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
+	
+protected:
+	virtual void	ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	
+	virtual void	EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+	
+public:
+
+	virtual float	GetSkillRange() const override;
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void	OnHitTarget(AActor*	Target);
-
-	virtual float GetSkillRange() const override;
-protected:
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
-	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 	
+protected:
+
+	virtual void	SetIndicator() override;
+
 	UFUNCTION()
 	void	NotifyMontageCanceledCallBack();
+	
 	UFUNCTION()
 	void	NotifyAttackPointComesCallBack(FGameplayEventData Payload);
+	
 	UFUNCTION()
 	void	NotifyComboResetCallBack(FGameplayEventData Payload);
+	
 	UFUNCTION()
 	void	NotifyCanActivateNextAttackCallBack(FGameplayEventData Payload);
 
 	void	ApplyEffectToTarget(const TArray<AActor*>& TargetActors);
-
-	void	SetIndicator() override;
 protected:
 	/*
-	 *	Changed at Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
 	
 	//
@@ -68,7 +78,7 @@ protected:
 	TArray<UAbilityTask*>	SpawnedIndicatorTasks;
 	
 	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | MeleeAttack")
-	TObjectPtr<AWeapon>			CurrentWeapon;
+	TObjectPtr<AWeapon>		CurrentWeapon;
 	
 	int32	CurrentCombo = ComboInitValue;
 	

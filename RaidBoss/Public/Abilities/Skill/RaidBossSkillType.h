@@ -39,3 +39,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int						MinimumSkillLevel = 0;
 };
+
+enum ESkillRequestType
+{
+	None,
+	IncreaseSkillLevel,
+	DecreaseSkillLevel
+};

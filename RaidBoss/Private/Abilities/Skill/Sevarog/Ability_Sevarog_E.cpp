@@ -72,47 +72,6 @@ void UAbility_Sevarog_E::EndAbility(const FGameplayAbilitySpecHandle Handle, con
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
-void UAbility_Sevarog_E::AttackPointCallback(FGameplayEventData Payload)
-{
-	if (AttackPointCount == 0)
-	{
-		AttackPointCount++;
-		
-		if (Cast<AMonsterBase>(OwnerCharacter))
-		{
-			SetIndicator();
-		}
-		
-		if (AimedTarget)
-		{
-			AttackLocation = GetFloorUnderTheTarget(AimedTarget);
-		}
-		else
-		{
-			AttackLocation = GetFloorAtCameraTracingLocation();
-		}
-	}
-	else if (AttackPointCount == 1)
-	{
-		AttackPointCount++;
-		URaidBossLibrary::SpawnEmitterAtLocation(GetWorld(), Particle, {FRotator::ZeroRotator, AttackLocation, {1.5, 1.5, 1.5}});
-	}
-	else
-	{
-		for (auto Element : SpawnedIndicatorTasks)
-		{
-			Element->ExternalCancel();
-		}
-		AttackPointCount = 0;
-		AttackTargetsInAttackLocation();
-	}
-}
-
-void UAbility_Sevarog_E::EndAbilityCallback()
-{
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-}
-
 void UAbility_Sevarog_E::SetIndicator()
 {
 	for (auto Indicator : TestIndicators)
@@ -170,6 +129,47 @@ void UAbility_Sevarog_E::SetIndicator()
 			}
 		}
 	}
+}
+
+void UAbility_Sevarog_E::AttackPointCallback(FGameplayEventData Payload)
+{
+	if (AttackPointCount == 0)
+	{
+		AttackPointCount++;
+		
+		if (Cast<AMonsterBase>(OwnerCharacter))
+		{
+			SetIndicator();
+		}
+		
+		if (AimedTarget)
+		{
+			AttackLocation = GetFloorUnderTheTarget(AimedTarget);
+		}
+		else
+		{
+			AttackLocation = GetFloorAtCameraTracingLocation();
+		}
+	}
+	else if (AttackPointCount == 1)
+	{
+		AttackPointCount++;
+		URaidBossLibrary::SpawnEmitterAtLocation(GetWorld(), Particle, {FRotator::ZeroRotator, AttackLocation, {1.5, 1.5, 1.5}});
+	}
+	else
+	{
+		for (auto Element : SpawnedIndicatorTasks)
+		{
+			Element->ExternalCancel();
+		}
+		AttackPointCount = 0;
+		AttackTargetsInAttackLocation();
+	}
+}
+
+void UAbility_Sevarog_E::EndAbilityCallback()
+{
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 
 FVector UAbility_Sevarog_E::GetFloorUnderTheTarget(const AActor* Target) const

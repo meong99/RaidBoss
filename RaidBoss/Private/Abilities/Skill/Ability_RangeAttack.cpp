@@ -2,7 +2,6 @@
 
 
 #include "Abilities/Skill/Ability_RangeAttack.h"
-
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
@@ -22,18 +21,13 @@ bool UAbility_RangeAttack::CanActivateAbility(const FGameplayAbilitySpecHandle H
 	const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
 {
 	bool	bIsValidOwner = OwnerCharacter ? true : false;
-	bool	bIsValidWeaponData = false;
-	
-	if (CurrentWeapon)
-	{
-		bIsValidWeaponData =
-			CurrentWeapon->GetWeaponData().AttackRange > 0 &&
-			CurrentWeapon->GetWeaponData().WeaponAnimations.UseAnims.Num() > 0;
-	}
-	
-	return Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags) &&
-		   bIsValidOwner &&
-		   bIsValidWeaponData;
+	bool	bIsValidWeaponData = CurrentWeapon != nullptr;
+
+	bool bCanActivate = Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
+
+	return	bCanActivate &&
+			bIsValidOwner &&
+			bIsValidWeaponData;
 }
 
 void UAbility_RangeAttack::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
@@ -106,7 +100,7 @@ void UAbility_RangeAttack::SetTracePointsFromCamera(FVector& OutStartPoint, FVec
 {
 	ARaidBossPlayerBase*	PlayerBase = Cast<ARaidBossPlayerBase>(OwnerCharacter);
 	
-	if (PlayerBase && CurrentWeapon)
+	if (PlayerBase && CurrentWeapon.IsValid())
 	{
 		OutStartPoint = PlayerBase->GetFollowCamera()->GetComponentLocation();
 
@@ -120,7 +114,7 @@ void UAbility_RangeAttack::SetTracePointsFromCamera(FVector& OutStartPoint, FVec
 
 void UAbility_RangeAttack::SetTracePointsFromWeapon(FVector& OutStartPoint, FVector& OutEndPoint, const TArray<FHitResult>& HitResultRef)
 {
-	OutStartPoint = CurrentWeapon ? CurrentWeapon->GetActorLocation() : OutStartPoint;
+	OutStartPoint = CurrentWeapon.IsValid() ? CurrentWeapon->GetActorLocation() : OutStartPoint;
 	
 	for (auto Result : HitResultRef)
 	{
@@ -131,8 +125,8 @@ void UAbility_RangeAttack::SetTracePointsFromWeapon(FVector& OutStartPoint, FVec
 
 		if (CharacterBase)
 		{
-			bool bIsDead = CharacterBase->GetCurrentPlayerState() == EPlayerState::Dead;
-			bool bIsNone = CharacterBase->GetCurrentPlayerState() == EPlayerState::None;
+			bool bIsDead = CharacterBase->GetCurrentCharacterState() == ECharacterState::Dead;
+			bool bIsNone = CharacterBase->GetCurrentCharacterState() == ECharacterState::None;
 
 			if (bIsDead == false && bIsNone == false)
 			{
@@ -182,8 +176,8 @@ bool UAbility_RangeAttack::StartTracingFromWeapon(const FVector& StartPoint, con
 	{
 		if (ARaidBossCharacterBase*	CharacterBase = Cast<ARaidBossCharacterBase>(TempHitResult.GetActor()))
 		{
-			if (CharacterBase->GetCurrentPlayerState() != EPlayerState::Dead &&
-				CharacterBase->GetCurrentPlayerState() != EPlayerState::None)
+			if (CharacterBase->GetCurrentCharacterState() != ECharacterState::Dead &&
+				CharacterBase->GetCurrentCharacterState() != ECharacterState::None)
 			{
 				*OutTargetActor = TempHitResult.GetActor();
 

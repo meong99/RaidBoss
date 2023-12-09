@@ -27,31 +27,32 @@ protected:
 	
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+	
 	UFUNCTION()
 	void	AttackPointEventCallback(FGameplayEventData EventData);
 	
 	UFUNCTION()
 	void	ToEndAbilityCallback();
 	
-	void	SpawnParticles() const;
-
-	void	AttackTargetsInRadius() const;
-	
 	virtual void	SetIndicator() override;
+	
+	void			SpawnParticles() const;
+
+	void			AttackTargetsInRadius() const;
 
 protected:
 	/*
-	 *	Changed on Initialize * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
 	
 	//
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Aurora E")
-	float	ParticleCount = 30;
+	TObjectPtr<UParticleSystem>	Particle;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Aurora E")
-	TObjectPtr<UParticleSystem>	Particle;
+	float	ParticleCount = 30;
 	/*
-	 *	Changed on every cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
 	
 	//

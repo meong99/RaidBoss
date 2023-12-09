@@ -16,14 +16,14 @@ class RAIDBOSS_API UHealthBarWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
+protected:
+	virtual void	NativeConstruct() override;
+	virtual void	NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
 public:
 	void	SetWidgetOwner(ARaidBossCharacterBase* InWidgetOwner) { WidgetOwner = InWidgetOwner; };
 	
 protected:
-	virtual void NativeConstruct() override;
-	
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-
 	UFUNCTION(BlueprintImplementableEvent, Category="Raid Boss | Widget")
 	void	CallToNotifyNewDamage(float NewDamage);
 
@@ -41,17 +41,18 @@ protected:
 	TObjectPtr<ARaidBossCharacterBase>	WidgetOwner;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Widget", meta=(BindWidget))
-	TObjectPtr<UProgressBar>	HealthBar;
+	TObjectPtr<UProgressBar>			HealthBar;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Widget", meta=(BindWidget))
-	TObjectPtr<UProgressBar>	DamageBar;
+	TObjectPtr<UProgressBar>			DamageBar;
 
 	// 데미지 바 감소 딜레이
 	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Widget")
-	float	DamageBarDelayTime = 1;
+	float								DamageBarDelayTime = 1;
 	
 	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Widget")
-	float	DamageBarInterSpeed = 5;
+	float								DamageBarInterSpeed = 5;
+	
 	/*
 	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */

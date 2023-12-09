@@ -16,14 +16,17 @@ class RAIDBOSS_API UAbility_Sevarog_Q : public URaidBossSkillBase
 public:
 	UAbility_Sevarog_Q();
 	
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	virtual void	ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
-	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	virtual void	CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
+	
 protected:
-	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	virtual void	EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+
+	virtual void	SetIndicator() override;
 
 	UFUNCTION()
 	void	AttackPointCallback(FGameplayEventData Payload);
@@ -31,20 +34,21 @@ protected:
 	UFUNCTION()
 	void	EndAbilityCallback();
 
-	virtual void	SetIndicator() override;
-
 	TArray<AActor*>	StartTraceAndGetTargets();
+	
 protected:
 	/*
-	 *	Changed on Initialize * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
-	//
 
+	//
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Sevarog E")
 	bool	bDrawDebugLine = false;
+	
 	/*
-	 *	Changed on every cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
+	
 	//
 	UPROPERTY()
 	TArray<UAbilityTask*>	SpawnedIndicatorTasks;

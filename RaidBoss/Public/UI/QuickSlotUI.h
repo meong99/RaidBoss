@@ -15,24 +15,40 @@ UCLASS()
 class RAIDBOSS_API UQuickSlotUI : public UInteractionalUI
 {
 	GENERATED_BODY()
+	
+protected:
+	virtual void NativeOnInitialized() override;
+
 public:
 	UFUNCTION()
 	void	NotifyNewWeaponEquippedCallBack(const TArray<URaidBossSkillBase*>& NewSkills);
 	
 protected:
-	virtual void NativeOnInitialized() override;
-
 	void	ResetAllSkillSlots();
 	
 	void	RegisterNewSKills(const TArray<URaidBossSkillBase*>& NewSkills);
 	
 protected:
+	/*
+	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	
+	//
 	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Slot Widget", meta=(BindWidget))
 	TObjectPtr<UQuickSlot>	QuickSlot_Q;
+	
 	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Slot Widget", meta=(BindWidget))
 	TObjectPtr<UQuickSlot>	QuickSlot_E;
+	
 	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Slot Widget", meta=(BindWidget))
 	TObjectPtr<UQuickSlot>	QuickSlot_R;
+	
 	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Slot Widget", meta=(BindWidget))
 	TObjectPtr<UQuickSlot>	QuickSlot_Right;
+
+	/*
+	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	
+	//
 };

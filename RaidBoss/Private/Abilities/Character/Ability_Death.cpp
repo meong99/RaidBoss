@@ -4,17 +4,16 @@
 #include "Abilities/Character/Ability_Death.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Character/RaidBossCharacterBase.h"
-#include "Character/Enemy/RaidBossEnemyControllerBase.h"
+#include "Character/Monster/RaidBossEnemyControllerBase.h"
 #include "Character/Monster/MonsterBase.h"
 #include "Components/CapsuleComponent.h"
-#include "Management/RaidBossGameplayTags.h"
 
 void UAbility_Death::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                      const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
                                      const FGameplayEventData* TriggerEventData)
 {
 	OwnerCharacter->GetCapsuleComponent()->SetCollisionObjectType(ECC_GameTraceChannel1);
-	OwnerCharacter->SetCurrentPlayerState(EPlayerState::None);
+	OwnerCharacter->SetCurrentPlayerState(ECharacterState::None);
 	OwnerCharacter->SetIsMovementBlocked(true);
 	
 	UAbilityTask_PlayMontageAndWait* PlayMontageAndWait = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
@@ -38,7 +37,7 @@ void UAbility_Death::EndAbilityCallBak()
 	if (OwnerCharacter)
 	{
 		OwnerCharacter->UnEquipWeapon();
-		OwnerCharacter->SetCurrentPlayerState(EPlayerState::Dead);
+		OwnerCharacter->SetCurrentPlayerState(ECharacterState::Dead);
 	}
 	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);

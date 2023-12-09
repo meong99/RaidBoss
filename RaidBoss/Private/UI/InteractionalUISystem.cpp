@@ -64,11 +64,6 @@ int32 UInteractionalUISystem::HandleUIActionTriggerEvent(FGameplayTag TriggerTag
 	return ActivatedActions;
 }
 
-void UInteractionalUISystem::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
 void UInteractionalUISystem::InteractionalUIParsing(const TArray<TSubclassOf<UInteractionalUI>>& InteractionalUIArray)
 {
 	ARaidBossPlayerControllerBase*	ControllerBase = Cast<ARaidBossPlayerControllerBase>(GetOwner());

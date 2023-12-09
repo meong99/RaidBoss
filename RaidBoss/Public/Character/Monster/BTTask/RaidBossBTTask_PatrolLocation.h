@@ -14,9 +14,18 @@ public:
 
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
-	float	GetSearchRadius() const;
-
 private:
+	/*
+	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	
+	//
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Raid Boss | PatrolLocation", meta = (AllowPrivateAccess = true))
 	float	SearchRadius = 2000.f;
+
+	/*
+	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	
+	//
 };

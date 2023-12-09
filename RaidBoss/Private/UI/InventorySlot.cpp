@@ -10,41 +10,8 @@
 
 class URaidBossConsumableItem;
 
-void UInventorySlot::ActivateThisSlot()
-{
-	TryActivateThisSlotAbility();
-}
-
-void UInventorySlot::RegisterNewItem(const URaidBossItemBase* NewItemCDO, int32 Amount)
-{
-	if (NewItemCDO == nullptr)
-	{
-		return;
-	}
-	
-	AddDynamicCallBackFunction();
-	
-	if (Amount > 0)
-	{
-		AbilityTriggerTag = NewItemCDO->GetAbilityTriggerTag();
-		SetTexture(NewItemCDO->GetItemTexture());
-		SetItemAmount(Amount);
-		CurrentItem = NewItemCDO;
-		
-		if (WasAbilityActivated(NewItemCDO) == false)
-		{
-			ObtainNewItem(NewItemCDO);
-		}
-	}
-}
-
-void UInventorySlot::NativeOnInitialized()
-{
-	Super::NativeOnInitialized();
-}
-
 bool UInventorySlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
-                                  UDragDropOperation* InOperation)
+								  UDragDropOperation* InOperation)
 {
 	Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 	
@@ -93,6 +60,107 @@ FReply UInventorySlot::NativeOnMouseButtonDoubleClick(const FGeometry& InGeometr
 	return UWidgetBlueprintLibrary::Handled().NativeReply;
 }
 
+void UInventorySlot::ActivateThisSlot()
+{
+	TryActivateThisSlotAbility();
+}
+
+void UInventorySlot::RegisterNewItem(const URaidBossItemBase* NewItemCDO, int32 Amount)
+{
+	if (NewItemCDO == nullptr)
+	{
+		return;
+	}
+	
+	AddDynamicCallBackFunction();
+	
+	if (Amount > 0)
+	{
+		AbilityTriggerTag = NewItemCDO->GetAbilityTriggerTag();
+		SetTexture(NewItemCDO->GetItemTexture());
+		SetItemAmount(Amount);
+		CurrentItem = NewItemCDO;
+		
+		if (WasAbilityActivated(NewItemCDO) == false)
+		{
+			ObtainNewItem(NewItemCDO);
+		}
+	}
+}
+
+void UInventorySlot::SetItemAmount(int32 Amount)
+{
+	Super::SetItemAmount(Amount);
+
+	if (Amount <= 0)
+	{
+		AmountText->SetText(FText::FromString(""));
+	}
+	else
+	{
+		AmountText->SetText(FText::FromString(FString::FromInt(Amount)));
+	}
+}
+
+void UInventorySlot::NotifyItemAmountCallBack(FGameplayTag InAbilityTriggerTag, int32 Amount)
+{
+	if (InAbilityTriggerTag == AbilityTriggerTag)
+	{
+		if (ItemAmount < Amount && WasAbilityActivated(CurrentItem.Get()) == false)
+		{
+			ObtainNewItem(CurrentItem.Get());
+		}
+		
+		SetItemAmount(Amount);
+
+		if (Amount <= 0)
+		{
+			ResetSlot();
+		}
+	}
+}
+
+void UInventorySlot::TryActivateThisSlotAbility() const
+{
+	ARaidBossCharacterBase*	CharacterBase = Cast<ARaidBossCharacterBase>(GetOwningPlayerPawn());
+
+	if (CharacterBase && AbilityTriggerTag.IsValid())
+	{
+		FGameplayEventData	EventData;
+
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(CharacterBase, AbilityTriggerTag, EventData);
+	}
+}
+
+void UInventorySlot::ResetSlot()
+{
+	RemoveDynamicCallBackFunction();
+	AbilityTriggerTag = FGameplayTag{};
+	SetItemAmount(0);
+	SetTexture(nullptr);
+	CurrentItem = nullptr;
+}
+
+void UInventorySlot::AddDynamicCallBackFunction()
+{
+	ARaidBossCharacterBase*	CharacterBase = Cast<ARaidBossCharacterBase>(GetOwningPlayerPawn());
+
+	if (CharacterBase && AbilityTriggerTag.IsValid() == false)
+	{
+		CharacterBase->NotifyItemAmountChanged.AddDynamic(this, &UInventorySlot::NotifyItemAmountCallBack);
+	}
+}
+
+void UInventorySlot::RemoveDynamicCallBackFunction()
+{
+	ARaidBossCharacterBase*	CharacterBase = Cast<ARaidBossCharacterBase>(GetOwningPlayerPawn());
+
+	if (CharacterBase)
+	{
+		CharacterBase->NotifyItemAmountChanged.RemoveDynamic(this, &UInventorySlot::NotifyItemAmountCallBack);
+	}
+}
+
 void UInventorySlot::SwapInventorySlot(UInventorySlot* OtherSlot)
 {
 	if (AbilityTriggerTag.IsValid() == false)
@@ -127,77 +195,4 @@ bool UInventorySlot::WasAbilityActivated(const URaidBossItemBase* NewItemCDO) co
 	URaidBossAbilityBase*	AbilityBase = AbilitySystemComponent->GetInstanceAbilitiesByTag().FindRef(NewItemCDO->GetAbilityTriggerTag());
 	
 	return AbilityBase ? AbilityBase->IsActive() : false;	
-}
-
-void UInventorySlot::NotifyItemAmountCallBack(FGameplayTag InAbilityTriggerTag, int32 Amount)
-{
-	if (InAbilityTriggerTag == AbilityTriggerTag)
-	{
-		if (ItemAmount < Amount && WasAbilityActivated(CurrentItem.Get()) == false)
-		{
-			ObtainNewItem(CurrentItem.Get());
-		}
-		
-		SetItemAmount(Amount);
-
-		if (Amount <= 0)
-		{
-			ResetSlot();
-		}
-	}
-}
-
-void UInventorySlot::SetItemAmount(int32 Amount)
-{
-	Super::SetItemAmount(Amount);
-
-	if (Amount <= 0)
-	{
-		AmountText->SetText(FText::FromString(""));
-	}
-	else
-	{
-		AmountText->SetText(FText::FromString(FString::FromInt(Amount)));
-	}
-}
-
-void UInventorySlot::ResetSlot()
-{
-	RemoveDynamicCallBackFunction();
-	AbilityTriggerTag = FGameplayTag{};
-	SetItemAmount(0);
-	SetTexture(nullptr);
-	CurrentItem = nullptr;
-}
-
-void UInventorySlot::AddDynamicCallBackFunction()
-{
-	ARaidBossCharacterBase*	CharacterBase = Cast<ARaidBossCharacterBase>(GetOwningPlayerPawn());
-
-	if (CharacterBase && AbilityTriggerTag.IsValid() == false)
-	{
-		CharacterBase->NotifyItemAmountChanged.AddDynamic(this, &UInventorySlot::NotifyItemAmountCallBack);
-	}
-}
-
-void UInventorySlot::RemoveDynamicCallBackFunction()
-{
-	ARaidBossCharacterBase*	CharacterBase = Cast<ARaidBossCharacterBase>(GetOwningPlayerPawn());
-
-	if (CharacterBase)
-	{
-		CharacterBase->NotifyItemAmountChanged.RemoveDynamic(this, &UInventorySlot::NotifyItemAmountCallBack);
-	}
-}
-
-void UInventorySlot::TryActivateThisSlotAbility() const
-{
-	ARaidBossCharacterBase*	CharacterBase = Cast<ARaidBossCharacterBase>(GetOwningPlayerPawn());
-
-	if (CharacterBase && AbilityTriggerTag.IsValid())
-	{
-		FGameplayEventData	EventData;
-
-		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(CharacterBase, AbilityTriggerTag, EventData);
-	}
 }

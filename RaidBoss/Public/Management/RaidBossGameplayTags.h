@@ -7,8 +7,14 @@ class UGameplayTagsManager;
 
 struct RaidBossGameplayTags
 {
+
+public:
+	static void							InitializeTags();
+	static const RaidBossGameplayTags&	Get() { return GameplayTags; }
+	
 private:
-	static RaidBossGameplayTags GameplayTags;
+	void InitTags();
+
 public:
 	FGameplayTag Attack;
 	FGameplayTag Attack_BasicAttack;
@@ -22,6 +28,8 @@ public:
 	FGameplayTag Init_Character_MoveSpeed;
 	FGameplayTag Init_Character_AttackSpeed;
 
+	FGameplayTag Character_Stat_Health;
+	FGameplayTag Character_Stat_Mana;
 	FGameplayTag Character_Stat_MaxHealth;
 	FGameplayTag Character_Stat_MaxMana;
 	FGameplayTag Character_Stat_AttackPower;
@@ -50,7 +58,6 @@ public:
 	FGameplayTag Animation_Notify_StopMove;
 	FGameplayTag Animation_Notify_BlockMovement;
 	FGameplayTag Animation_Notify_ReleaseMovement;
-
 	
 	FGameplayTag Event_Equipment_ToRemove;
 	FGameplayTag Event_Skill_IncreaseLevel;
@@ -70,10 +77,6 @@ public:
 
 	FGameplayTag GameplayCue_DestroyActor;
 	
-public:
-	static void InitializeTags();
-	static const RaidBossGameplayTags& Get() { return GameplayTags; }
-	
 private:
-	void InitTags();
+	static RaidBossGameplayTags GameplayTags;
 };

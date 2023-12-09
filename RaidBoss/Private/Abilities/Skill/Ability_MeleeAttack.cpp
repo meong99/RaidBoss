@@ -45,18 +45,6 @@ void UAbility_MeleeAttack::OnGiveAbility(const FGameplayAbilityActorInfo* ActorI
 	MaximumCombo = CurrentWeapon->GetWeaponData().WeaponAnimations.UseAnims.Num();
 }
 
-float UAbility_MeleeAttack::GetSkillRange() const
-{
-	float CurrentSkillRange = 1;
-	
-	if (OwnerCharacter)
-	{
-		CurrentSkillRange = OwnerCharacter->GetCharacterStatusAttributeSet()->GetAttackRange();
-	}
-	
-	return CurrentSkillRange;
-}
-
 void UAbility_MeleeAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                            const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
                                            const FGameplayEventData* TriggerEventData)
@@ -127,6 +115,45 @@ void UAbility_MeleeAttack::EndAbility(const FGameplayAbilitySpecHandle Handle,
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
+float UAbility_MeleeAttack::GetSkillRange() const
+{
+	float CurrentSkillRange = 1;
+	
+	if (OwnerCharacter)
+	{
+		CurrentSkillRange = OwnerCharacter->GetCharacterStatusAttributeSet()->GetAttackRange();
+	}
+	
+	return CurrentSkillRange;
+}
+
+void UAbility_MeleeAttack::SetIndicator()
+{
+	for (auto Indicator : TestIndicators)
+	{
+		UAT_SpawnActorAndFollowParent* SpawnActorAndFollowParent = UAT_SpawnActorAndFollowParent::SpawnActorAndFollowParent(
+			this, Indicator, OwnerCharacter, AdditiveIndicatorLocation, FVector{ 1, SkillRange, SkillRange },
+			bAttachLocationToParent, bFollowRotationToParent);
+		
+		SpawnActorAndFollowParent->ReadyForActivation();
+		
+		auto FanShapeIndicator = Cast<AFanShapeIndicator>(SpawnActorAndFollowParent->GetSpawnedActor());
+		if (FanShapeIndicator)
+		{
+			FanShapeIndicator->SetIndicatorValue(SkillAngle);
+			if (Cast<AMonsterBase>(OwnerCharacter))
+			{
+				FanShapeIndicator->SetIndicatorColor(FColor::Red);
+				SpawnedIndicatorTasks.Add(SpawnActorAndFollowParent);
+			}
+			else
+			{
+				FanShapeIndicator->SetIndicatorColor(FColor::Blue);
+			}
+		}
+	}
+}
+
 void UAbility_MeleeAttack::NotifyMontageCanceledCallBack()
 {
 	bCanActivateNextAttack = true;
@@ -183,38 +210,18 @@ void UAbility_MeleeAttack::ApplyEffectToTarget(const TArray<AActor*>& TargetActo
 	
 	for (const auto& TargetActor : TargetActors)
 	{
+		ARaidBossCharacterBase* TargetCharacter = Cast<ARaidBossCharacterBase>(TargetActor);
+		
+		if (TargetCharacter == nullptr && TargetCharacter->GetCurrentCharacterState() != ECharacterState::Alive)
+		{
+			continue;
+		}
+		
 		FGameplayAbilityTargetDataHandle TargetData = UAbilitySystemBlueprintLibrary::AbilityTargetDataFromActor(TargetActor);
 		
 		TArray<FActiveGameplayEffectHandle> EffectHandles =
 			ApplyGameplayEffectToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, TargetData, EffectClass, 1);
 
 		OnHitTarget(TargetActor);
-	}
-}
-
-void UAbility_MeleeAttack::SetIndicator()
-{
-	for (auto Indicator : TestIndicators)
-	{
-		UAT_SpawnActorAndFollowParent* SpawnActorAndFollowParent = UAT_SpawnActorAndFollowParent::SpawnActorAndFollowParent(
-			this, Indicator, OwnerCharacter, AdditiveIndicatorLocation, FVector{ 1, SkillRange, SkillRange },
-			bAttachLocationToParent, bFollowRotationToParent);
-		
-		SpawnActorAndFollowParent->ReadyForActivation();
-		
-		auto FanShapeIndicator = Cast<AFanShapeIndicator>(SpawnActorAndFollowParent->GetSpawnedActor());
-		if (FanShapeIndicator)
-		{
-			FanShapeIndicator->SetIndicatorValue(SkillAngle);
-			if (Cast<AMonsterBase>(OwnerCharacter))
-			{
-				FanShapeIndicator->SetIndicatorColor(FColor::Red);
-				SpawnedIndicatorTasks.Add(SpawnActorAndFollowParent);
-			}
-			else
-			{
-				FanShapeIndicator->SetIndicatorColor(FColor::Blue);
-			}
-		}
 	}
 }

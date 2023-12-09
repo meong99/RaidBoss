@@ -22,37 +22,55 @@ class RAIDBOSS_API URaidBossSlotWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
-public:
-	virtual void	ActivateThisSlot();
-
-	
-	UTexture2D*	GetTexture() const;
-	ESlotType	GetSlotType() const { return SlotType; }
-	int32		GetItemAmount() const;
-	const FGameplayTag&	GetAbilityTriggerTag() const { return AbilityTriggerTag; }
-	
-	virtual void	SetItemAmount(IN int32 Amount);
-	void	SetTexture(IN UTexture2D* InTexture);
-	void	SetSlotType(IN ESlotType InSlotType);
-	
 protected:
 	virtual void	NativeConstruct() override;
 	virtual FReply	NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual FReply	NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
+public:
+	virtual void	ActivateThisSlot() {}
+	virtual void	SetItemAmount(IN int32 Amount) { ItemAmount = Amount; }
+
+	/*
+	 *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	UTexture2D*			GetTexture() const;
+	ESlotType			GetSlotType() const { return SlotType; }
+	int32				GetItemAmount() const { return ItemAmount; }
+	const FGameplayTag&	GetAbilityTriggerTag() const { return AbilityTriggerTag; }
+	
+	void	SetTexture(IN UTexture2D* InTexture);
+	void	SetSlotType(IN ESlotType InSlotType) { SlotType = InSlotType; }
+	
 protected:
-	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))
-	FGameplayTag				AbilityTriggerTag;
-	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Slot Widget", meta=(BindWidget, AllowPrivateAccess))
-	TObjectPtr<UImage>			BindImage;
-	UPROPERTY(EditInstanceOnly, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))
-	TObjectPtr<UTexture2D>		DefaultTexture;
-	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))
-	int32						ItemAmount;
-	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))
-	ESlotType					SlotType = ESlotType::None;
-	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))
-	EDragPivot					DragPivot = EDragPivot::CenterCenter;
-	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Slot Widget", meta=(AllowPrivateAccess))
-	FVector2D					DragOffset = FVector2d(0, 0);
+	/*
+	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	
+	//
+	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Slot Widget", meta=(BindWidget))
+	TObjectPtr<UImage>		BindImage;
+	
+	UPROPERTY(EditInstanceOnly, Category="Raid Boss | Slot Widget")
+	TObjectPtr<UTexture2D>	DefaultTexture;
+	
+	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Slot Widget")
+	ESlotType				SlotType = ESlotType::None;
+	
+	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Slot Widget")
+	EDragPivot				DragPivot = EDragPivot::CenterCenter;
+	
+	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Slot Widget")
+	FVector2D				DragOffset = FVector2d(0, 0);
+	/*
+	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	
+	//
+	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Slot Widget")
+	FGameplayTag	AbilityTriggerTag;
+
+	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Slot Widget")
+	int32			ItemAmount;
+
 };

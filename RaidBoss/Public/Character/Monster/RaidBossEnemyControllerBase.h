@@ -38,40 +38,45 @@ class RAIDBOSS_API ARaidBossEnemyControllerBase : public AAIController
 public:
 	ARaidBossEnemyControllerBase();
 
-	virtual void Tick(float DeltaSeconds) override;
-
-	UFUNCTION(BlueprintCallable, Category="Raid Boss | Controller")
-	AMonsterBase*	GetControlledCharacter() const;
-	
-	void	StopChasePlayer();
+	virtual void	Tick(float DeltaSeconds) override;
 	
 protected:
 	virtual	void	OnPossess(APawn* InPawn) override;
 	
 	virtual	void	BeginPlay() override;
 
+public:
+	void	StopChasePlayer();
+
+	/*
+	 *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	UFUNCTION(BlueprintCallable, Category="Raid Boss | Controller")
+	AMonsterBase*	GetControlledCharacter() const { return ControlledMonster.Get(); }
+	
+protected:
 	UFUNCTION()
 	void	OnTargetDetectedDelegated(AActor* Actor, struct FAIStimulus Stimulus);
 	
 protected:
 	/*
-	 *	Changed on Initialize * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
 	
 	//
-	TWeakObjectPtr<AMonsterBase>	ControlledMonster;
+	TWeakObjectPtr<AMonsterBase>		ControlledMonster;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Enermy Controller", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Enermy Controller")
 	TObjectPtr<UBehaviorTree>			BehaviourTree;
 	
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Enermy Controller", meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Enermy Controller")
 	TObjectPtr<UBehaviorTreeComponent>	BehaviourTreeComponent;
 	
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Enermy Controller", meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Enermy Controller")
 	TObjectPtr<UAISenseConfig_Sight>	Sight;
 
 	/*
-	 *	Changed on every cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
 	
 	//

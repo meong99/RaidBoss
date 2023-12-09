@@ -17,23 +17,23 @@ class RAIDBOSS_API UAbility_Sevarog_E : public URaidBossSkillBase
 public:
 	UAbility_Sevarog_E();
 
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	virtual void	ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
-	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	virtual void	CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
 	
 protected:
-	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	virtual void	EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
-
+	
+	virtual void	SetIndicator() override;
+	
 	UFUNCTION()
 	void	AttackPointCallback(FGameplayEventData Payload);
 	
 	UFUNCTION()
 	void	EndAbilityCallback();
-
-	virtual void	SetIndicator() override;
 	
 	FVector	GetFloorUnderTheTarget(const AActor* Target) const;
 
@@ -42,26 +42,27 @@ protected:
 	void	AttackTargetsInAttackLocation() const;
 protected:
 	/*
-	 *	Changed on Initialize * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
-	//
 	
+	//
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Sevarog E")
 	TObjectPtr<UParticleSystem>	Particle;
 
 	/*
-	 *	Changed on every cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
+	
 	//
 	UPROPERTY()
 	TArray<UAbilityTask*>	SpawnedIndicatorTasks;
 	
+	UPROPERTY()
+	const ACharacter*		AimedTarget;
+	
 	bool	bIsFirstTrigger = true;
 
 	int		AttackPointCount = 0;
-	
-	UPROPERTY()
-	const ACharacter* AimedTarget;
 
 	FVector AttackLocation;
 };

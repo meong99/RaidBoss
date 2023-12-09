@@ -14,7 +14,9 @@ class RAIDBOSS_API URaidBossAnimBase : public UAnimInstance
 public:
 	virtual void NativeUpdateAnimation(float deltaTime) override;
 
-	UFUNCTION(BlueprintCallable, Category="Raid Boss | Anim Base")
+	/*
+	 *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
 	ARaidBossCharacterBase*	GetOwningCharacter() const;
 	bool					IsInAir() const { return bIsInAir; }
 	bool					IsAccelerating() const { return bIsAccelerating; }
@@ -30,14 +32,14 @@ public:
 private:
 	
 	/*
-	 *	Changed on Initialize * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
 	//
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
 	float InterpSpeed = 5;
 	
 	/*
-	 *	Changed on every cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
 	//
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))

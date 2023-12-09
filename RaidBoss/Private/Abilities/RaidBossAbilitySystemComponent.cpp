@@ -37,16 +37,13 @@ bool URaidBossAbilitySystemComponent::CanActivateAbility(FGameplayTag TriggerTag
 	return false;
 }
 
-bool URaidBossAbilitySystemComponent::GiveAbilityWithoutDuplication(TSubclassOf<URaidBossAbilityBase> AbilityClass,
-                                                                    FGameplayAbilitySpecHandle& OutSpecHandle, int32 InputID)
+bool URaidBossAbilitySystemComponent::CanActivateAbility(int32 InputID)
 {
-	if (FindAbilitySpecFromClass(AbilityClass) == nullptr)
+	URaidBossAbilityBase* AbilityBase = GetAbilityByInputID(InputID);
+
+	if (AbilityBase)
 	{
-		FGameplayAbilitySpec Spec {AbilityClass, 1, InputID};
-
-		OutSpecHandle = GiveAbility(Spec);
-
-		return true;
+		return AbilityBase->CanActivateAbility(AbilityBase->GetCurrentAbilitySpecHandle(), AbilityBase->GetCurrentActorInfo());
 	}
 	
 	return false;
@@ -62,15 +59,6 @@ bool URaidBossAbilitySystemComponent::TryActivateAbilityByInputID(int32 InputID)
 	}
 
 	return false;
-}
-
-FGameplayAbilitySpecHandle URaidBossAbilitySystemComponent::GiveAbilityToASC(TSubclassOf<URaidBossAbilityBase> AbilityClass,UObject* SourceObject, FGameplayTagContainer TagContainer)
-{
-	FGameplayAbilitySpec abilitySpec(AbilityClass.GetDefaultObject(), 1);
-	abilitySpec.SourceObject = SourceObject;
-	abilitySpec.DynamicAbilityTags.AppendTags(TagContainer);
-
-	return GiveAbility(abilitySpec);
 }
 
 URaidBossAbilityBase* URaidBossAbilitySystemComponent::GetAbilityByClass(TSubclassOf<URaidBossAbilityBase> AbilityClass)
@@ -97,4 +85,19 @@ URaidBossAbilityBase* URaidBossAbilitySystemComponent::GetAbilityByInputID(int32
 	}
 
 	return Ret;
+}
+
+bool URaidBossAbilitySystemComponent::GiveAbilityWithoutDuplication(TSubclassOf<URaidBossAbilityBase> AbilityClass,
+                                                                    FGameplayAbilitySpecHandle& OutSpecHandle, int32 InputID)
+{
+	if (FindAbilitySpecFromClass(AbilityClass) == nullptr)
+	{
+		FGameplayAbilitySpec Spec {AbilityClass, 1, InputID};
+
+		OutSpecHandle = GiveAbility(Spec);
+
+		return true;
+	}
+	
+	return false;
 }

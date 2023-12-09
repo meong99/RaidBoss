@@ -17,20 +17,26 @@ class RAIDBOSS_API ACircleIndicator : public ASkillIndicator
 public:
 	ACircleIndicator();
 	
-	virtual void Tick(float DeltaSeconds) override;
-
-	void	SetIndicatorValue(float InRadius) { Radius = InRadius; }
+	virtual void	Tick(float DeltaSeconds) override;
 	
+protected:
+	virtual void	BeginPlay() override;
+
+public:
+
+	/*
+	 *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
 	float	GetRadius() const { return Radius; }
 	
+	void	SetIndicatorValue(float InRadius) { Radius = InRadius; }
 	void	SetRadius(float InRadius) { Radius = InRadius; }
 	
 protected:
-	virtual void BeginPlay() override;
-	
+
 protected:
 	/*
-	 *	Changed on Initialize * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
 	
 	//
@@ -38,7 +44,7 @@ protected:
 	TObjectPtr<UMaterialInstanceDynamic>	IndicatorInstance;
 	
 	/*
-	 *	Changed on every cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
 
 	//

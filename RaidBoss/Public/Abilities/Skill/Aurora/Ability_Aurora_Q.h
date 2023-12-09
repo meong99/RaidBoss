@@ -9,6 +9,7 @@
 class UDataPassingObject;
 class UAT_DashCharacter;
 class AWeapon;
+
 /**
  * 
  */
@@ -20,17 +21,17 @@ class RAIDBOSS_API UAbility_Aurora_Q : public URaidBossSkillBase
 public:
 	UAbility_Aurora_Q();
 
-	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	virtual bool	CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags,
 		FGameplayTagContainer* OptionalRelevantTags) const override;
 	
 protected:
-	virtual void OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
+	virtual void	OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
 
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	virtual void	ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
-	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	virtual void	EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 	UFUNCTION()
@@ -42,11 +43,12 @@ protected:
 	UFUNCTION()
 	void	NotifyBeginOverlappedCallBack(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
-
+	
 	UDataPassingObject*	GetKnockBackData(AActor* TargetActor);
+	
 protected:
 	/*
-	 *	Constant Value
+	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Skill")
@@ -58,21 +60,19 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Skill")
 	float	KnockBackPower = 1000;
 	
-	TObjectPtr<AWeapon> CurrentWeapon;
 
 	/*
-	 *	Changed in Initialize
+	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
 
-	/*
-	 *	Changed in every cycle
-	 */
+	//
+	UPROPERTY()
+	UAT_DashCharacter*		DashCharacterTask = nullptr;
+
+	UPROPERTY()
+	TArray<AActor*>			TargetActors;
 	
-	UPROPERTY()
-	UAT_DashCharacter*	DashCharacterTask = nullptr;
-
+	TWeakObjectPtr<AWeapon> CurrentWeapon;
+	
 	bool	bIsFirstActivation = true;
-
-	UPROPERTY()
-	TArray<AActor*>	TargetActors;
 };

@@ -21,7 +21,23 @@ public:
 
 	virtual void	JumpCharacter();
 	virtual void	StopJumpCharacter();
-	
+
+	/*
+	 *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Player Base")
 	ARaidBossPlayerControllerBase*		GetRaidBossPlayerController() const;
+
+protected:
+	/*
+	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	
+	//
+
+	/*
+	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	
+	//
 };

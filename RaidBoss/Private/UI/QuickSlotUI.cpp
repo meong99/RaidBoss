@@ -5,11 +5,6 @@
 #include "Character/RaidBossCharacterBase.h"
 #include "UI/QuickSlot.h"
 
-void UQuickSlotUI::NotifyNewWeaponEquippedCallBack(const TArray<URaidBossSkillBase*>& NewSkills)
-{
-	RegisterNewSKills(NewSkills);
-}
-
 void UQuickSlotUI::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
@@ -20,6 +15,11 @@ void UQuickSlotUI::NativeOnInitialized()
 	{
 		CharacterBase->NotifyNewWeaponEquipped.AddDynamic(this, &UQuickSlotUI::NotifyNewWeaponEquippedCallBack);
 	}
+}
+
+void UQuickSlotUI::NotifyNewWeaponEquippedCallBack(const TArray<URaidBossSkillBase*>& NewSkills)
+{
+	RegisterNewSKills(NewSkills);
 }
 
 void UQuickSlotUI::ResetAllSkillSlots()

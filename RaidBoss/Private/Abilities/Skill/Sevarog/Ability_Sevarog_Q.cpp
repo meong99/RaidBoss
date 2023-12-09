@@ -70,10 +70,34 @@ void UAbility_Sevarog_Q::CancelAbility(const FGameplayAbilitySpecHandle Handle,
 }
 
 void UAbility_Sevarog_Q::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-                                    const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+									const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	SpawnedIndicatorTasks.Reset();
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+}
+
+void UAbility_Sevarog_Q::SetIndicator()
+{
+	for (auto Indicator : TestIndicators)
+	{
+		UAT_SpawnActorAndFollowParent* SpawnActorAndFollowParent = UAT_SpawnActorAndFollowParent::SpawnActorAndFollowParent(
+			this, Indicator, OwnerCharacter, SkillRange * 0.5, FVector{ 1, SkillSideRange * 0.5, SkillRange * 0.5},
+			bAttachLocationToParent, bFollowRotationToParent);
+		
+		SpawnActorAndFollowParent->ReadyForActivation();
+		if (auto SpawnedIndicator = Cast<ASkillIndicator>(SpawnActorAndFollowParent->GetSpawnedActor()))
+		{
+			if (Cast<AMonsterBase>(OwnerCharacter))
+			{
+				SpawnedIndicator->SetIndicatorColor(FColor::Red);
+				SpawnedIndicatorTasks.Add(SpawnActorAndFollowParent);
+			}
+			else
+			{
+				SpawnedIndicator->SetIndicatorColor(FColor::Blue);
+			}
+		}
+	}
 }
 
 void UAbility_Sevarog_Q::AttackPointCallback(FGameplayEventData Payload)
@@ -105,30 +129,6 @@ void UAbility_Sevarog_Q::EndAbilityCallback()
 	bIsFirstTrigger = true;
 	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-}
-
-void UAbility_Sevarog_Q::SetIndicator()
-{
-	for (auto Indicator : TestIndicators)
-	{
-		UAT_SpawnActorAndFollowParent* SpawnActorAndFollowParent = UAT_SpawnActorAndFollowParent::SpawnActorAndFollowParent(
-			this, Indicator, OwnerCharacter, SkillRange * 0.5, FVector{ 1, SkillSideRange * 0.5, SkillRange * 0.5},
-			bAttachLocationToParent, bFollowRotationToParent);
-		
-		SpawnActorAndFollowParent->ReadyForActivation();
-		if (auto SpawnedIndicator = Cast<ASkillIndicator>(SpawnActorAndFollowParent->GetSpawnedActor()))
-		{
-			if (Cast<AMonsterBase>(OwnerCharacter))
-			{
-				SpawnedIndicator->SetIndicatorColor(FColor::Red);
-				SpawnedIndicatorTasks.Add(SpawnActorAndFollowParent);
-			}
-			else
-			{
-				SpawnedIndicator->SetIndicatorColor(FColor::Blue);
-			}
-		}
-	}
 }
 
 TArray<AActor*> UAbility_Sevarog_Q::StartTraceAndGetTargets()

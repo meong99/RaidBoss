@@ -1,7 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "UI/EquipmentSlot.h"
-
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Abilities/GameplayAbilityTypes.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
@@ -9,28 +8,6 @@
 #include "Components/Image.h"
 #include "Management/RaidBossGameplayTags.h"
 #include "UI/InventorySlot.h"
-
-void UEquipmentSlot::NotifyEquipmentChangedCallback(FGameplayTag InAbilityTriggerTag, int32 InEquipmentType, UTexture2D* NewItemImage)
-{
-	if (static_cast<int32>(EquipmentType) != InEquipmentType)
-	{
-		return;
-	}
-	
-	if (InAbilityTriggerTag.IsValid() && NewItemImage)
-	{
-		if (AbilityTriggerTag.IsValid() && InAbilityTriggerTag != AbilityTriggerTag)
-		{
-			UnEquipItem();
-		}
-		
-		EquipItem(InAbilityTriggerTag, NewItemImage);
-	}
-	else
-	{
-		UnEquipItem();
-	}
-}
 
 void UEquipmentSlot::NativeOnInitialized()
 {
@@ -92,11 +69,26 @@ FReply UEquipmentSlot::NativeOnMouseButtonDoubleClick(const FGeometry& InGeometr
 	return UWidgetBlueprintLibrary::Handled().NativeReply;
 }
 
-void UEquipmentSlot::UnEquipItem()
+void UEquipmentSlot::NotifyEquipmentChangedCallback(FGameplayTag InAbilityTriggerTag, int32 InEquipmentType, UTexture2D* NewItemImage)
 {
-	RetriggerAbilityForUnEquipItem();
-	AbilityTriggerTag = FGameplayTag{};
-	BindImage->SetVisibility(ESlateVisibility::Hidden);
+	if (static_cast<int32>(EquipmentType) != InEquipmentType)
+	{
+		return;
+	}
+	
+	if (InAbilityTriggerTag.IsValid() && NewItemImage)
+	{
+		if (AbilityTriggerTag.IsValid() && InAbilityTriggerTag != AbilityTriggerTag)
+		{
+			UnEquipItem();
+		}
+		
+		EquipItem(InAbilityTriggerTag, NewItemImage);
+	}
+	else
+	{
+		UnEquipItem();
+	}
 }
 
 void UEquipmentSlot::EquipItem(FGameplayTag InAbilityTriggerTag, UTexture2D* NewItemImage)
@@ -104,6 +96,13 @@ void UEquipmentSlot::EquipItem(FGameplayTag InAbilityTriggerTag, UTexture2D* New
 	AbilityTriggerTag = InAbilityTriggerTag;
 	BindImage->SetBrushFromTexture(NewItemImage);
 	BindImage->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UEquipmentSlot::UnEquipItem()
+{
+	RetriggerAbilityForUnEquipItem();
+	AbilityTriggerTag = FGameplayTag{};
+	BindImage->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UEquipmentSlot::RetriggerAbilityForUnEquipItem() const

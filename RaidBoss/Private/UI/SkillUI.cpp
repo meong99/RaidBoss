@@ -7,11 +7,6 @@
 #include "Character/Player/RaidBossPlayerControllerBase.h"
 #include "UI/SkillSlot.h"
 
-void USkillUI::RegisterAllSkillsToUI()
-{
-	CreateAndInitSlots(GetPlayerSkills());
-}
-
 void USkillUI::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
@@ -45,16 +40,9 @@ void USkillUI::NativeDestruct()
 	Super::NativeDestruct();
 }
 
-const TArray<TSubclassOf<URaidBossSkillBase>>* USkillUI::GetPlayerSkills() const
+void USkillUI::RegisterAllSkillsToUI()
 {
-	ARaidBossCharacterBase*	CharacterBase = Cast<ARaidBossCharacterBase>(GetOwningPlayerPawn());
-
-	if (CharacterBase)
-	{
-		return CharacterBase->GetPlayerSkills();
-	}
-
-	return nullptr;
+	CreateAndInitSlots(GetPlayerSkills());
 }
 
 void USkillUI::CreateAndInitSlots(const TArray<TSubclassOf<URaidBossSkillBase>>* PlayerSkills) const
@@ -92,4 +80,16 @@ bool USkillUI::InitSlotBySkill(URaidBossSkillBase* SkillCDO, USkillSlot* NewSlot
 	}
 
 	return false;
+}
+
+const TArray<TSubclassOf<URaidBossSkillBase>>* USkillUI::GetPlayerSkills() const
+{
+	ARaidBossCharacterBase*	CharacterBase = Cast<ARaidBossCharacterBase>(GetOwningPlayerPawn());
+
+	if (CharacterBase)
+	{
+		return CharacterBase->GetPlayerSkills();
+	}
+
+	return nullptr;
 }

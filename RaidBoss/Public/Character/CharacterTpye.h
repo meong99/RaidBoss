@@ -5,15 +5,11 @@
 class URaidBossItemBase;
 
 UENUM(BlueprintType)
-enum class EPlayerState : uint8
+enum class ECharacterState : uint8
 {
 	None UMETA(DisplayName = "None"),
 	Alive UMETA(DisplayName = "Alive"),
-	Dead UMETA(DisplayName = "Dead"),
-	Move UMETA(DisplayName = "Move"),
-	Aiming UMETA(DisplayName = "Aiming"),
-	Attack UMETA(DisplayName = "Attack"),
-	Jump UMETA(DisplayName = "Jump"),
+	Dead UMETA(DisplayName = "Dead")
 };
 
 USTRUCT(BlueprintType)

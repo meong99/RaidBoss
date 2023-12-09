@@ -7,7 +7,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 
 TArray<AActor*> URaidBossLibrary::GetActorsInAngle(const UObject* WorldContextObject, const FVector& Location,
-                                                     const FVector& Direction, float Distance,
+                                                     const FVector& Direction, float Radius,
                                                      const TArray<TSubclassOf<AActor>>& FilterClasses,
                                                      const TArray<TSubclassOf<AActor>>& IgnoreClasses,
                                                      float Angle/* = 45*/, bool bIgnoreDistanceZ/* = true*/, bool DrawDebug/* = false*/)
@@ -25,9 +25,9 @@ TArray<AActor*> URaidBossLibrary::GetActorsInAngle(const UObject* WorldContextOb
 	{
 		TArray<AActor*> TMP;
 		FHitResult HitResult;
-		UKismetSystemLibrary::LineTraceSingle(WorldContextObject, Location, Location + FRotator(0, Angle / 2, 0).RotateVector(Direction) * Distance,
+		UKismetSystemLibrary::LineTraceSingle(WorldContextObject, Location, Location + FRotator(0, Angle / 2, 0).RotateVector(Direction) * Radius,
 			TraceTypeQuery1, false, TMP, EDrawDebugTrace::ForDuration, HitResult, true);
-		UKismetSystemLibrary::LineTraceSingle(WorldContextObject, Location, Location + FRotator(0, -Angle / 2, 0).RotateVector(Direction) * Distance,
+		UKismetSystemLibrary::LineTraceSingle(WorldContextObject, Location, Location + FRotator(0, -Angle / 2, 0).RotateVector(Direction) * Radius,
 			TraceTypeQuery1, false, TMP, EDrawDebugTrace::ForDuration, HitResult, true);
 	}
 
@@ -37,12 +37,12 @@ TArray<AActor*> URaidBossLibrary::GetActorsInAngle(const UObject* WorldContextOb
 		{
 			AActor* Actor = *It;
 
-			if (bIgnoreDistanceZ && FVector::DistXY(Location, Actor->GetActorLocation()) > Distance)
+			if (bIgnoreDistanceZ && FVector::DistXY(Location, Actor->GetActorLocation()) > Radius)
 			{
 				continue;
 			}
 			
-			if (!bIgnoreDistanceZ && FVector::Dist(Location, Actor->GetActorLocation()) > Distance)
+			if (!bIgnoreDistanceZ && FVector::Dist(Location, Actor->GetActorLocation()) > Radius)
 			{
 				continue;
 			}

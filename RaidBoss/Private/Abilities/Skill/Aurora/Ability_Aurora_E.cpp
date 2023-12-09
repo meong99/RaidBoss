@@ -88,6 +88,27 @@ void UAbility_Aurora_E::ToEndAbilityCallback()
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 
+void UAbility_Aurora_E::SetIndicator()
+{
+	for (auto Indicator : TestIndicators)
+	{
+		UAT_SpawnActorAndFollowParent* SpawnActorAndFollowParent = UAT_SpawnActorAndFollowParent::SpawnActorAndFollowParent(
+			this, Indicator, OwnerCharacter, 0, FVector{ 1, SkillRadius, SkillRadius},
+			bAttachLocationToParent, bFollowRotationToParent);
+		
+		if (SpawnActorAndFollowParent == nullptr)
+		{
+			continue;
+		}
+		SpawnActorAndFollowParent->ReadyForActivation();
+		
+		if (auto SpawnedIndicator = Cast<ASkillIndicator>(SpawnActorAndFollowParent->GetSpawnedActor()))
+		{
+			SpawnedIndicator->SetIndicatorColor(FColor::Blue);
+		}
+	}
+}
+
 void UAbility_Aurora_E::SpawnParticles() const
 {
 	FVector OwnerForwardVector = OwnerCharacter->GetActorForwardVector();
@@ -134,26 +155,5 @@ void UAbility_Aurora_E::AttackTargetsInRadius() const
 		TArray<FActiveGameplayEffectHandle> AppliedEffectsHandle =
 			ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo,
 				EffectSpecHandle, TargetDataHandle);
-	}
-}
-
-void UAbility_Aurora_E::SetIndicator()
-{
-	for (auto Indicator : TestIndicators)
-	{
-		UAT_SpawnActorAndFollowParent* SpawnActorAndFollowParent = UAT_SpawnActorAndFollowParent::SpawnActorAndFollowParent(
-			this, Indicator, OwnerCharacter, 0, FVector{ 1, SkillRadius, SkillRadius},
-			bAttachLocationToParent, bFollowRotationToParent);
-		
-		if (SpawnActorAndFollowParent == nullptr)
-		{
-			continue;
-		}
-		SpawnActorAndFollowParent->ReadyForActivation();
-		
-		if (auto SpawnedIndicator = Cast<ASkillIndicator>(SpawnActorAndFollowParent->GetSpawnedActor()))
-		{
-			SpawnedIndicator->SetIndicatorColor(FColor::Blue);
-		}
 	}
 }

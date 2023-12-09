@@ -26,6 +26,8 @@ void RaidBossGameplayTags::InitTags()
 	Init_Character_MoveSpeed = TAG("Init.Character.MoveSpeed");
 	Init_Character_AttackSpeed = TAG("Init.Character.AttackSpeed");
 	
+	Character_Stat_Health = TAG("Character.Stat.Health");
+	Character_Stat_Mana = TAG("Character.Stat.Mana");
 	Character_Stat_MaxHealth = TAG("Character.Stat.MaxHealth");
 	Character_Stat_MaxMana = TAG("Character.Stat.MaxMana");
 	Character_Stat_AttackPower = TAG("Character.Stat.AttackPower");

@@ -62,17 +62,17 @@ void UAbility_Aurora_RMB::EndAbility(const FGameplayAbilitySpecHandle Handle,
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
+void UAbility_Aurora_RMB::EndAbilityCallback()
+{
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+}
+
 void UAbility_Aurora_RMB::ReleaseMovementCallback(FGameplayEventData Payload)
 {
 	if (OwnerCharacter)
 	{
 		OwnerCharacter->GetCapsuleComponent()->SetCollisionObjectType(ECC_Pawn);
 	}
-}
-
-void UAbility_Aurora_RMB::EndAbilityCallback()
-{
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 
 void UAbility_Aurora_RMB::GetDirectionAndMontageSection(FVector& OutLaunchDirection, FName& OutStartSection)

@@ -49,8 +49,3 @@ const URaidBossCharacterStatusAttributeSet* URaidBossAbilityBase::GetOwnerCharac
 
 	return nullptr;
 }
-
-ECharacterAbilityInputs URaidBossAbilityBase::GetAbilityInputID() const
-{
-	return AbilityInputID;
-}

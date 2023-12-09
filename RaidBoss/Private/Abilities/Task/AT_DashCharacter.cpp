@@ -32,14 +32,6 @@ void UAT_DashCharacter::TickTask(float DeltaTime)
 	
 	if (CharacterBase)
 	{
-		// FVector	CharacterLocation = CharacterBase->GetActorLocation();
-		// FVector NewDestination = FVector{Destination.X, Destination.Y, CharacterLocation.Z};
-		//
-		// NewDestination = FMath::VInterpConstantTo(CharacterLocation, NewDestination, DeltaTime, DashSpeed);
-
-		// PastDistance += (NewDestination - CharacterLocation).Length();
-		
-		// CharacterBase->SetActorLocation(NewDestination);
 		CharacterBase->AddMovementInput(Direction);
 	}
 
@@ -47,11 +39,6 @@ void UAT_DashCharacter::TickTask(float DeltaTime)
 	{
 		EndTask();
 	}
-}
-
-void UAT_DashCharacter::ExternalCancel()
-{
-	Super::ExternalCancel();
 }
 
 void UAT_DashCharacter::Activate()
@@ -63,9 +50,6 @@ void UAT_DashCharacter::Activate()
 	{
 		bTickingTask = true;
 		
-		// FVector	CharacterLocation = CharacterBase->GetActorLocation();
-		
-		// Destination = CharacterLocation + Direction * DashDistance;
 		OriginLocation = CharacterBase->GetActorLocation();
 		OriginMovementSpeed = CharacterBase->GetCharacterMovement()->MaxWalkSpeed;
 

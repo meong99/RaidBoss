@@ -14,9 +14,13 @@ void AMonsterSpawner::Tick(float DeltaTime)
 
 	DestroyDeadMonsters();
 
-	Timer += DeltaTime;
+	if (GetCurrentSpawnedMonsterNumber() < MaximumSpawnMonster)
+	{
+		Timer += DeltaTime;
+	}
 	
-	if (Timer >= SpawnTimeCycle)
+	if (Timer >= SpawnTimeCycle &&
+		GetCurrentSpawnedMonsterNumber() < MaximumSpawnMonster)
 	{
 		Timer = 0;
 		
@@ -41,6 +45,17 @@ void AMonsterSpawner::RequestToSpawnMonster()
 void AMonsterSpawner::RequestToStopSpawning()
 {
 	SetActorTickEnabled(false);
+}
+
+void AMonsterSpawner::ResetSpawner()
+{
+	DeadMonsterNumber = 0;
+	SpawnedMonsters.Reset();
+}
+
+int32 AMonsterSpawner::GetCurrentSpawnedMonsterNumber() const
+{
+	return SpawnedMonsters.Num();
 }
 
 bool AMonsterSpawner::SpawnMonster()
@@ -83,27 +98,11 @@ bool AMonsterSpawner::SpawnMonster()
 	return false;
 }
 
-int32 AMonsterSpawner::GetCurrentSpawnedMonsterNumber() const
-{
-	return SpawnedMonsters.Num();
-}
-
-int32 AMonsterSpawner::GetDeadMonsterNumber() const
-{
-	return DeadMonsterNumber;
-}
-
-void AMonsterSpawner::ResetSpawner()
-{
-	DeadMonsterNumber = 0;
-	SpawnedMonsters.Reset();
-}
-
 void AMonsterSpawner::DestroyDeadMonsters()
 {
 	for (int i = 0; i < SpawnedMonsters.Num(); i++)
 	{
-		if (SpawnedMonsters[i]->GetMonsterState() == EPlayerState::Dead)
+		if (SpawnedMonsters[i]->GetMonsterState() == ECharacterState::Dead)
 		{
 			AMonsterBase* Tmp = SpawnedMonsters[i];
 			

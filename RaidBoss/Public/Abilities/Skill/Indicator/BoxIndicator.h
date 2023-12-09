@@ -17,20 +17,26 @@ class RAIDBOSS_API ABoxIndicator : public ASkillIndicator
 public:
 	ABoxIndicator();
 	
-	virtual void Tick(float DeltaSeconds) override;
-
-	void	SetIndicatorValue(float InLineThickness) { LineThickness = InLineThickness; }
+	virtual void	Tick(float DeltaSeconds) override;
+	
+protected:
+	virtual void	BeginPlay() override;
+	
+public:
+	/*
+	 *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
 	
 	float	GetLineThickness() const { return LineThickness; }
 	
+	void	SetIndicatorValue(float InLineThickness) { LineThickness = InLineThickness; }
 	void	SetLineThickness(float InLineThickness) { LineThickness = InLineThickness; }
 	
 protected:
-	virtual void BeginPlay() override;
-	
+
 protected:
 	/*
-	 *	Changed on Initialize * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
 	
 	//
@@ -38,7 +44,7 @@ protected:
 	TObjectPtr<UMaterialInstanceDynamic>	IndicatorInstance;
 	
 	/*
-	 *	Changed on every cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
 
 	//

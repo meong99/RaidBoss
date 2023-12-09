@@ -80,6 +80,33 @@ void UAbility_Sevarog_R::EndAbility(const FGameplayAbilitySpecHandle Handle, con
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
+void UAbility_Sevarog_R::SetIndicator()
+{
+	for (auto Indicator : TestIndicators)
+	{
+		UAT_SpawnActorAndFollowParent* SpawnActorAndFollowParent = UAT_SpawnActorAndFollowParent::SpawnActorAndFollowParent(
+			this, Indicator, OwnerCharacter, AdditiveIndicatorLocation, FVector{ 1, SkillRange, SkillRange },
+			bAttachLocationToParent, bFollowRotationToParent);
+		
+		SpawnActorAndFollowParent->ReadyForActivation();
+		
+		auto FanShapeIndicator = Cast<AFanShapeIndicator>(SpawnActorAndFollowParent->GetSpawnedActor());
+		if (FanShapeIndicator)
+		{
+			FanShapeIndicator->SetIndicatorValue(SkillAngle);
+			if (Cast<AMonsterBase>(OwnerCharacter))
+			{
+				FanShapeIndicator->SetIndicatorColor(FColor::Red);
+				SpawnedIndicatorTasks.Add(SpawnActorAndFollowParent);
+			}
+			else
+			{
+				FanShapeIndicator->SetIndicatorColor(FColor::Blue);
+			}
+		}
+	}
+}
+
 void UAbility_Sevarog_R::AttackPointCallback(FGameplayEventData Payload)
 {
 	for (auto Element : SpawnedIndicatorTasks)
@@ -132,31 +159,4 @@ void UAbility_Sevarog_R::AttackPointCallback(FGameplayEventData Payload)
 void UAbility_Sevarog_R::EndAbilityCallback()
 {
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-}
-
-void UAbility_Sevarog_R::SetIndicator()
-{
-	for (auto Indicator : TestIndicators)
-	{
-		UAT_SpawnActorAndFollowParent* SpawnActorAndFollowParent = UAT_SpawnActorAndFollowParent::SpawnActorAndFollowParent(
-			this, Indicator, OwnerCharacter, AdditiveIndicatorLocation, FVector{ 1, SkillRange, SkillRange },
-			bAttachLocationToParent, bFollowRotationToParent);
-		
-		SpawnActorAndFollowParent->ReadyForActivation();
-		
-		auto FanShapeIndicator = Cast<AFanShapeIndicator>(SpawnActorAndFollowParent->GetSpawnedActor());
-		if (FanShapeIndicator)
-		{
-			FanShapeIndicator->SetIndicatorValue(SkillAngle);
-			if (Cast<AMonsterBase>(OwnerCharacter))
-			{
-				FanShapeIndicator->SetIndicatorColor(FColor::Red);
-				SpawnedIndicatorTasks.Add(SpawnActorAndFollowParent);
-			}
-			else
-			{
-				FanShapeIndicator->SetIndicatorColor(FColor::Blue);
-			}
-		}
-	}
 }

@@ -17,40 +17,41 @@ class RAIDBOSS_API URaidBossAbilityBase : public UGameplayAbility
 public:
 	URaidBossAbilityBase();
 
-	virtual void OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
+	virtual void	OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
 
-	ECharacterAbilityInputs						GetAbilityInputID() const;
-	FGameplayTagContainer						GetAbilityInputTags() const { return AbilityInputTags; }
-	FGameplayTag								GetAbilityTriggerTag() const;
+/*
+*	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+*/
+	ECharacterAbilityInputs	GetAbilityInputID() const { return AbilityInputID; };
+	FGameplayTag			GetAbilityTriggerTag() const;
 	
 protected:
 	void	SendGameplayEventToActor(AActor* Target, FGameplayTag EventTag, FGameplayEventData Payload);
+	
 	URaidBossAbilitySystemComponent*			GetOwnerAbilityComponent() const;
+	
 	const URaidBossCharacterStatusAttributeSet*	GetOwnerCharacterState() const;
 	
 protected:
 	
-	/*
-	 *	Changed on Initialize * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
+/*
+ *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ */
 
 	//
 	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<ARaidBossCharacterBase>			OwnerCharacter;
+	TObjectPtr<ARaidBossCharacterBase>	OwnerCharacter;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Raid Boss | Ability base")
-	FGameplayTagContainer						AbilityInputTags;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Raid Boss | Ability base")
-	ECharacterAbilityInputs						AbilityInputID = ECharacterAbilityInputs::None;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Ability base")
-	TArray<TObjectPtr<UAnimMontage>>			Montages; // 변경 필요 - 섹션으로 관리하도록
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Ability base")
-	TArray<FGameplayEffectExecutionDefinition>	EffectExecutions; // 변경 필요 - 없애고 SetByCaller로 변경
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Ability base")
-	TArray<FGameplayModifierInfo>				EffectModifiers; // 변경 필요 - 없애고 SetByCaller로 변경
+	ECharacterAbilityInputs				AbilityInputID = ECharacterAbilityInputs::None;
 
-	/*
-	 *	Changed on every cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
+	// 변경 필요 - 어레이 말고 몽타주 섹션으로 여러 애니메이션을 선택해서 실행할 수 있도록 하는게 좋을 듯 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Ability base")
+	TArray<TObjectPtr<UAnimMontage>>	Montages;
+	
+/*
+ *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ */
 
 	//
 };

@@ -1,6 +1,5 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Abilities/Skill/Aurora/Ability_Aurora_Q.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Abilities/Task/AT_DashCharacter.h"
@@ -23,7 +22,7 @@ bool UAbility_Aurora_Q::CanActivateAbility(const FGameplayAbilitySpecHandle Hand
 	bool	bIsValidOwner = OwnerCharacter ? true : false;
 	bool	bIsValidWeaponData = false;
 
-	if (CurrentWeapon)
+	if (CurrentWeapon.IsValid())
 	{
 		bIsValidWeaponData = true;
 	}

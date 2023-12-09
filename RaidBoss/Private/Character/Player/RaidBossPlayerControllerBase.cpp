@@ -7,6 +7,16 @@ ARaidBossPlayerControllerBase::ARaidBossPlayerControllerBase()
 	InteractionalUISystem = CreateDefaultSubobject<UInteractionalUISystem>(TEXT("Interactional UI System"));
 }
 
+void ARaidBossPlayerControllerBase::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+	
+	if (InteractionalUISystem)
+	{
+		InteractionalUISystem->InteractionalUIParsing(InteractionalUIArray);
+	}
+}
+
 void ARaidBossPlayerControllerBase::MoveCharacter(FVector2D Value) const
 {
 	ARaidBossPlayerBase* PlayerBase = GetRaidBossPlayerBase();
@@ -39,9 +49,12 @@ void ARaidBossPlayerControllerBase::LookCharacter(FVector2D Value) const
 		PlayerBase->LookCharacter(Value);
 }
 
-ARaidBossPlayerBase* ARaidBossPlayerControllerBase::GetRaidBossPlayerBase() const
+void ARaidBossPlayerControllerBase::SendUIEventTagToController(FGameplayTag TriggerTag) const
 {
-	return Cast<ARaidBossPlayerBase>(GetPawn());
+	if (InteractionalUISystem)
+	{
+		int32 AddedUI = InteractionalUISystem->HandleUITriggerEvent(TriggerTag);
+	}
 }
 
 URaidBossAbilitySystemComponent* ARaidBossPlayerControllerBase::GetRaidBossAbilitySystemComponent() const
@@ -51,20 +64,7 @@ URaidBossAbilitySystemComponent* ARaidBossPlayerControllerBase::GetRaidBossAbili
 	return PlayerBase ? PlayerBase->GetRaidBossAbilitySystemComponent() : nullptr;
 }
 
-void ARaidBossPlayerControllerBase::SendUIEventTagToController(FGameplayTag TriggerTag) const
+ARaidBossPlayerBase* ARaidBossPlayerControllerBase::GetRaidBossPlayerBase() const
 {
-	if (InteractionalUISystem)
-	{
-		int32 AddedUI = InteractionalUISystem->HandleUITriggerEvent(TriggerTag);
-	}
-}
-
-void ARaidBossPlayerControllerBase::OnPossess(APawn* InPawn)
-{
-	Super::OnPossess(InPawn);
-	
-	if (InteractionalUISystem)
-	{
-		InteractionalUISystem->InteractionalUIParsing(InteractionalUIArray);
-	}
+	return Cast<ARaidBossPlayerBase>(GetPawn());
 }

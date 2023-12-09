@@ -17,20 +17,26 @@ class RAIDBOSS_API AFanShapeIndicator : public ASkillIndicator
 public:
 	AFanShapeIndicator();
 	
-	virtual void Tick(float DeltaSeconds) override;
-
-	void	SetIndicatorValue(float InAngle) { Angle = InAngle; }
+	virtual void	Tick(float DeltaSeconds) override;
 	
+protected:
+	virtual void	BeginPlay() override;
+	
+public:
+
+	/*
+	 *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
 	float	GetAngle() const { return Angle; }
 	
+	void	SetIndicatorValue(float InAngle) { Angle = InAngle; }
 	void	SetAngle(float InAngle) { Angle = InAngle; }
 	
 protected:
-	virtual void BeginPlay() override;
 	
 protected:
 	/*
-	 *	Changed on Initialize * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
 	
 	//
@@ -38,7 +44,7 @@ protected:
 	TObjectPtr<UMaterialInstanceDynamic>	IndicatorInstance;
 	
 	/*
-	 *	Changed on every cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
 
 	//

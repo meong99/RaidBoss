@@ -56,6 +56,12 @@ void URaidBossEquipmentItem::EquipItem()
 	FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(ItemEffect);
 	
 	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_AttackPower, AdditiveAttackPower);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_AttackRange, AdditiveAttackRange);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_AttackSpeed, AdditiveAttackSpeed);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_DefensePower, AdditiveDefensePower);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_MaxHealth, AdditiveMaxHealth);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_MaxMana, AdditiveMaxMana);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_MoveSpeed, AdditiveMoveSpeed);
 	
 	if (CurrentAbilitySpec && OwnerCharacter)
 	{

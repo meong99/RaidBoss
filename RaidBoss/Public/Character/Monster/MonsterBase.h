@@ -20,14 +20,12 @@ class RAIDBOSS_API AMonsterBase : public ARaidBossCharacterBase
 public:
 	AMonsterBase();
 
-	virtual void Tick(float DeltaSeconds) override;
-	
 protected:
-	virtual void PossessedBy(AController* NewController) override;
+	virtual void	PossessedBy(AController* NewController) override;
 
-	virtual void BeginPlay() override;
+	virtual void	BeginPlay() override;
 	
-	virtual void Destroyed() override;
+	virtual void	Destroyed() override;
 
 	
 public:
@@ -38,15 +36,18 @@ public:
 	float	GetDistanceBetweenSpawner() const;
 
 	void	SetMonsterHealthBarVisibility(bool	NewVisible) const;
-	
+
+/*
+ *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ */
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Monster")
-	ARaidBossEnemyControllerBase* GetRiadBossEnemyController() const;
-	EPlayerState	GetMonsterState() const { return CurrentPlayerState; }
-	EMonsterType	GetMonsterType() const { return MonsterType; }
+	ARaidBossEnemyControllerBase*	GetRiadBossEnemyController() const { return MonsterController.Get(); }
+	ECharacterState					GetMonsterState() const { return CurrentCharacterState; }
+	EMonsterType					GetMonsterType() const { return MonsterType; }
 	
 	// 플레이어 추격 종료 조건 달성했을 때부터 이 시간이 지나면 추격 종료
-	float	GetTimerForStopChase() const { return TimerForStopChase; }
-	float	GetMaxChasingDistance() const { return MaxChasingDistance; }
+	float							GetTimerForStopChase() const { return TimerForStopChase; }
+	float							GetMaxChasingDistance() const { return MaxChasingDistance; }
 	
 protected:
 	

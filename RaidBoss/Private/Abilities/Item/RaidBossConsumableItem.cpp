@@ -20,13 +20,13 @@ void URaidBossConsumableItem::ActivateAbility(const FGameplayAbilitySpecHandle H
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(ItemEffect);
-	
-	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Item_SetByCaller_Health, Health);
-	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Item_SetByCaller_MaxHealth, MaxHealth);
-	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Item_SetByCaller_Mana, Mana);
-	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Item_SetByCaller_MaxMana, MaxMana);
-	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Item_SetByCaller_AttackPower, AttackPower);
-	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Item_SetByCaller_DefensePower, DefensePower);
+
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_AttackPower, AttackPower);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_DefensePower, DefensePower);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_MaxHealth, MaxHealth);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_MaxMana, MaxMana);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_Health, Health);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_Mana, Mana);
 	
 	FGameplayAbilitySpec* AbilitySpec = GetCurrentAbilitySpec();
 	

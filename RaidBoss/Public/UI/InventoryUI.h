@@ -24,13 +24,14 @@ protected:
 	virtual void NativeOnInitialized() override;
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
-
-	void	CreateItemSlots(TArray<UWidget*> InventoryWrapBox, ESlotType SlotType);
 	
 	UFUNCTION()
 	void	NotifyNewItemAddedCallBack(URaidBossItemBase* NewItemCDO, int32 Amount);
 
+	void	CreateItemSlots(TArray<UWidget*> InventoryWrapBox, ESlotType SlotType);
+
 	void	AddNewItemToSlot(TArray<UWidget*> InventoryWrapBox, URaidBossItemBase* NewItemCDO, int32 Amount) const;
+	
 protected:
 	/*
 	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
@@ -38,20 +39,16 @@ protected:
 	
 	//
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Inventory Widget")
-	int32	SlotCount = 20;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Inventory Widget")
 	TSubclassOf<UInventorySlot>	InventorySlotClass;
 	
 	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Inventory Widget", meta = (BindWidget, AllowPrivateAccess))
-	TObjectPtr<UWrapBox>	EquipmentWrapBox;
+	TObjectPtr<UWrapBox>		EquipmentWrapBox;
 	
 	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Inventory Widget", meta = (BindWidget, AllowPrivateAccess))
-	TObjectPtr<UWrapBox>	ConsumableWrapBox;
-	
-	// UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Inventory Widget", meta = (BindWidget, AllowPrivateAccess))
-	// TObjectPtr<UWrapBox>	MiscellaneousWrapBox;
+	TObjectPtr<UWrapBox>		ConsumableWrapBox;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Inventory Widget")
+	int32						SlotCount = 20;
 	
 	/*
 	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 

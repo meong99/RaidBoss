@@ -9,14 +9,3 @@ ASkillIndicator::ASkillIndicator()
 
 	IndicatorDecal->SetRelativeRotation(FRotator(-90, 0, 0));
 }
-
-void ASkillIndicator::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-void ASkillIndicator::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-

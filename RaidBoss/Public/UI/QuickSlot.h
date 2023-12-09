@@ -19,6 +19,12 @@ class RAIDBOSS_API UQuickSlot : public URaidBossSlotWidget
 public:
 	UQuickSlot();
 	
+protected:
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
+
+public:
 	UFUNCTION(BlueprintCallable)
 	virtual void ActivateThisSlot() override;
 	
@@ -27,19 +33,15 @@ public:
 	void	RemoveRegisteredSkill();
 	
 protected:
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
-	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
-
 	void	SetOtherSlot(URaidBossSlotWidget* OtherSlot);
 
 	void	RemoveOtherSlot();
 	
-	void	SendGameplayEventWithTag(const FGameplayTag& TagToAdd = FGameplayTag{});
+	void	SendGameplayEventWithTag(const FGameplayTag& TagToAdd = {});
 
 protected:
 	/*
-	 *	Changed on Initialize * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
 	//
 	UPROPERTY(Transient, BlueprintReadOnly, Category="Raid Boss | QuickSlot", meta=(BindWidgetAnim))
@@ -49,7 +51,7 @@ protected:
 	TObjectPtr<UProgressBar>		CooldownBar;
 
 	/*
-	 *	Changed on every cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
 	// 스킬 쿨타임을 보여주는 텍스트
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | QuickSlot", meta=(BindWidget))

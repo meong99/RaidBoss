@@ -2,38 +2,6 @@
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Components/Image.h"
 
-void URaidBossSlotWidget::ActivateThisSlot()
-{
-}
-
-UTexture2D* URaidBossSlotWidget::GetTexture() const
-{
-	return UWidgetBlueprintLibrary::GetBrushResourceAsTexture2D(BindImage->Brush);
-}
-
-int32 URaidBossSlotWidget::GetItemAmount() const
-{
-	return ItemAmount;
-}
-
-void URaidBossSlotWidget::SetTexture(UTexture2D* InTexture)
-{
-	if (InTexture)
-		BindImage->SetBrushFromTexture(InTexture);
-	else
-		BindImage->SetBrushFromTexture(DefaultTexture);
-}
-
-void URaidBossSlotWidget::SetItemAmount(int32 Amount)
-{
-	ItemAmount = Amount;
-}
-
-void URaidBossSlotWidget::SetSlotType(ESlotType InSlotType)
-{
-	SlotType = InSlotType;
-}
-
 void URaidBossSlotWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -61,4 +29,17 @@ FReply URaidBossSlotWidget::NativeOnMouseButtonDoubleClick(const FGeometry& InGe
 	FEventReply ReplyResult = UWidgetBlueprintLibrary::Handled();
 
 	return ReplyResult.NativeReply; 
+}
+
+UTexture2D* URaidBossSlotWidget::GetTexture() const
+{
+	return UWidgetBlueprintLibrary::GetBrushResourceAsTexture2D(BindImage->Brush);
+}
+
+void URaidBossSlotWidget::SetTexture(UTexture2D* InTexture)
+{
+	if (InTexture)
+		BindImage->SetBrushFromTexture(InTexture);
+	else
+		BindImage->SetBrushFromTexture(DefaultTexture);
 }

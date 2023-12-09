@@ -1,4 +1,6 @@
-#include "Character/Enemy/RaidBossEnemyControllerBase.h"
+#include "Character/Monster/RaidBossEnemyControllerBase.h"
+#include "Abilities/AbilityType.h"
+#include "Abilities/RaidBossAbilitySystemComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -52,6 +54,26 @@ void ARaidBossEnemyControllerBase::Tick(float DeltaSeconds)
 	{
 		StopChasePlayer();
 	}
+
+	URaidBossAbilitySystemComponent*	AbilitySystemComponent = ControlledMonster->GetRaidBossAbilitySystemComponent();
+	bool	bCanMove = false;
+	
+	if (AbilitySystemComponent)
+	{
+		bCanMove = AbilitySystemComponent->CanActivateAbility(static_cast<int32>(ECharacterAbilityInputs::Move));
+	}
+	
+	if (ControlledMonster->GetCurrentCharacterState() != ECharacterState::Alive ||
+		bCanMove == false)
+	{
+		Blackboard->SetValueAsBool(BBKey::CAN_MOVE, false);
+	}
+
+	if (ControlledMonster->GetCurrentCharacterState() == ECharacterState::Alive &&
+		bCanMove)
+	{
+		Blackboard->SetValueAsBool(BBKey::CAN_MOVE, true);
+	}
 }
 
 void ARaidBossEnemyControllerBase::OnPossess(APawn* InPawn)
@@ -79,6 +101,25 @@ void ARaidBossEnemyControllerBase::BeginPlay()
 	}
 }
 
+void ARaidBossEnemyControllerBase::StopChasePlayer()
+{
+	if (IsValid(Blackboard) == false || ControlledMonster.IsValid() == false)
+	{
+		return;
+	}
+
+	TimeSinceOutChasingRange = 0;
+	
+	ControlledMonster->SetMonsterHealthBarVisibility(false);
+	
+	PerceptionComponent->ForgetAll();
+	
+	Blackboard->SetValueAsBool(BBKey::RETURN_TO_SPAWNER, true);
+	Blackboard->SetValueAsVector(BBKey::DESTINATION, ControlledMonster->GetSpawnerLocation());
+	Blackboard->SetValueAsBool(BBKey::FOUND_PLAYER, false);
+	Blackboard->SetValueAsObject(BBKey::TARGET_ACTOR, nullptr);
+}
+
 void ARaidBossEnemyControllerBase::OnTargetDetectedDelegated(AActor* Actor, FAIStimulus Stimulus)
 {
 	if (IsValid(Actor) == false || IsValid(Blackboard) == false || ControlledMonster.IsValid() == false)
@@ -104,28 +145,4 @@ void ARaidBossEnemyControllerBase::OnTargetDetectedDelegated(AActor* Actor, FAIS
 		Blackboard->SetValueAsObject(BBKey::TARGET_ACTOR, Actor);
 		ControlledMonster->SetMonsterHealthBarVisibility(true);
 	}
-}
-
-void ARaidBossEnemyControllerBase::StopChasePlayer()
-{
-	if (IsValid(Blackboard) == false || ControlledMonster.IsValid() == false)
-	{
-		return;
-	}
-
-	TimeSinceOutChasingRange = 0;
-	
-	ControlledMonster->SetMonsterHealthBarVisibility(false);
-	
-	PerceptionComponent->ForgetAll();
-	
-	Blackboard->SetValueAsBool(BBKey::RETURN_TO_SPAWNER, true);
-	Blackboard->SetValueAsVector(BBKey::DESTINATION, ControlledMonster->GetSpawnerLocation());
-	Blackboard->SetValueAsBool(BBKey::FOUND_PLAYER, false);
-	Blackboard->SetValueAsObject(BBKey::TARGET_ACTOR, nullptr);
-}
-
-AMonsterBase* ARaidBossEnemyControllerBase::GetControlledCharacter() const
-{
-	return ControlledMonster.Get();
 }

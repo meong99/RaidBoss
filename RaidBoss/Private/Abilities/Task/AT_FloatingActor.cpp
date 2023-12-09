@@ -21,11 +21,6 @@ UAT_FloatingActor* UAT_FloatingActor::CreateFloatingActorTask(UGameplayAbility* 
 	return MyObj;
 }
 
-void UAT_FloatingActor::ExternalCancel()
-{
-	Super::ExternalCancel();
-}
-
 void UAT_FloatingActor::TickTask(float DeltaTime)
 {
 	Super::TickTask(DeltaTime);

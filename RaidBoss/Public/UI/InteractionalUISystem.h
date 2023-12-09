@@ -45,21 +45,23 @@ class RAIDBOSS_API UInteractionalUISystem : public UActorComponent
 
 public:
 	UInteractionalUISystem();
-
-	void	InteractionalUIParsing(const TArray<TSubclassOf<UInteractionalUI>>& InteractionalUIArray);
 	
+public:
 	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category="Raid Boss | UI System")
 	int32	HandleUITriggerEvent(FGameplayTag TriggerTag) const;
 	
 	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category="Raid Boss | UI System")
 	int32	HandleUIActionTriggerEvent(FGameplayTag TriggerTag, FUIActionData ActionData) const;
 
+	void	InteractionalUIParsing(const TArray<TSubclassOf<UInteractionalUI>>& InteractionalUIArray);
+
+	/*
+	 *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category="Raid Boss | UI System")
 	FInteractionalUIHandle	GetInteractionalUIHandle(FGameplayTag TriggerTag) const {return InteractionalUIMap.FindRef(TriggerTag); }
-	
-protected:
-	virtual void BeginPlay() override;
 
+protected:
 	void	AddRemovalTagKey(UInteractionalUI* InteractionalUI);
 	
 	void	InteractionalUIActionParsing(const TArray<UInteractionalUIAction*>& InteractionalUIActionArray);
@@ -69,10 +71,23 @@ protected:
 	void	RemoveOtherUIWithRemoveTag(FGameplayTagContainer RemoveTags) const;
 	
 protected:
+	/*
+	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	
+	//
 	UPROPERTY()
-	TMap<FGameplayTag, FInteractionalUIHandle>	InteractionalUIMap;
+	TMap<FGameplayTag, FInteractionalUIHandle>			InteractionalUIMap;
+	
 	UPROPERTY()
-	TMap<FGameplayTag, FInteractionalUIActionHandle> InteractionalUIActionMap;
+	TMap<FGameplayTag, FInteractionalUIActionHandle>	InteractionalUIActionMap;
+	
 	UPROPERTY()
-	TMap<FGameplayTag, FRemoveUIHandle>	RemovalUIByTagMap;
+	TMap<FGameplayTag, FRemoveUIHandle>					RemovalUIByTagMap;
+
+	/*
+	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	
+	//
 };

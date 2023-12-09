@@ -18,40 +18,40 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category="Ability|Tasks", meta = (DisplayName="FloatingActor",
 		HidePin = "OwningAbility", DefaultToSelf = "OwningAbility", BlueprintInternalUseOnly = "TRUE"))
-	static UAT_FloatingActor* CreateFloatingActorTask(UGameplayAbility* OwningAbility, float InHeight, float InRisingSpeed,
+	static UAT_FloatingActor*	CreateFloatingActorTask(UGameplayAbility* OwningAbility, float InHeight, float InRisingSpeed,
 		float InFloatingTime, float InFallingSpeed);
 
-	virtual void ExternalCancel() override;
-	
 protected:
-	virtual void TickTask(float DeltaTime) override;
+	virtual void	TickTask(float DeltaTime) override;
 	
-	virtual void Activate() override;
+	virtual void	Activate() override;
 
-	virtual void OnDestroy(bool bInOwnerFinished) override;
+	virtual void	OnDestroy(bool bInOwnerFinished) override;
 
 	void	InterpolateDestinationXY();
 protected:
-	/*
-	 *	Constant Value
-	 */
-	
-	float Height;
-	float RisingSpeed;
-	float FloatingTime;
-	float ActivateTime = 0.f;
-	float FallingSpeed;
-	FVector	Destination;
+/*
+ *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ */
 
+	//
 	UPROPERTY()
 	TObjectPtr<ARaidBossCharacterBase>	OwnerCharacter;
+
+	float	Height;
 	
-	/*
-	 *	Changed in Initialize
-	 */
+	float	RisingSpeed;
+	
+	float	FloatingTime;
+	
+	float	FallingSpeed;
 
-	/*
-	 *	Changed in every cycle
-	 */
-
+/*
+ *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ */
+	
+	//
+	float	ActivateTime = 0.f;
+	
+	FVector	Destination;
 };

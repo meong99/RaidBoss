@@ -35,6 +35,7 @@ public:
 protected:
 	void	AdjustAttributeForMaxChange(FGameplayAttributeData& AffectedAttribute, const FGameplayAttributeData& MaxAttribute,
 										float NewMaxValue, const FGameplayAttribute& AffectedAttributeProperty);
+	
 	void	CheckHealthAndToDeath() const;
 
 public:
@@ -61,7 +62,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute", meta=(AllowPrivateAccess))
 	FGameplayAttributeData	AttackSpeed;
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute", meta=(AllowPrivateAccess))
-	FGameplayAttributeData AttackPowerIncreaseRate;
+	FGameplayAttributeData	AttackPowerIncreaseRate;
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute", meta=(AllowPrivateAccess))
-	FGameplayAttributeData DefencePowerIncreaseRate;
+	FGameplayAttributeData	DefencePowerIncreaseRate;
 };

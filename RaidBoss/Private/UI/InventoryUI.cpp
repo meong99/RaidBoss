@@ -50,20 +50,6 @@ void UInventoryUI::NativeDestruct()
 	Super::NativeDestruct();
 }
 
-void UInventoryUI::CreateItemSlots(TArray<UWidget*> InventoryWrapBox, ESlotType SlotType)
-{
-	for (int i = 0; i < SlotCount; i++)
-	{
-		UInventorySlot* NewSlot = CreateWidget<UInventorySlot>(this, InventorySlotClass);
-		
-		if (NewSlot)
-		{
-			NewSlot->SetSlotType(SlotType);
-			InventoryWrapBox.Add(NewSlot);
-		}
-	}
-}
-
 void UInventoryUI::NotifyNewItemAddedCallBack(URaidBossItemBase* NewItemCDO, int32 Amount)
 {
 	if (NewItemCDO)
@@ -78,6 +64,20 @@ void UInventoryUI::NotifyNewItemAddedCallBack(URaidBossItemBase* NewItemCDO, int
 			break;
 		default:
 			break;
+		}
+	}
+}
+
+void UInventoryUI::CreateItemSlots(TArray<UWidget*> InventoryWrapBox, ESlotType SlotType)
+{
+	for (int i = 0; i < SlotCount; i++)
+	{
+		UInventorySlot* NewSlot = CreateWidget<UInventorySlot>(this, InventorySlotClass);
+		
+		if (NewSlot)
+		{
+			NewSlot->SetSlotType(SlotType);
+			InventoryWrapBox.Add(NewSlot);
 		}
 	}
 }

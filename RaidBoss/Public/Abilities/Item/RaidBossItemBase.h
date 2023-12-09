@@ -20,14 +20,19 @@ struct FItemAbilityInformation
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	EITemCategory			ItemCategory;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FName					ItemName;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int32					BuyingPrice;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int32					SellingPrice;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<UTexture2D>	ItemTexture;
+	
 	UPROPERTY(BlueprintReadOnly)
 	uint8					ItemKey = INDEX_NONE;
 };
@@ -38,14 +43,16 @@ class RAIDBOSS_API URaidBossItemBase : public URaidBossAbilityBase
 	GENERATED_BODY()
 
 public:
-	UTexture2D*				GetItemTexture() const;
 	
-	EITemCategory			GetItemCategory() const;
+	/*
+	 *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
 	
-	FItemAbilityInformation	GetItemInfo() const;
-	
+	UTexture2D*				GetItemTexture() const { return ITemInfo.ItemTexture; }
+	EITemCategory			GetItemCategory() const { return ITemInfo.ItemCategory; }
+	FItemAbilityInformation	GetItemInfo() const { return ITemInfo; }
 	uint8					GetItemKey() const { return ITemInfo.ItemKey; }
-
+	
 	void	SetItemKey(uint8 ItemKey) { ITemInfo.ItemKey = ItemKey; }
 	
 protected:

@@ -25,6 +25,7 @@ public:
 
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 			const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const override;
+	
 	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 			const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
 
@@ -36,20 +37,38 @@ protected:
 
 private:
 	void	EquipItem();
+	
 	void	UnEquipItem();
 
 protected:
 	/*
-	 *	Changed on Initialize * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Item")
 	EEquipType EquipType = EEquipType::Size;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Item")
+	float	AdditiveMaxHealth = 0;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Item")
+	float	AdditiveMaxMana = 0;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Item")
 	float	AdditiveAttackPower = 0;
-
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Item")
+	float	AdditiveAttackSpeed = 0;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Item")
+	float	AdditiveAttackRange = 0;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Item")
+	float	AdditiveDefensePower = 0;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Item")
+	float	AdditiveMoveSpeed = 0;
 	/*
-	 *	Changed on every cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
 	
 	bool bIsThisArmed = false;

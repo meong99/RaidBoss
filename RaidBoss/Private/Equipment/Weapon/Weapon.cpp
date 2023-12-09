@@ -15,10 +15,6 @@ AWeapon::AWeapon()
 	GetSkeletalMesh()->SetRenderCustomDepth(true);
 }
 
-void AWeapon::BeginPlay()
-{
-}
-
 bool AWeapon::Attack()
 {
 	URaidBossAbilitySystemComponent* AbilitySystemComponent = GetRaidBossAbilitySystemComponent();
@@ -50,8 +46,39 @@ void AWeapon::LoadWeaponData(FWeaponKey InWeaponKey)
 		FinishSpawning(FTransform::Identity, true);
 		GiveAbilityToAsc();
 		ApplyWeaponStatToOwner();
-		GetAnimDataFromOwner();
 		AttachToOwner();
+	}
+}
+
+void AWeapon::AddWidgetToViewport()
+{
+	for (auto Widget : WeaponData.WidgetsToApply)
+	{
+		UUserWidget* NewWidget = CreateWidget<UUserWidget>(GetWorld(), Widget);
+
+		if (NewWidget)
+		{
+			NewWidget->AddToViewport();
+			WidgetInstances.Add(NewWidget);
+		}
+	}
+}
+
+void AWeapon::RemoveWidgetFromViewport()
+{
+	for (auto Widget : WidgetInstances)
+	{
+		Widget->RemoveFromParent();
+	}
+}
+
+void AWeapon::NotifyNewWeaponEquipped()
+{
+	ARaidBossCharacterBase*	OwnerCharacter = Cast<ARaidBossCharacterBase>(Owner);
+
+	if (OwnerCharacter)
+	{
+		OwnerCharacter->NotifyNewWeaponEquipped.Broadcast(CurrentSkills);
 	}
 }
 
@@ -101,7 +128,10 @@ void AWeapon::GiveAbilityToAsc()
 	{
 		for (const auto Ability : WeaponData.Abilities)
 		{
-			AbilitySpecHandles.Add(AbilitySystemComponent->GiveAbilityToASC(Ability, this, FGameplayTagContainer()));
+			FGameplayAbilitySpec abilitySpec(Ability.GetDefaultObject(), 1);
+			abilitySpec.SourceObject = this;
+			
+			AbilitySpecHandles.Add(AbilitySystemComponent->GiveAbility(abilitySpec));
 			
 			URaidBossAbilityBase* AbilityCDO = Ability->GetDefaultObject<URaidBossAbilityBase>();
 
@@ -161,52 +191,5 @@ void AWeapon::ApplyWeaponStatToOwner()
 		OutGoingSpec.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_AttackRange, WeaponData.AttackRange);
 
 		AppliedEffectHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*OutGoingSpec.Data);
-	}
-}
-
-void AWeapon::GetAnimDataFromOwner()
-{
-	// ARaidBossCharacterBase*	OwnerCharacter = Cast<ARaidBossCharacterBase>(Owner);
-	//
-	// if (OwnerCharacter)
-	// {
-	// 	const FItemAnimations* FoundAnimations =  OwnerCharacter->GetAnimationsByWeaponType(WeaponData.WeaponKey.WeaponType);
-	// 	
-	// 	if (FoundAnimations)
-	// 	{
-	// 		WeaponData.WeaponAnimations = *FoundAnimations;
-	// 	}
-	// }
-}
-
-void AWeapon::NotifyNewWeaponEquipped()
-{
-	ARaidBossCharacterBase*	OwnerCharacter = Cast<ARaidBossCharacterBase>(Owner);
-
-	if (OwnerCharacter)
-	{
-		OwnerCharacter->NotifyNewWeaponEquipped.Broadcast(CurrentSkills);
-	}
-}
-
-void AWeapon::AddWidgetToViewport()
-{
-	for (auto Widget : WeaponData.WidgetsToApply)
-	{
-		UUserWidget* NewWidget = CreateWidget<UUserWidget>(GetWorld(), Widget);
-
-		if (NewWidget)
-		{
-			NewWidget->AddToViewport();
-			WidgetInstances.Add(NewWidget);
-		}
-	}
-}
-
-void AWeapon::RemoveWidgetFromViewport()
-{
-	for (auto Widget : WidgetInstances)
-	{
-		Widget->RemoveFromParent();
 	}
 }

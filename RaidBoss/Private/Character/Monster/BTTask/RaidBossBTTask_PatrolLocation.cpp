@@ -1,5 +1,5 @@
-#include "Character/Enemy/BTTasks/RaidBossBTTask_PatrolLocation.h"
-#include "Character/Enemy/RaidBossEnemyControllerBase.h"
+#include "Character/Monster/BTTask/RaidBossBTTask_PatrolLocation.h"
+#include "Character/Monster/RaidBossEnemyControllerBase.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "NavigationSystem.h"
 #include "AIController.h"
@@ -37,9 +37,4 @@ EBTNodeResult::Type URaidBossBTTask_PatrolLocation::ExecuteTask(UBehaviorTreeCom
 	}
 
 	return EBTNodeResult::Failed;
-}
-
-float URaidBossBTTask_PatrolLocation::GetSearchRadius() const
-{
-	return SearchRadius;
 }

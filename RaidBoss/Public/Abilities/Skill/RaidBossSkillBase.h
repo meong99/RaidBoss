@@ -10,75 +10,79 @@ class ASkillIndicator;
 class UAbilityTask_PlayMontageAndWait;
 class UAbilityTask_WaitGameplayEvent;
 
-enum ESkillRequestType
-{
-	None,
-	IncreaseSkillLevel,
-	DecreaseSkillLevel
-};
-
 UCLASS()
 class RAIDBOSS_API URaidBossSkillBase : public URaidBossAbilityBase
 {
 	GENERATED_BODY()
 public:
-	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	virtual bool	CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const override;
 
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	virtual void	ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
-	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	virtual void	EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 	
-	virtual const FGameplayTagContainer* GetCooldownTags() const override;
-	
-	virtual void ApplyCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	virtual void	ApplyCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo) const override;
 	
-	const FRaidBossSkillInfo&	GetSkillInfo() const;
+	virtual const FGameplayTagContainer* GetCooldownTags() const override;
 
+/*
+ *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ */
 	UFUNCTION(BlueprintCallable, Category="Raid Boss | Skill")
-	virtual float	GetSkillRange() const { return SkillRange; }
+	virtual float				GetSkillRange() const { return SkillRange; }
+	const FRaidBossSkillInfo&	GetSkillInfo() const { return SkillInfo; };
 	
 protected:
-	virtual void	SetIndicator();
-	
-	bool	CanLevelIncrease();
-	
-	bool	CanLevelDecrease();
+	virtual void	SetIndicator() {}
 	
 	void	IncreaseSkillLevel();
 	
 	void	DecreaseSkillLevel();
-
-	ESkillRequestType		GetRequestType(const FGameplayTagContainer* InstigatorTags) const;
+	
+	bool	CanLevelIncrease();
+	
+	bool	CanLevelDecrease();
 
 	void	NotifySkillLevelChanged();
-
 	
+	bool	IsTargetInRangeXY(AActor* Target, float Range) const;
+	
+	bool	IsTargetInAngleXY(FVector StandardVector, FVector TargetVector, float MaxAngle) const;
+
+	ESkillRequestType					GetRequestType(const FGameplayTagContainer* InstigatorTags) const;
+
 	FGameplayAbilityTargetDataHandle	CreateAbilityTargetDataFromActor(AActor* Target) const;
+	
 	UAbilityTask_PlayMontageAndWait*	CreatePlayMontageAndWaitTask(int32 MontageIndex = 0, float Rate = 1, FName StartSection = NAME_None);
+	
 	UAbilityTask_WaitGameplayEvent*		CreateWaitGameplayEventTask(FGameplayTag EventTag, bool OnlyTriggerOnce = true);
-	bool								IsTargetInRangeXY(AActor* Target, float Range) const;
-	bool								IsTargetInAngleXY(FVector StandardVector, FVector TargetVector, float MaxAngle) const;
 
 protected:
 	
 	/*
-	 *	Changed on Initialize * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
 	
 	//
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Skill Base")
-	TSubclassOf<UGameplayEffect>	EffectClass;
+	TSubclassOf<UGameplayEffect>			EffectClass;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Skill Indicator")
-	TSubclassOf<ASkillIndicator>	SkillIndicatorClass;
+	TSubclassOf<ASkillIndicator>			SkillIndicatorClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Skill Indicator")
-	TArray<TSubclassOf<ASkillIndicator>> TestIndicators;
+	TArray<TSubclassOf<ASkillIndicator>>	TestIndicators;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Skill Base")
+	FGameplayTagContainer	CooldownTags;
+
+	UPROPERTY(Transient)
+	FGameplayTagContainer	TempCooldownTags;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Skill Indicator")
 	float	AdditiveIndicatorLocation = 0;
 
@@ -106,13 +110,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Skill Base")
 	float	SkillCoolTime = 1;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Skill Base")
-	FGameplayTagContainer	CooldownTags;
-
-	UPROPERTY(Transient)
-	FGameplayTagContainer	TempCooldownTags;
 	/*
-	 *	Changed on every cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
 	
 	//
