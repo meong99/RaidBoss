@@ -39,6 +39,7 @@ public:
 	virtual void	SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void	BeginPlay() override;
 	virtual void	Tick(float DeltaSeconds) override;
+
 	
 public:
 	UFUNCTION(BlueprintCallable)
