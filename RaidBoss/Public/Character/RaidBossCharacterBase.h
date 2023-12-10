@@ -40,7 +40,7 @@ public:
 	virtual void	BeginPlay() override;
 	virtual void	Tick(float DeltaSeconds) override;
 
-	
+    
 public:
 	UFUNCTION(BlueprintCallable)
 	void	EquipWeapon(FWeaponKey WeaponKey);
@@ -65,12 +65,12 @@ public:
 	 *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
 	
-	virtual UAbilitySystemComponent*				GetAbilitySystemComponent() const override;
-	URaidBossAbilitySystemComponent*				GetRaidBossAbilitySystemComponent() const;
-	const URaidBossCharacterStatusAttributeSet*		GetCharacterStatusAttributeSet() const;
-	UCameraComponent*								GetFollowCamera() const { return FollowCamera; };
-	const TMap<FGameplayTag, FInventoryData>&		GetInventoryData() const { return InventoryData; }
-	const TArray<TSubclassOf<URaidBossSkillBase>>*	GetPlayerSkills() const { return &PlayerSkills; }
+	virtual UAbilitySystemComponent*                GetAbilitySystemComponent() const override;
+	URaidBossAbilitySystemComponent*                GetRaidBossAbilitySystemComponent() const;
+	const URaidBossCharacterStatusAttributeSet*     GetCharacterStatusAttributeSet() const;
+	UCameraComponent*                               GetFollowCamera() const { return FollowCamera; };
+	const TMap<FGameplayTag, FInventoryData>&       GetInventoryData() const { return InventoryData; }
+	const TArray<TSubclassOf<URaidBossSkillBase>>*  GetPlayerSkills() const { return &PlayerSkills; }
 	FCharacterAnimations	GetCharacterAnimations() const { return CharacterAnimations; }
 	ECharacterState			GetCurrentCharacterState() const { return CurrentCharacterState; }
 	int32					GetItemAmount(FGameplayTag InAbilityTriggerTag) const { return InventoryData.FindRef(InAbilityTriggerTag).Amount; };
