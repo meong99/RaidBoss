@@ -12,7 +12,40 @@ class RAIDBOSS_API URaidBossConsumableItem : public URaidBossItemBase
 public:
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 			const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const override;
+	
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 			const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+
+	void	ApplyEffectToOwner() const;
+
+	bool	CanApplyEffectToOwner() const;
+protected:
+		
+	/*
+	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Item")
+	float	Health = 0;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Item")
+	float	MaxHealth = 0;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Item")
+    float	Mana = 0;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Item")
+	float	MaxMana = 0;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Item")
+	float	AttackPower = 0;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Item")
+	float	DefensePower = 0;
+
+	/*
+	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+
 };

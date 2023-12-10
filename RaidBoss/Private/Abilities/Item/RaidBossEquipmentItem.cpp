@@ -1,9 +1,10 @@
 ﻿#include "Abilities/Item/RaidBossEquipmentItem.h"
 #include "Abilities/RaidBossAbilitySystemComponent.h"
+#include "Character/RaidBossCharacterBase.h"
+#include "Management/RaidBossGameplayTags.h"
 
 URaidBossEquipmentItem::URaidBossEquipmentItem()
 {
-	bRetriggerInstancedAbility = true;
 }
 
 bool URaidBossEquipmentItem::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -33,32 +34,56 @@ void URaidBossEquipmentItem::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 	const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	if (CommitAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo) == true)
+
+	if (TriggerEventData->InstigatorTags.HasTag(RaidBossGameplayTags::Get().Event_Equipment_ToRemove))
+	{
+		UnEquipItem();
+		bIsThisArmed = false;
+	}
+	else if (bIsThisArmed == false)
 	{
 		EquipItem();
+		bIsThisArmed = true;
 	}
+	
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 
 void URaidBossEquipmentItem::EquipItem()
 {
-	FGameplayAbilitySpec* AbilitySpec = GetCurrentAbilitySpec();
-	FGameplayEffectSpecHandle EffectSpecHandle = CreateEffectSpecHandle();
+	FGameplayAbilitySpec* CurrentAbilitySpec = GetCurrentAbilitySpec();
 
-	if (AbilitySpec)
+	FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(ItemEffect);
+	
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_AttackPower, AdditiveAttackPower);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_AttackRange, AdditiveAttackRange);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_AttackSpeed, AdditiveAttackSpeed);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_DefensePower, AdditiveDefensePower);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_MaxHealth, AdditiveMaxHealth);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_MaxMana, AdditiveMaxMana);
+	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_MoveSpeed, AdditiveMoveSpeed);
+	
+	if (CurrentAbilitySpec && OwnerCharacter)
 	{
-		AbilitySpec->GameplayEffectHandle = ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle);
+		CurrentAbilitySpec->GameplayEffectHandle = ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle);
+
+		OwnerCharacter->NotifyEquipmentChanged.Broadcast(GetAbilityTriggerTag(), static_cast<int32>(EquipType), GetItemTexture());
+		OwnerCharacter->DecreaseOrRemoveInventoryData(GetAbilityTriggerTag());
 	}
 }
 
 void URaidBossEquipmentItem::UnEquipItem()
 {
-	FGameplayAbilitySpec*		AbilitySpec = GetCurrentAbilitySpec();
+	FGameplayAbilitySpec*		CurrentAbilitySpec = GetCurrentAbilitySpec();
 	UAbilitySystemComponent*	AbilitySystemComponent = GetAbilitySystemComponentFromActorInfo();
 
-	if (AbilitySpec && AbilitySystemComponent)
+	if (CurrentAbilitySpec && AbilitySystemComponent && OwnerCharacter)
 	{
-		FActiveGameplayEffectHandle EffectHandle = AbilitySpec->GameplayEffectHandle;
+		FActiveGameplayEffectHandle EffectHandle = CurrentAbilitySpec->GameplayEffectHandle;
 		
 		AbilitySystemComponent->RemoveActiveGameplayEffect(EffectHandle);
+		
+		OwnerCharacter->NotifyEquipmentChanged.Broadcast(FGameplayTag{}, static_cast<int32>(EquipType), nullptr);
+		OwnerCharacter->IncreaseOrAddInventoryData(GetItemKey());
 	}
 }

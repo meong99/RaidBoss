@@ -14,6 +14,7 @@ public:
 	URaidBossCharacterStatusAttributeSet();
 
 	virtual void	PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
+	virtual void	PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
 	virtual bool	PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data) override;
 	virtual void	PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
@@ -27,10 +28,14 @@ public:
 	ATTRIBUTE_ACCESSORS(URaidBossCharacterStatusAttributeSet, AdditionalAttackPower)
 	ATTRIBUTE_ACCESSORS(URaidBossCharacterStatusAttributeSet, AdditionalDefencePower)
 	ATTRIBUTE_ACCESSORS(URaidBossCharacterStatusAttributeSet, MoveSpeed)
-	
+	ATTRIBUTE_ACCESSORS(URaidBossCharacterStatusAttributeSet, AttackSpeed)
+	ATTRIBUTE_ACCESSORS(URaidBossCharacterStatusAttributeSet, AttackPowerIncreaseRate)
+	ATTRIBUTE_ACCESSORS(URaidBossCharacterStatusAttributeSet, DefencePowerIncreaseRate)
+
 protected:
 	void	AdjustAttributeForMaxChange(FGameplayAttributeData& AffectedAttribute, const FGameplayAttributeData& MaxAttribute,
 										float NewMaxValue, const FGameplayAttribute& AffectedAttributeProperty);
+	
 	void	CheckHealthAndToDeath() const;
 
 public:
@@ -54,4 +59,10 @@ public:
 	FGameplayAttributeData	AdditionalDefencePower;
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute", meta=(AllowPrivateAccess))
 	FGameplayAttributeData	MoveSpeed;
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute", meta=(AllowPrivateAccess))
+	FGameplayAttributeData	AttackSpeed;
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute", meta=(AllowPrivateAccess))
+	FGameplayAttributeData	AttackPowerIncreaseRate;
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Character Stat Attribute", meta=(AllowPrivateAccess))
+	FGameplayAttributeData	DefencePowerIncreaseRate;
 };

@@ -1,13 +1,16 @@
 #include "Character/RaidBossAnimBase.h"
+
+#include "AbilitySystemComponent.h"
 #include "Character/RaidBossCharacterBase.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Management/RaidBossGameplayTags.h"
 
 void URaidBossAnimBase::NativeUpdateAnimation(float deltaTime)
 {
 	Super::NativeUpdateAnimation(deltaTime);
 	
-	ACharacter* Character = Cast<ACharacter>(GetOwningActor());
+	ARaidBossCharacterBase* Character = GetOwningCharacter();
 	
 	if (IsValid(Character) == false)
 		return;
@@ -31,7 +34,12 @@ void URaidBossAnimBase::NativeUpdateAnimation(float deltaTime)
 	
 	MoveForward = RotatedVector.X;
 	MoveRight = RotatedVector.Y;
+	InputMoveForward = FMath::FInterpTo(InputMoveForward, Character->GetInputMoveForward(), deltaTime, InterpSpeed);
+	InputMoveRight = FMath::FInterpTo(InputMoveRight, Character->GetInputMoveRight(), deltaTime, InterpSpeed);;
 
+	bIsDuringAlign = Character->IsDuringAlign();
+	bIsTurnLeft = Character->IsTurnLeft();
+		
 	if (IsAccelerating() == true)
 	{
 		SetRootMotionMode(ERootMotionMode::IgnoreRootMotion);
@@ -39,6 +47,17 @@ void URaidBossAnimBase::NativeUpdateAnimation(float deltaTime)
 	else
 	{
 		SetRootMotionMode(ERootMotionMode::RootMotionFromMontagesOnly);
+	}
+
+	UAbilitySystemComponent* AbilitySystemComponent = Character->GetAbilitySystemComponent();
+
+	if (AbilitySystemComponent && AbilitySystemComponent->HasMatchingGameplayTag(RaidBossGameplayTags::Get().Attack))
+	{
+		bIsAttacking = true;
+	}
+	else
+	{
+		bIsAttacking = false;
 	}
 }
 

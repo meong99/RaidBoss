@@ -31,9 +31,18 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int						SkillCost = 0;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	int						RequirePoint = 1;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, SaveGame)
 	int						SkillLevel = 0;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int						MaximumSkillLevel = 1;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int						MinimumSkillLevel = 0;
+};
+
+enum ESkillRequestType
+{
+	None,
+	IncreaseSkillLevel,
+	DecreaseSkillLevel
 };

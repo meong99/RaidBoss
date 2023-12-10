@@ -1,7 +1,10 @@
 #include "Abilities/RaidBossAbilityBase.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Abilities/RaidBossAbilitySystemComponent.h"
 #include "Character/RaidBossCharacterBase.h"
 #include "Abilities/RaidBossCharacterStatusAttributeSet.h"
+#include "Management/RaidBossGameplayTags.h"
 
 URaidBossAbilityBase::URaidBossAbilityBase()
 {
@@ -15,54 +18,21 @@ void URaidBossAbilityBase::OnGiveAbility(const FGameplayAbilityActorInfo* ActorI
 	OwnerCharacter = Cast<ARaidBossCharacterBase>(ActorInfo->OwnerActor);
 }
 
-bool URaidBossAbilityBase::UseAbility() const
+FGameplayTag URaidBossAbilityBase::GetAbilityTriggerTag() const
 {
-	URaidBossAbilitySystemComponent* AbilityComponent	= GetOwnerAbilityComponent();
-	bool bAbilityActivated	= false;
-	
-	if (IsValid(AbilityComponent) == true)
+	if (AbilityTriggers.IsEmpty())
 	{
-		AbilityComponent->TryActivateAbility(CurrentSpecHandle);
-		bAbilityActivated = true;
+		return FGameplayTag{};
 	}
+	
+	FAbilityTriggerData TriggerData = *AbilityTriggers.begin();
 
-	return bAbilityActivated;
+	return TriggerData.TriggerTag;
 }
 
-FGameplayEffectSpecHandle URaidBossAbilityBase::CreateEffectSpecHandle()
+void URaidBossAbilityBase::SendGameplayEventToActor(AActor* Target, FGameplayTag EventTag, FGameplayEventData Payload)
 {
-	FGameplayEffectContextHandle	EffectContextHandle = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
-	EffectContextHandle.AddSourceObject(OwnerCharacter);
-	
-	UGameplayEffect* Effect = CreateNewEffect();
-	if (Effect == nullptr)
-		return FGameplayEffectSpecHandle();
-	
-	FGameplayEffectSpec* EffectSpec = new FGameplayEffectSpec(Effect, EffectContextHandle);
-
-	return FGameplayEffectSpecHandle(EffectSpec);
-}
-
-UGameplayEffect* URaidBossAbilityBase::CreateNewEffect()
-{
-	if (EffectClass == nullptr)
-		return nullptr;
-	
-	UGameplayEffect* EffectObject = NewObject<UGameplayEffect>(this, EffectClass);
-	
-	if (EffectObject)
-	{
-		if (EffectExecutions.IsEmpty() == false)
-		{
-			EffectObject->Executions.Append(EffectExecutions);
-		}
-		else if (EffectModifiers.IsEmpty() == false)
-		{
-			EffectObject->Modifiers.Append(EffectModifiers);
-		}
-	}
-
-	return EffectObject;
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Target, EventTag, Payload);
 }
 
 URaidBossAbilitySystemComponent* URaidBossAbilityBase::GetOwnerAbilityComponent() const
@@ -78,9 +48,4 @@ const URaidBossCharacterStatusAttributeSet* URaidBossAbilityBase::GetOwnerCharac
 	}
 
 	return nullptr;
-}
-
-ERaidBossAbilityInputID URaidBossAbilityBase::GetAbilityInputID() const
-{
-	return AbilityInputID;
 }

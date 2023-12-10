@@ -14,7 +14,9 @@ class RAIDBOSS_API URaidBossAnimBase : public UAnimInstance
 public:
 	virtual void NativeUpdateAnimation(float deltaTime) override;
 
-	UFUNCTION(BlueprintCallable, Category="Raid Boss | Anim Base")
+	/*
+	 *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
 	ARaidBossCharacterBase*	GetOwningCharacter() const;
 	bool					IsInAir() const { return bIsInAir; }
 	bool					IsAccelerating() const { return bIsAccelerating; }
@@ -28,6 +30,18 @@ public:
 	void	SetMoveRight(float Right) { MoveRight = Right; }
 
 private:
+	
+	/*
+	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	//
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
+	float InterpSpeed = 5;
+	
+	/*
+	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	//
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
 	bool		bIsInAir;
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
@@ -41,13 +55,20 @@ private:
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
 	float		MoveRight;
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
+	float		InputMoveForward;
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
+	float		InputMoveRight;
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
 	float		Roll;
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
 	float		Pitch;
 	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
 	float		Yaw;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
-	TObjectPtr<UAnimMontage>	DeathMontage;
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
+	bool		bIsDuringAlign;
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
+	bool		bIsTurnLeft = false;
+	UPROPERTY(BlueprintReadOnly, Category = "Raid Boss | Anim Base", meta=(AllowPrivateAccess))
+	bool		bIsAttacking = false;
 };
 

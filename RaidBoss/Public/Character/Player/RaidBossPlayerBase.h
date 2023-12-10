@@ -8,6 +8,7 @@ class ARaidBossPlayerControllerBase;
 class USpringArmComponent;
 class UCameraComponent;
 
+
 UCLASS(Abstract)
 class RAIDBOSS_API ARaidBossPlayerBase : public ARaidBossCharacterBase
 {
@@ -18,18 +19,25 @@ public:
 
 	virtual void	BeginPlay() override;
 
-	void			MoveCharacter(const FVector2D& Value);
-	void			LookCharacter(const FVector2D& Value);
 	virtual void	JumpCharacter();
 	virtual void	StopJumpCharacter();
-	
+
+	/*
+	 *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Player Base")
 	ARaidBossPlayerControllerBase*		GetRaidBossPlayerController() const;
-	UCameraComponent*					GetFollowCamera() const;
+
+protected:
+	/*
+	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
 	
-private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Raid Boss | Player Base", meta=(AllowPrivateAccess))
-	TObjectPtr<USpringArmComponent>		CameraBoom;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Raid Boss | Player Base", meta=(AllowPrivateAccess))
-	TObjectPtr<UCameraComponent>		FollowCamera;
+	//
+
+	/*
+	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+	
+	//
 };

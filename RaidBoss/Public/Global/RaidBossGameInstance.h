@@ -9,4 +9,8 @@ class RAIDBOSS_API URaidBossGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 
+public:
+	URaidBossGameInstance();
+
+	virtual void Init() override;
 };

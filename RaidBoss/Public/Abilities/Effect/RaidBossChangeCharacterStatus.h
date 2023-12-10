@@ -46,5 +46,14 @@ private:
 	float	GetBonusDefensePowerAllExecuted(const FGameplayEffectCustomExecutionParameters& ExecutionParams) const;
 
 private:
+	/*
+	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+
+	/*
+	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+	 */
+
+	// 변경 필요 - 스태틱이라 다른 클래스도 공용으로 사용하다보니 중첩되는 것 같음
 	static TMap<FGameplayEffectAttributeCaptureDefinition, float>	ExecutedValueFromSpec;
 };

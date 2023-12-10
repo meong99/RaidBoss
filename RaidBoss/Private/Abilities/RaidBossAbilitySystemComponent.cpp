@@ -1,15 +1,51 @@
 #include "Abilities/RaidBossAbilitySystemComponent.h"
 #include "Abilities/Skill/RaidBossSkillBase.h"
 
-bool URaidBossAbilitySystemComponent::GiveAbilityWithoutDuplication(TSubclassOf<URaidBossAbilityBase> AbilityClass,
-	FGameplayAbilitySpecHandle& OutSpecHandle, int32 InputID)
+void URaidBossAbilitySystemComponent::OnGiveAbility(FGameplayAbilitySpec& AbilitySpec)
 {
-	if (FindAbilitySpecFromClass(AbilityClass) == nullptr)
-	{
-		FGameplayAbilitySpec Spec {AbilityClass, 1, InputID};
+	Super::OnGiveAbility(AbilitySpec);
 
-		OutSpecHandle = GiveAbility(Spec);
+	URaidBossAbilityBase*	AbilityBase = Cast<URaidBossAbilityBase>(AbilitySpec.GetPrimaryInstance());
+	
+	if (AbilityBase && AbilityBase->GetAbilityTriggerTag().IsValid())
+	{
+		InstanceAbilitiesByTag.Add(AbilityBase->GetAbilityTriggerTag(), AbilityBase);
 	}
+}
+
+void URaidBossAbilitySystemComponent::OnRemoveAbility(FGameplayAbilitySpec& AbilitySpec)
+{
+	URaidBossAbilityBase*	AbilityBase = Cast<URaidBossAbilityBase>(AbilitySpec.GetPrimaryInstance());
+	
+	if (AbilityBase && AbilityBase->GetAbilityTriggerTag().IsValid())
+	{
+		InstanceAbilitiesByTag.Remove(AbilityBase->GetAbilityTriggerTag());
+	}
+	
+	Super::OnRemoveAbility(AbilitySpec);
+}
+
+bool URaidBossAbilitySystemComponent::CanActivateAbility(FGameplayTag TriggerTag) const
+{
+	URaidBossAbilityBase*	AbilityBase = InstanceAbilitiesByTag.FindRef(TriggerTag);
+
+	if (AbilityBase)
+	{
+		return AbilityBase->CanActivateAbility(AbilityBase->GetCurrentAbilitySpecHandle(), AbilityBase->GetCurrentActorInfo());
+	}
+
+	return false;
+}
+
+bool URaidBossAbilitySystemComponent::CanActivateAbility(int32 InputID)
+{
+	URaidBossAbilityBase* AbilityBase = GetAbilityByInputID(InputID);
+
+	if (AbilityBase)
+	{
+		return AbilityBase->CanActivateAbility(AbilityBase->GetCurrentAbilitySpecHandle(), AbilityBase->GetCurrentActorInfo());
+	}
+	
 	return false;
 }
 
@@ -49,4 +85,19 @@ URaidBossAbilityBase* URaidBossAbilitySystemComponent::GetAbilityByInputID(int32
 	}
 
 	return Ret;
+}
+
+bool URaidBossAbilitySystemComponent::GiveAbilityWithoutDuplication(TSubclassOf<URaidBossAbilityBase> AbilityClass,
+                                                                    FGameplayAbilitySpecHandle& OutSpecHandle, int32 InputID)
+{
+	if (FindAbilitySpecFromClass(AbilityClass) == nullptr)
+	{
+		FGameplayAbilitySpec Spec {AbilityClass, 1, InputID};
+
+		OutSpecHandle = GiveAbility(Spec);
+
+		return true;
+	}
+	
+	return false;
 }

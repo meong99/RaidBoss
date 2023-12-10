@@ -1,12 +1,20 @@
 #include "Character/Player/RaidBossPlayerControllerBase.h"
 #include "Character/Player/RaidBossPlayerBase.h"
-#include "Management/RaidBossSkillSystem.h"
-#include "Management/RaidBossInventorySystem.h"
-#include "Management/RaidBossRewardSystem.h"
+#include "UI/InteractionalUISystem.h"
 
 ARaidBossPlayerControllerBase::ARaidBossPlayerControllerBase()
 {
-	RewardSystem = CreateDefaultSubobject<URaidBossRewardSystem>(TEXT("Reward System"));
+	InteractionalUISystem = CreateDefaultSubobject<UInteractionalUISystem>(TEXT("Interactional UI System"));
+}
+
+void ARaidBossPlayerControllerBase::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+	
+	if (InteractionalUISystem)
+	{
+		InteractionalUISystem->InteractionalUIParsing(InteractionalUIArray);
+	}
 }
 
 void ARaidBossPlayerControllerBase::MoveCharacter(FVector2D Value) const
@@ -41,9 +49,12 @@ void ARaidBossPlayerControllerBase::LookCharacter(FVector2D Value) const
 		PlayerBase->LookCharacter(Value);
 }
 
-ARaidBossPlayerBase* ARaidBossPlayerControllerBase::GetRaidBossPlayerBase() const
+void ARaidBossPlayerControllerBase::SendUIEventTagToController(FGameplayTag TriggerTag) const
 {
-	return Cast<ARaidBossPlayerBase>(GetPawn());
+	if (InteractionalUISystem)
+	{
+		int32 AddedUI = InteractionalUISystem->HandleUITriggerEvent(TriggerTag);
+	}
 }
 
 URaidBossAbilitySystemComponent* ARaidBossPlayerControllerBase::GetRaidBossAbilitySystemComponent() const
@@ -53,25 +64,7 @@ URaidBossAbilitySystemComponent* ARaidBossPlayerControllerBase::GetRaidBossAbili
 	return PlayerBase ? PlayerBase->GetRaidBossAbilitySystemComponent() : nullptr;
 }
 
-URaidBossInventorySystem* ARaidBossPlayerControllerBase::GetInventorySystem() const
+ARaidBossPlayerBase* ARaidBossPlayerControllerBase::GetRaidBossPlayerBase() const
 {
-	return InventorySystem;
-}
-
-void ARaidBossPlayerControllerBase::ToggleInventoryWidget() const
-{
-	InventorySystem->ToggleInventoryWidget();
-}
-
-void ARaidBossPlayerControllerBase::ToggleSkillWidget() const
-{
-	SkillSystem->ToggleSkillWidget();
-}
-
-void ARaidBossPlayerControllerBase::AttemptDropItem(EITemCategory ItemCategory, int32 Index)
-{
-	if (InventorySystem)
-	{
-		InventorySystem->RemoveItem(ItemCategory, Index);
-	}
+	return Cast<ARaidBossPlayerBase>(GetPawn());
 }

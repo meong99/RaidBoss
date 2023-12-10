@@ -1,61 +1,138 @@
 #include "Abilities/Skill/RaidBossSkillBase.h"
+#include "AbilitySystemComponent.h"
 #include "Character/RaidBossCharacterBase.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "Management/RaidBossGameplayTags.h"
 
-const FRaidBossSkillInfo& URaidBossSkillBase::GetSkillInfo() const
+bool URaidBossSkillBase::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
+                                            const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
+                                            const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
 {
-	return SkillInfo;
+	bool bHasValidOwner = OwnerCharacter != nullptr;
+	
+	bool bIsItForLeveling = GetRequestType(SourceTags) == ESkillRequestType::IncreaseSkillLevel ||
+							GetRequestType(SourceTags) == ESkillRequestType::DecreaseSkillLevel;
+	
+	bool bIsItLearned = bIsItForLeveling == true ||
+						SkillInfo.SkillLevel > 0;
+
+	bool bCanActivateAbility = Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
+	
+	return bIsItLearned && bCanActivateAbility && bHasValidOwner;
 }
 
-bool URaidBossSkillBase::IncreaseSkillLevel()
+void URaidBossSkillBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+	const FGameplayEventData* TriggerEventData)
 {
-	if (SkillInfo.SkillLevel + 1 <= SkillInfo.MaximumSkillLevel)
+	ESkillRequestType RequestType = GetRequestType(&TriggerEventData->InstigatorTags);
+	
+	switch (RequestType)
+	{
+	case ESkillRequestType::IncreaseSkillLevel :
+	{
+		IncreaseSkillLevel();
+		break;
+	}
+	case ESkillRequestType::DecreaseSkillLevel :
+	{
+		DecreaseSkillLevel();
+		break;
+	}
+	default:
+		break;
+	}
+}
+
+void URaidBossSkillBase::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+{
+	if (OwnerCharacter)
+	{
+		OwnerCharacter->SetIsMovementBlocked(false);
+		OwnerCharacter->SetCanActivateNormalAttack(true);
+	}
+	
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+}
+
+void URaidBossSkillBase::ApplyCooldown(const FGameplayAbilitySpecHandle Handle,
+									   const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const
+{
+	UGameplayEffect* CooldownGE = GetCooldownGameplayEffect();
+	
+	if (CooldownGE)
+	{
+		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(CooldownGE->GetClass());
+
+		EffectSpecHandle.Data->DynamicGrantedTags.AppendTags(CooldownTags);
+		
+		EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().CoolDown, SkillCoolTime);
+		
+		ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, EffectSpecHandle);
+	}
+}
+
+const FGameplayTagContainer* URaidBossSkillBase::GetCooldownTags() const
+{
+	FGameplayTagContainer* MutableTags = const_cast<FGameplayTagContainer*>(&TempCooldownTags);
+	MutableTags->Reset();
+	
+	const FGameplayTagContainer* ParentTags = Super::GetCooldownTags();
+	if (ParentTags)
+	{
+		MutableTags->AppendTags(*ParentTags);
+	}
+	MutableTags->AppendTags(CooldownTags);
+	
+	return MutableTags;
+}
+
+void URaidBossSkillBase::IncreaseSkillLevel()
+{
+	if (CanLevelIncrease())
 	{
 		SkillInfo.SkillLevel++;
-
-		return  true;
+		NotifySkillLevelChanged();
 	}
-
-	return false;
 }
 
-bool URaidBossSkillBase::DecreaseSkillLevel()
+void URaidBossSkillBase::DecreaseSkillLevel()
 {
-	if ( SkillInfo.SkillLevel - 1 >= SkillInfo.MinimumSkillLevel)
+	if (CanLevelDecrease())
 	{
 		SkillInfo.SkillLevel--;
-		return  true;
+		NotifySkillLevelChanged();
 	}
-	
+}
+
+bool URaidBossSkillBase::CanLevelIncrease()
+{
+	if (SkillInfo.SkillLevel < SkillInfo.MaximumSkillLevel)
+	{
+		return true;
+	}
+
 	return false;
 }
 
-FGameplayAbilityTargetDataHandle URaidBossSkillBase::CreateAbilityTargetDataFromActor(AActor* Target) const
+bool URaidBossSkillBase::CanLevelDecrease()
 {
-	FGameplayAbilityTargetData_ActorArray* NewData = new FGameplayAbilityTargetData_ActorArray();
-	NewData->TargetActorArray.Add(Target);
+	if (SkillInfo.SkillLevel > SkillInfo.MinimumSkillLevel)
+	{
+		return true;
+	}
 
-	FGameplayAbilityTargetDataHandle	Handle(NewData);
-
-	return Handle;
+	return false;
 }
 
-UAbilityTask_PlayMontageAndWait* URaidBossSkillBase::CreatePlayMontageAndWaitTask(int32 MontageIndex)
+void URaidBossSkillBase::NotifySkillLevelChanged()
 {
-	if (Montages.IsValidIndex(MontageIndex) == false)
-		return nullptr;
-		
-	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-		this, FName(GetName()), Montages[MontageIndex]);
-	
-	return PlayMontageTask;
-}
-
-UAbilityTask_WaitGameplayEvent* URaidBossSkillBase::CreateWaitGameplayEventTask(FGameplayTag EventTag, bool OnlyTriggerOnce)
-{
-	UAbilityTask_WaitGameplayEvent* WaitEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, EventTag, nullptr, OnlyTriggerOnce);
-	return WaitEventTask;
+	if (OwnerCharacter)
+	{
+		OwnerCharacter->NotifySkillLevelChanged.Broadcast(GetAbilityTriggerTag(), SkillInfo.SkillLevel);
+	}
 }
 
 bool URaidBossSkillBase::IsTargetInRangeXY(AActor* Target, float Range) const
@@ -87,14 +164,49 @@ bool URaidBossSkillBase::IsTargetInAngleXY(FVector StandardVector, FVector Targe
 	return false;
 }
 
-void URaidBossSkillBase::BlockOwnerCharacterMovement() const
+ESkillRequestType URaidBossSkillBase::GetRequestType(const FGameplayTagContainer* InstigatorTags) const
 {
-	if (IsValid(OwnerCharacter) == true)
-		OwnerCharacter->TurnOffCharacterStateBitMap(ECharacterState::CanMove);
+	if (InstigatorTags && InstigatorTags->IsValid())
+	{
+		const RaidBossGameplayTags& AllTags = RaidBossGameplayTags::Get();
+		
+		if (InstigatorTags->HasTag(AllTags.Event_Skill_IncreaseLevel))
+		{
+			return ESkillRequestType::IncreaseSkillLevel;
+		}
+		
+		if (InstigatorTags->HasTag(AllTags.Event_Skill_DecreaseLevel))
+		{
+			return ESkillRequestType::DecreaseSkillLevel;
+		}
+	}
+
+	return None;
 }
 
-void URaidBossSkillBase::ReleaseOwnerCharacterMovement() const
+FGameplayAbilityTargetDataHandle URaidBossSkillBase::CreateAbilityTargetDataFromActor(AActor* Target) const
 {
-	if (IsValid(OwnerCharacter) == true)
-		OwnerCharacter->TurnOnCharacterStateBitMap(ECharacterState::CanMove);
+	FGameplayAbilityTargetData_ActorArray* NewData = new FGameplayAbilityTargetData_ActorArray();
+	NewData->TargetActorArray.Add(Target);
+
+	FGameplayAbilityTargetDataHandle	Handle(NewData);
+
+	return Handle;
+}
+
+UAbilityTask_PlayMontageAndWait* URaidBossSkillBase::CreatePlayMontageAndWaitTask(int32 MontageIndex, float Rate, FName StartSection)
+{
+	if (Montages.IsValidIndex(MontageIndex) == false)
+		return nullptr;
+		
+	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
+		this, FName(GetName()), Montages[MontageIndex], Rate, StartSection);
+	
+	return PlayMontageTask;
+}
+
+UAbilityTask_WaitGameplayEvent* URaidBossSkillBase::CreateWaitGameplayEventTask(FGameplayTag EventTag, bool OnlyTriggerOnce)
+{
+	UAbilityTask_WaitGameplayEvent* WaitEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, EventTag, nullptr, OnlyTriggerOnce);
+	return WaitEventTask;
 }
