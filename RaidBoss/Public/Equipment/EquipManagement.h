@@ -19,10 +19,8 @@ public:
 public:
 	//템플릿으로 빼면 될듯? 만약... 로직이 동일하다면...?
 	IWeaponInterface*	Equip(FWeaponKey InWeaponKey);
-	IArmorInterface*	Equip(FArmorKey InArmorKey);
 	
 	void				UnEquip(IWeaponInterface* Weapon);
-	void				UnEquip(IArmorInterface* Armor);
 
 private:
 	/*

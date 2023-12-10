@@ -24,11 +24,6 @@ IWeaponInterface* UEquipManagement::Equip(FWeaponKey InWeaponKey)
 	return nullptr;
 }
 
-IArmorInterface* UEquipManagement::Equip(FArmorKey InArmorKey)
-{
-	return nullptr;
-}
-
 void UEquipManagement::UnEquip(IWeaponInterface* Weapon)
 {
 	AWeapon*	WeaponInstance = Weapon ? Weapon->GetCurrentObject() : nullptr;
@@ -38,8 +33,4 @@ void UEquipManagement::UnEquip(IWeaponInterface* Weapon)
 		WeaponInstance->ClearWeaponData();
 		WeaponInstance->Destroy();
 	}
-}
-
-void UEquipManagement::UnEquip(IArmorInterface* Armor)
-{
 }

@@ -1,22 +1,22 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Abilities/Skill/Indicator/FanShapeIndicator.h"
+#include "Skill/Indicator/BoxIndicator.h"
 #include "Components/DecalComponent.h"
 
-AFanShapeIndicator::AFanShapeIndicator()
+ABoxIndicator::ABoxIndicator()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	SetActorTickEnabled(false);
 }
 
-void AFanShapeIndicator::Tick(float DeltaSeconds)
+void ABoxIndicator::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	IndicatorInstance->SetScalarParameterValue(FName("Angle"), Angle);
+	IndicatorInstance->SetScalarParameterValue(FName("LineThickness"), LineThickness);
 	IndicatorInstance->SetVectorParameterValue(FName("IndicatorColor"), IndicatorColor);
 }
 
-void AFanShapeIndicator::BeginPlay()
+void ABoxIndicator::BeginPlay()
 {
 	Super::BeginPlay();
 	SetActorTickEnabled(true);

@@ -1,9 +1,8 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Abilities/Skill/Aurora/Ability_Aurora_E.h"
-#include "Abilities/Skill/SkillIndicator.h"
 #include "Abilities/Task/AT_SpawnActorAndFollowParent.h"
+#include "Skill/Indicator/SkillIndicator.h"
 #include "Character/RaidBossCharacterBase.h"
 #include "Character/Monster/MonsterBase.h"
 #include "Character/Player/RaidBossPlayerBase.h"

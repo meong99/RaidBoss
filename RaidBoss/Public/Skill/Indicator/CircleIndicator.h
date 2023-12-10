@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Abilities/Skill/SkillIndicator.h"
+#include "Skill/Indicator/SkillIndicator.h"
 #include "CircleIndicator.generated.h"
 
 /**

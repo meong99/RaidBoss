@@ -75,6 +75,8 @@ void URaidBossDamageCalculation::Execute_Implementation(const FGameplayEffectCus
 		float DefenseRate = TargetTotalDefensePower / (TargetTotalDefensePower + DefensiveConstant);
 		float TotalDamage = ceil(SourceTotalAttackPower * (1 - DefenseRate));
 		
+		TotalDamage = TotalDamage > TargetHealth ? TargetHealth : TotalDamage;
+		
 		OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(DamageStatic().HealthProperty, EGameplayModOp::Additive, -TotalDamage));
 	}
 }

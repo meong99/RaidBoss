@@ -3,19 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Abilities/Skill/SkillIndicator.h"
-#include "BoxIndicator.generated.h"
+#include "Skill/Indicator/SkillIndicator.h"
+#include "FanShapeIndicator.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class RAIDBOSS_API ABoxIndicator : public ASkillIndicator
+class RAIDBOSS_API AFanShapeIndicator : public ASkillIndicator
 {
 	GENERATED_BODY()
-	
+
 public:
-	ABoxIndicator();
+	AFanShapeIndicator();
 	
 	virtual void	Tick(float DeltaSeconds) override;
 	
@@ -23,17 +23,17 @@ protected:
 	virtual void	BeginPlay() override;
 	
 public:
+
 	/*
 	 *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 	 */
+	float	GetAngle() const { return Angle; }
 	
-	float	GetLineThickness() const { return LineThickness; }
-	
-	void	SetIndicatorValue(float InLineThickness) { LineThickness = InLineThickness; }
-	void	SetLineThickness(float InLineThickness) { LineThickness = InLineThickness; }
+	void	SetIndicatorValue(float InAngle) { Angle = InAngle; }
+	void	SetAngle(float InAngle) { Angle = InAngle; }
 	
 protected:
-
+	
 protected:
 	/*
 	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
@@ -48,7 +48,6 @@ protected:
 	 */
 
 	//
-protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Indicator | Value")
-	float	LineThickness = 0.05;
+	float	Angle = 0;
 };

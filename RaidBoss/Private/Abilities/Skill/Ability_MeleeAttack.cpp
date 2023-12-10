@@ -3,7 +3,7 @@
 #include "Abilities/Skill/Ability_MeleeAttack.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Abilities/RaidBossCharacterStatusAttributeSet.h"
-#include "Abilities/Skill/Indicator/FanShapeIndicator.h"
+#include "Skill/Indicator/FanShapeIndicator.h"
 #include "Abilities/Task/AT_SpawnActorAndFollowParent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
@@ -11,8 +11,6 @@
 #include "Character/Monster/MonsterBase.h"
 #include "Character/Player/RaidBossPlayerBase.h"
 #include "Equipment/Weapon/Weapon.h"
-#include "Kismet/KismetMathLibrary.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "Management/RaidBossGameplayTags.h"
 #include "Util/RaidBossLibrary.h"
 

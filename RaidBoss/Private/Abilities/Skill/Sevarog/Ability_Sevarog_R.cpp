@@ -2,8 +2,7 @@
 
 
 #include "Abilities/Skill/Sevarog/Ability_Sevarog_R.h"
-#include "Abilities/Skill/SkillIndicator.h"
-#include "Abilities/Skill/Indicator/FanShapeIndicator.h"
+#include "Skill/Indicator/FanShapeIndicator.h"
 #include "Abilities/Task/AT_SpawnActorAndFollowParent.h"
 #include "Character/RaidBossCharacterBase.h"
 #include "Character/Monster/MonsterBase.h"

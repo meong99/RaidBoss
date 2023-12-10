@@ -1,22 +1,22 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Abilities/Skill/Indicator/CircleIndicator.h"
+#include "Skill/Indicator/FanShapeIndicator.h"
 #include "Components/DecalComponent.h"
 
-ACircleIndicator::ACircleIndicator()
+AFanShapeIndicator::AFanShapeIndicator()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	SetActorTickEnabled(false);
 }
 
-void ACircleIndicator::Tick(float DeltaSeconds)
+void AFanShapeIndicator::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	IndicatorInstance->SetScalarParameterValue(FName("InnerCircleRadius"), Radius);
+	IndicatorInstance->SetScalarParameterValue(FName("Angle"), Angle);
 	IndicatorInstance->SetVectorParameterValue(FName("IndicatorColor"), IndicatorColor);
 }
 
-void ACircleIndicator::BeginPlay()
+void AFanShapeIndicator::BeginPlay()
 {
 	Super::BeginPlay();
 	SetActorTickEnabled(true);

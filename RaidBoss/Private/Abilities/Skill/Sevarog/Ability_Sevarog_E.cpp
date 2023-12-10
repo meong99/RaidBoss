@@ -1,8 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Abilities/Skill/Sevarog/Ability_Sevarog_E.h"
-#include "Abilities/Skill/SkillIndicator.h"
-#include "Abilities/Skill/Indicator/CircleIndicator.h"
+#include "Skill/Indicator/CircleIndicator.h"
 #include "Abilities/Task/AT_SpawnActorAndFollowCamera.h"
 #include "Abilities/Task/AT_SpawnActorAndFollowParent.h"
 #include "Character/Monster/MonsterBase.h"
