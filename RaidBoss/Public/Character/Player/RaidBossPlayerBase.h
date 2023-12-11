@@ -12,32 +12,32 @@ class UCameraComponent;
 UCLASS(Abstract)
 class RAIDBOSS_API ARaidBossPlayerBase : public ARaidBossCharacterBase
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	ARaidBossPlayerBase();
+    ARaidBossPlayerBase();
 
-	virtual void	BeginPlay() override;
+    virtual void BeginPlay() override;
 
-	virtual void	JumpCharacter();
-	virtual void	StopJumpCharacter();
+    virtual void JumpCharacter();
+    virtual void StopJumpCharacter();
 
-	/*
-	 *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Raid Boss | Player Base")
-	ARaidBossPlayerControllerBase*		GetRaidBossPlayerController() const;
+    /*
+     *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+    UFUNCTION(BlueprintCallable, Category = "Raid Boss | Player Base")
+    ARaidBossPlayerControllerBase* GetRaidBossPlayerController() const;
 
 protected:
-	/*
-	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	
-	//
+    /*
+     *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
 
-	/*
-	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	
-	//
+    //
+
+    /*
+     *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+
+    //
 };

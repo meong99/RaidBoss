@@ -8,7 +8,7 @@ URaidBossGameInstance::URaidBossGameInstance()
 
 void URaidBossGameInstance::Init()
 {
-	Super::Init();
+    Super::Init();
 
-	RaidBossGameplayTags::InitializeTags();
+    RaidBossGameplayTags::InitializeTags();
 }

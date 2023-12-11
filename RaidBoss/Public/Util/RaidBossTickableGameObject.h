@@ -6,27 +6,27 @@
 class RAIDBOSS_API FRaidBossTickableGameObject : public FTickableGameObject
 {
 public:
-	FRaidBossTickableGameObject();
-	
-	virtual ~FRaidBossTickableGameObject() override;
-	
-	virtual bool	IsTickable() const override;
-	
-	virtual TStatId	GetStatId() const override;
+    FRaidBossTickableGameObject();
 
-	void			SetIsTickable(bool Tickable);
-	
+    virtual ~FRaidBossTickableGameObject() override;
+
+    virtual bool IsTickable() const override;
+
+    virtual TStatId GetStatId() const override;
+
+    void SetIsTickable(bool Tickable);
+
 protected:
-	/*
-	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	
-	//
+    /*
+     *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
 
-	/*
-	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	
-	//
-	bool	bIsTickable = false;
+    //
+
+    /*
+     *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+
+    //
+    bool bIsTickable = false;
 };

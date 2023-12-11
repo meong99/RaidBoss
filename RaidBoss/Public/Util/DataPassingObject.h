@@ -13,23 +13,23 @@
 UCLASS(BlueprintType)
 class RAIDBOSS_API UDataPassingObject : public UObject
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	/*
-	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	
-	//
+    /*
+     *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
 
-	/*
-	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	
-	//
-	UPROPERTY(BlueprintReadOnly)
-	TMap<FString, float>	FloatValue;
-	
-	UPROPERTY(BlueprintReadOnly)
-	TMap<FString, FVector>	VectorValue;
+    //
+
+    /*
+     *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+
+    //
+    UPROPERTY(BlueprintReadOnly)
+    TMap<FString, float> FloatValue;
+
+    UPROPERTY(BlueprintReadOnly)
+    TMap<FString, FVector> VectorValue;
 };

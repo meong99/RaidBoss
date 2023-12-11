@@ -7,18 +7,17 @@
 
 IWeaponInterface* UEquipmentFactory::CreateProduct(FWeaponKey InWeaponKey, ARaidBossCharacterBase* CharacterBase)
 {
-	AWeapon* NewWeapon = nullptr;
+    AWeapon* NewWeapon = nullptr;
 
-	if (CharacterBase)
-	{
-		FActorSpawnParameters ActorSpawnParameters;
+    if (CharacterBase)
+    {
+        FActorSpawnParameters ActorSpawnParameters;
 
-		ActorSpawnParameters.Owner = CharacterBase;
-		
-		NewWeapon = CharacterBase->GetWorld()->SpawnActorDeferred<AWeapon>(
-			AWeapon::StaticClass(), FTransform::Identity, CharacterBase);
-		NewWeapon->LoadWeaponData(InWeaponKey);
-	}
+        ActorSpawnParameters.Owner = CharacterBase;
+        NewWeapon = CharacterBase->GetWorld()->SpawnActorDeferred<AWeapon>(AWeapon::StaticClass(), FTransform::Identity, CharacterBase);
+        
+        NewWeapon->LoadWeaponData(InWeaponKey);
+    }
 
-	return NewWeapon;
+    return NewWeapon;
 }

@@ -5,20 +5,24 @@
 
 AFanShapeIndicator::AFanShapeIndicator()
 {
-	PrimaryActorTick.bCanEverTick = true;
-	SetActorTickEnabled(false);
+    PrimaryActorTick.bCanEverTick = true;
+    
+    SetActorTickEnabled(false);
 }
 
 void AFanShapeIndicator::Tick(float DeltaSeconds)
 {
-	Super::Tick(DeltaSeconds);
-	IndicatorInstance->SetScalarParameterValue(FName("Angle"), Angle);
-	IndicatorInstance->SetVectorParameterValue(FName("IndicatorColor"), IndicatorColor);
+    Super::Tick(DeltaSeconds);
+    
+    IndicatorInstance->SetScalarParameterValue(FName("Angle"), Angle);
+    IndicatorInstance->SetVectorParameterValue(FName("IndicatorColor"), IndicatorColor);
 }
 
 void AFanShapeIndicator::BeginPlay()
 {
-	Super::BeginPlay();
-	SetActorTickEnabled(true);
-	IndicatorInstance = IndicatorDecal->CreateDynamicMaterialInstance();
+    Super::BeginPlay();
+    
+    SetActorTickEnabled(true);
+    
+    IndicatorInstance = IndicatorDecal->CreateDynamicMaterialInstance();
 }

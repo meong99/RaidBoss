@@ -12,46 +12,50 @@
 UCLASS()
 class RAIDBOSS_API UAbility_Sevarog_Q : public URaidBossSkillBase
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
+
 public:
-	UAbility_Sevarog_Q();
-	
-	virtual void	ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+    UAbility_Sevarog_Q();
 
-	virtual void	CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
-	
+    virtual void    ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+                                    const FGameplayAbilityActivationInfo ActivationInfo,
+                                    const FGameplayEventData* TriggerEventData) override;
+
+    virtual void    CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+                                  const FGameplayAbilityActivationInfo ActivationInfo,
+                                  bool bReplicateCancelAbility) override;
+
 protected:
-	virtual void	EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+    virtual void    EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+                               const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility,
+                               bool bWasCancelled) override;
 
-	virtual void	SetIndicator() override;
+    virtual void    SetIndicator() override;
 
-	UFUNCTION()
-	void	AttackPointCallback(FGameplayEventData Payload);
-	
-	UFUNCTION()
-	void	EndAbilityCallback();
+    UFUNCTION()
+    void    AttackPointCallback(FGameplayEventData Payload);
 
-	TArray<AActor*>	StartTraceAndGetTargets();
-	
+    UFUNCTION()
+    void    EndAbilityCallback();
+
+    TArray<AActor*> StartTraceAndGetTargets();
+
 protected:
-	/*
-	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
+    /*
+     *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
 
-	//
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Sevarog E")
-	bool	bDrawDebugLine = false;
-	
-	/*
-	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	
-	//
-	UPROPERTY()
-	TArray<UAbilityTask*>	SpawnedIndicatorTasks;
-	
-	bool	bIsFirstTrigger = true;
+    //
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Sevarog E")
+    bool    bDrawDebugLine = false;
+
+    /*
+     *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+
+    //
+    UPROPERTY()
+    TArray<UAbilityTask*>   SpawnedIndicatorTasks;
+
+    bool    bIsFirstTrigger = true;
 };

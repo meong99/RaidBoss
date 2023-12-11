@@ -9,73 +9,74 @@
 #include "Kismet/KismetSystemLibrary.h"
 
 UAT_FloatingActor* UAT_FloatingActor::CreateFloatingActorTask(UGameplayAbility* OwningAbility, float InHeight,
-                                                              float InRisingSpeed, float InFloatingTime, float InFallingSpeed)
+                                                              float InRisingSpeed, float InFloatingTime,
+                                                              float InFallingSpeed)
 {
-	UAT_FloatingActor* MyObj = NewAbilityTask<UAT_FloatingActor>(OwningAbility);
+    UAT_FloatingActor* MyObj = NewAbilityTask<UAT_FloatingActor>(OwningAbility);
 
-	MyObj->Height = InHeight;
-	MyObj->FloatingTime = InFloatingTime;
-	MyObj->RisingSpeed = InRisingSpeed;
-	MyObj->FallingSpeed = InFallingSpeed;
-	
-	return MyObj;
+    MyObj->Height = InHeight;
+    MyObj->FloatingTime = InFloatingTime;
+    MyObj->RisingSpeed = InRisingSpeed;
+    MyObj->FallingSpeed = InFallingSpeed;
+
+    return MyObj;
 }
 
 void UAT_FloatingActor::TickTask(float DeltaTime)
 {
-	Super::TickTask(DeltaTime);
+    Super::TickTask(DeltaTime);
 
-	if (OwnerCharacter && ActivateTime < FloatingTime)
-	{
-		InterpolateDestinationXY();
-		
-		FVector	NextDestination = FMath::VInterpConstantTo(OwnerCharacter->GetActorLocation(), Destination,
-			DeltaTime, RisingSpeed);
-		
-		OwnerCharacter->SetActorLocation(NextDestination);
+    if (OwnerCharacter && ActivateTime < FloatingTime)
+    {
+        InterpolateDestinationXY();
 
-		ActivateTime += DeltaTime;
-	}
-	else if (OwnerCharacter)
-	{
-		OwnerCharacter->GetCharacterMovement()->MovementMode = MOVE_Walking;
-		OwnerCharacter->GetCharacterMovement()->GravityScale = FallingSpeed;
-	}
+        FVector NextDestination = FMath::VInterpConstantTo(OwnerCharacter->GetActorLocation(), Destination,
+                                                           DeltaTime, RisingSpeed);
+
+        OwnerCharacter->SetActorLocation(NextDestination);
+
+        ActivateTime += DeltaTime;
+    }
+    else if (OwnerCharacter)
+    {
+        OwnerCharacter->GetCharacterMovement()->MovementMode = MOVE_Walking;
+        OwnerCharacter->GetCharacterMovement()->GravityScale = FallingSpeed;
+    }
 }
 
 void UAT_FloatingActor::Activate()
 {
-	Super::Activate();
+    Super::Activate();
 
-	OwnerCharacter = Cast<ARaidBossCharacterBase>(GetOwnerActor());
+    OwnerCharacter = Cast<ARaidBossCharacterBase>(GetOwnerActor());
 
-	if (OwnerCharacter)
-	{
-		OwnerCharacter->GetCharacterMovement()->MovementMode = MOVE_Flying;
-		
-		Destination = OwnerCharacter->GetActorLocation() + OwnerCharacter->GetActorUpVector() * Height;
-		bTickingTask = true;
-	}
+    if (OwnerCharacter)
+    {
+        OwnerCharacter->GetCharacterMovement()->MovementMode = MOVE_Flying;
+
+        Destination = OwnerCharacter->GetActorLocation() + OwnerCharacter->GetActorUpVector() * Height;
+        bTickingTask = true;
+    }
 }
 
 void UAT_FloatingActor::OnDestroy(bool bInOwnerFinished)
 {
-	bTickingTask = false;
+    bTickingTask = false;
 
-	if (OwnerCharacter)
-	{
-		OwnerCharacter->GetCharacterMovement()->MovementMode = MOVE_Walking;
-		OwnerCharacter->GetCharacterMovement()->GravityScale = 1;
-	}
+    if (OwnerCharacter)
+    {
+        OwnerCharacter->GetCharacterMovement()->MovementMode = MOVE_Walking;
+        OwnerCharacter->GetCharacterMovement()->GravityScale = 1;
+    }
 
-	Super::OnDestroy(bInOwnerFinished);
+    Super::OnDestroy(bInOwnerFinished);
 }
 
 void UAT_FloatingActor::InterpolateDestinationXY()
 {
-	if (OwnerCharacter)
-	{
-		Destination.X = OwnerCharacter->GetActorLocation().X;
-		Destination.Y = OwnerCharacter->GetActorLocation().Y;
-	}
+    if (OwnerCharacter)
+    {
+        Destination.X = OwnerCharacter->GetActorLocation().X;
+        Destination.Y = OwnerCharacter->GetActorLocation().Y;
+    }
 }

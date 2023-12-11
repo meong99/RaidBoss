@@ -15,60 +15,61 @@ class URaidBossConsumableItem;
 UCLASS()
 class RAIDBOSS_API UInventorySlot : public URaidBossSlotWidget
 {
-	GENERATED_BODY()
-	
+    GENERATED_BODY()
+
 protected:
-	virtual bool	NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
-	virtual void	NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
-	virtual FReply	NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
-	
+    virtual bool    NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
+                                 UDragDropOperation* InOperation) override;
+    virtual void    NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent,
+                                         UDragDropOperation*& OutOperation) override;
+    virtual FReply  NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
 public:
-	virtual void	ActivateThisSlot() override;
-	
-	UFUNCTION(BlueprintImplementableEvent, Category="Raid Boss | Inventory")
-	void	ObtainNewItem(const URaidBossItemBase* NewItemCDO);
-	
-	void	RegisterNewItem(const URaidBossItemBase* NewItemCDO, int32 Amount);
+    virtual void    ActivateThisSlot() override;
 
-	/*
-	 *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	UFUNCTION(BlueprintCallable, Category="Raid Boss | Inventory")
-	const URaidBossItemBase*	GetCurrentItem() const { return CurrentItem.Get(); }
+    UFUNCTION(BlueprintImplementableEvent, Category="Raid Boss | Inventory")
+    void    ObtainNewItem(const URaidBossItemBase* NewItemCDO);
 
-protected:
+    void    RegisterNewItem(const URaidBossItemBase* NewItemCDO, int32 Amount);
 
-	virtual void	SetItemAmount(int32 Amount) override;
-	
-	UFUNCTION()
-	void	NotifyItemAmountCallBack(FGameplayTag InAbilityTriggerTag, int32 Amount);
-	
-	void	TryActivateThisSlotAbility() const;
-	
-	void	ResetSlot();
-
-	void	AddDynamicCallBackFunction();
-	
-	void	RemoveDynamicCallBackFunction();
-	
-	void	SwapInventorySlot(UInventorySlot* OtherSlot);
-
-	bool	WasAbilityActivated(const URaidBossItemBase* NewItemCDO) const;
+    /*
+     *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+    UFUNCTION(BlueprintCallable, Category="Raid Boss | Inventory")
+    const URaidBossItemBase*    GetCurrentItem() const { return CurrentItem.Get(); }
 
 protected:
-	/*
-	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	
-	//
-	
-	/*
-	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	
-	//
-	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Inventory Slot", meta=(BindWidget, AllowPrivateAccess))
-	TObjectPtr<UTextBlock>		AmountText;
-	
-	TWeakObjectPtr<const URaidBossItemBase>	CurrentItem;
+    virtual void    SetItemAmount(int32 Amount) override;
+
+    UFUNCTION()
+    void    NotifyItemAmountCallBack(FGameplayTag InAbilityTriggerTag, int32 Amount);
+
+    void    TryActivateThisSlotAbility() const;
+
+    void    ResetSlot();
+
+    void    AddDynamicCallBackFunction();
+
+    void    RemoveDynamicCallBackFunction();
+
+    void    SwapInventorySlot(UInventorySlot* OtherSlot);
+
+    bool    WasAbilityActivated(const URaidBossItemBase* NewItemCDO) const;
+
+protected:
+    /*
+     *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+
+    //
+
+    /*
+     *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+
+    //
+    UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Inventory Slot", meta=(BindWidget, AllowPrivateAccess))
+    TObjectPtr<UTextBlock> AmountText;
+
+    TWeakObjectPtr<const URaidBossItemBase> CurrentItem;
 };

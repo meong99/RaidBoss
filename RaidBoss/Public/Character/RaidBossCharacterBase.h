@@ -20,12 +20,20 @@ class UGameplayEffect;
 #define MONSTER_TEAM_ID 1
 #define PLAYER_TEAM_ID 0
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FNotifyNewItemAddedDelegate, URaidBossItemBase*, NewItemCDO, int32, Amount);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FNotifyItemAmountChangedDelegate, FGameplayTag, InAbilityTriggerTag, int32, Amount);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FNotifyNewItemAddedDelegate, URaidBossItemBase*, NewItemCDO, int32, Amount)
+;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FNotifyItemAmountChangedDelegate, FGameplayTag, InAbilityTriggerTag, int32,
+                                             Amount);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FNotifyEquipmentChangedDelegate, FGameplayTag, InAbilityTriggerTag,
                                                int32, EquipmentType, UTexture2D*, NewItemImage);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FNotifySkillLevelChangedDelegate, FGameplayTag, InAbilityTriggerTag, int32, InCurrentSkillLevel);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FNotifyNewWeaponEquippedDelegate, const TArray<URaidBossSkillBase*>&, NewSkillsg);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FNotifySkillLevelChangedDelegate, FGameplayTag, InAbilityTriggerTag, int32,
+                                             InCurrentSkillLevel);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FNotifyNewWeaponEquippedDelegate, const TArray<URaidBossSkillBase*>&,
+                                            NewSkillsg);
 
 UCLASS(Abstract)
 class RAIDBOSS_API ARaidBossCharacterBase : public ACharacter, public IAbilitySystemInterface,
@@ -74,10 +82,6 @@ public:
     FCharacterAnimations                            GetCharacterAnimations() const { return CharacterAnimations; }
     ECharacterState                                 GetCurrentCharacterState() const { return CurrentCharacterState; }
     virtual FGenericTeamId                          GetGenericTeamId() const override { return TeamID; }
-    int32                                           GetItemAmount(FGameplayTag InAbilityTriggerTag) const
-    {
-        return InventoryData.FindRef(InAbilityTriggerTag).Amount;
-    };
     float                                           GetInputMoveForward() const { return InputMoveForward; }
     float                                           GetInputMoveRight() const { return InputMoveRight; }
     bool                                            IsDuringAlign() const { return bIsDuringAlign; }
@@ -85,6 +89,10 @@ public:
     bool                                            IsMovementBlocked() const { return bIsMovementBlocked; }
     bool                                            CanActivateNormalAttack() const { return bCanActivateNormalAttack; }
     float                                           GetGold() const { return Gold; }
+    int32                                           GetItemAmount(FGameplayTag InAbilityTriggerTag) const
+    {
+        return InventoryData.FindRef(InAbilityTriggerTag).Amount;
+    };
 
     virtual void    SetGenericTeamId(const FGenericTeamId& NewTeamID) override { TeamID = NewTeamID; };
     void            SetCurrentCharacterState(ECharacterState State) { CurrentCharacterState = State; };
@@ -98,9 +106,10 @@ public:
     }
 
 protected:
-    void    ApplyCharacterDefaultSpecEffectToSelf();
-
+    
     bool    IsItEquipment(const URaidBossItemBase* NewItem) const;
+
+    void    ApplyCharacterDefaultSpecEffectToSelf();
 
     void    GiveDefaultAbilities() const;
 
@@ -204,14 +213,14 @@ protected:
 
     //플레이어 소지 골드
     UPROPERTY(BlueprintReadWrite, Category = "Raid Boss | Item", SaveGame)
-    float   Gold = 0;
+    float                                           Gold = 0;
 
     UPROPERTY(BlueprintReadWrite, Category="Raid Boss")
-    bool    bIsMovementBlocked = false;
+    bool                                            bIsMovementBlocked = false;
 
     // 플레이어 기본 공격
     UPROPERTY(BlueprintReadWrite, Category="Raid Boss")
-    bool    bCanActivateNormalAttack = true;
+    bool                                            bCanActivateNormalAttack = true;
 
     // 플레이어 움직임 및 회전
     float   InputMoveForward = 0;

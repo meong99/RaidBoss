@@ -9,87 +9,88 @@
 
 void USkillUI::NativeOnInitialized()
 {
-	Super::NativeOnInitialized();
-	
-	RegisterAllSkillsToUI();
+    Super::NativeOnInitialized();
+
+    RegisterAllSkillsToUI();
 }
 
 void USkillUI::NativeConstruct()
 {
-	Super::NativeConstruct();
+    Super::NativeConstruct();
 
-	ARaidBossPlayerControllerBase*	ControllerBase = Cast<ARaidBossPlayerControllerBase>(GetOwningPlayer());
+    ARaidBossPlayerControllerBase* ControllerBase = Cast<ARaidBossPlayerControllerBase>(GetOwningPlayer());
 
-	if (ControllerBase)
-	{
-		ControllerBase->SetInputMode(FInputModeGameAndUI{});
-		ControllerBase->SetShowMouseCursor(true);
-	}
+    if (ControllerBase)
+    {
+        ControllerBase->SetInputMode(FInputModeGameAndUI{});
+        ControllerBase->SetShowMouseCursor(true);
+    }
 }
 
 void USkillUI::NativeDestruct()
 {
-	ARaidBossPlayerControllerBase*	ControllerBase = Cast<ARaidBossPlayerControllerBase>(GetOwningPlayer());
+    ARaidBossPlayerControllerBase* ControllerBase = Cast<ARaidBossPlayerControllerBase>(GetOwningPlayer());
 
-	if (ControllerBase)
-	{
-		ControllerBase->SetInputMode(FInputModeGameOnly{});
-		ControllerBase->SetShowMouseCursor(false);
-	}
-	
-	Super::NativeDestruct();
+    if (ControllerBase)
+    {
+        ControllerBase->SetInputMode(FInputModeGameOnly{});
+        ControllerBase->SetShowMouseCursor(false);
+    }
+
+    Super::NativeDestruct();
 }
 
 void USkillUI::RegisterAllSkillsToUI()
 {
-	CreateAndInitSlots(GetPlayerSkills());
+    CreateAndInitSlots(GetPlayerSkills());
 }
 
 void USkillUI::CreateAndInitSlots(const TArray<TSubclassOf<URaidBossSkillBase>>* PlayerSkills) const
 {
-	if (PlayerSkills == nullptr)
-	{
-		return;
-	}
-	
-	for (int i = 0; i < PlayerSkills->Num(); i++)
-	{
-		URaidBossSkillBase* SkillCDO = (*PlayerSkills)[i]->GetDefaultObject<URaidBossSkillBase>();
-		USkillSlot*			NewSlot = Cast<USkillSlot>(CreateWidget(GetOwningPlayer(), SkillSlotClass));
+    if (PlayerSkills == nullptr)
+    {
+        return;
+    }
 
-		if (NewSlot == nullptr)
-		{
-			break;
-		}
+    for (int i = 0; i < PlayerSkills->Num(); i++)
+    {
+        URaidBossSkillBase* SkillCDO = (*PlayerSkills)[i]->GetDefaultObject<URaidBossSkillBase>();
+        USkillSlot*         NewSlot = Cast<USkillSlot>(CreateWidget(GetOwningPlayer(), SkillSlotClass));
 
-		if (InitSlotBySkill(SkillCDO, NewSlot))
-		{
-			SkillVerticalBox->AddChild(NewSlot);
-		}
-	}
+        if (NewSlot == nullptr)
+        {
+            break;
+        }
+
+        if (InitSlotBySkill(SkillCDO, NewSlot))
+        {
+            SkillVerticalBox->AddChild(NewSlot);
+        }
+    }
 }
 
 bool USkillUI::InitSlotBySkill(URaidBossSkillBase* SkillCDO, USkillSlot* NewSlot) const
 {
-	if (SkillCDO && NewSlot)
-	{
-		NewSlot->InitSlot(SkillCDO->GetAbilityTriggerTag(), SkillCDO->GetSkillInfo().SkillTexture, SkillCDO->GetSkillInfo().SkillName,
-						  SkillCDO->GetSkillInfo().RequirePoint, SkillCDO->GetSkillInfo().SkillLevel);
+    if (SkillCDO && NewSlot)
+    {
+        NewSlot->InitSlot(SkillCDO->GetAbilityTriggerTag(), SkillCDO->GetSkillInfo().SkillTexture,
+                          SkillCDO->GetSkillInfo().SkillName,
+                          SkillCDO->GetSkillInfo().RequirePoint, SkillCDO->GetSkillInfo().SkillLevel);
 
-		return true;
-	}
+        return true;
+    }
 
-	return false;
+    return false;
 }
 
 const TArray<TSubclassOf<URaidBossSkillBase>>* USkillUI::GetPlayerSkills() const
 {
-	ARaidBossCharacterBase*	CharacterBase = Cast<ARaidBossCharacterBase>(GetOwningPlayerPawn());
+    ARaidBossCharacterBase* CharacterBase = Cast<ARaidBossCharacterBase>(GetOwningPlayerPawn());
 
-	if (CharacterBase)
-	{
-		return CharacterBase->GetPlayerSkills();
-	}
+    if (CharacterBase)
+    {
+        return CharacterBase->GetPlayerSkills();
+    }
 
-	return nullptr;
+    return nullptr;
 }

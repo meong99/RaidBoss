@@ -7,19 +7,20 @@
 UCLASS()
 class RAIDBOSS_API URaidBossDamageCalculation : public UGameplayEffectExecutionCalculation
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
+
 public:
-	URaidBossDamageCalculation();
-	
-	virtual void	Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
-											FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const override;
+    URaidBossDamageCalculation();
+
+    virtual void Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
+                                        FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const override;
 
 protected:
-	/*
-	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
+    /*
+     *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
 
-	/*
-	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
+    /*
+     *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
 };

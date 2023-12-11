@@ -7,22 +7,26 @@
 
 void UInteractionalUI::SendUIActionEventToController(FGameplayTag ActionTriggerTag, FUIActionData ActionData) const
 {
-	const ARaidBossPlayerControllerBase*	ControllerBase = Cast<ARaidBossPlayerControllerBase>(GetOwningPlayer());
-	const UInteractionalUISystem*			InteractionalUISystem = ControllerBase ? ControllerBase->GetInteractionalUISystem() : nullptr;
-	
-	if (InteractionalUISystem)
-	{
-		int32 ActivatedActions = InteractionalUISystem->HandleUIActionTriggerEvent(ActionTriggerTag, ActionData);
-	}
+    const ARaidBossPlayerControllerBase* ControllerBase = Cast<ARaidBossPlayerControllerBase>(GetOwningPlayer());
+    const UInteractionalUISystem* InteractionalUISystem = ControllerBase
+                                                              ? ControllerBase->GetInteractionalUISystem()
+                                                              : nullptr;
+
+    if (InteractionalUISystem)
+    {
+        int32 ActivatedActions = InteractionalUISystem->HandleUIActionTriggerEvent(ActionTriggerTag, ActionData);
+    }
 }
 
 void UInteractionalUI::SendUIEventToController() const
 {
-	const ARaidBossPlayerControllerBase*	ControllerBase = Cast<ARaidBossPlayerControllerBase>(GetOwningPlayer());
-	const UInteractionalUISystem*			InteractionalUISystem = ControllerBase ? ControllerBase->GetInteractionalUISystem() : nullptr;
-	
-	if (InteractionalUISystem)
-	{
-		int32 ActivatedActions = InteractionalUISystem->HandleUITriggerEvent(UITriggerTag);
-	}
+    const ARaidBossPlayerControllerBase* ControllerBase = Cast<ARaidBossPlayerControllerBase>(GetOwningPlayer());
+    const UInteractionalUISystem* InteractionalUISystem = ControllerBase
+                                                              ? ControllerBase->GetInteractionalUISystem()
+                                                              : nullptr;
+
+    if (InteractionalUISystem)
+    {
+        int32 ActivatedActions = InteractionalUISystem->HandleUITriggerEvent(UITriggerTag);
+    }
 }

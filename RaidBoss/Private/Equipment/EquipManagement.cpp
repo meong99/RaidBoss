@@ -6,31 +6,31 @@
 
 UEquipManagement::UEquipManagement()
 {
-	PrimaryComponentTick.bCanEverTick = true;
-	EquipmentFactory = CreateDefaultSubobject<UEquipmentFactory>("Equipment Factory");
+    PrimaryComponentTick.bCanEverTick = true;
+    EquipmentFactory = CreateDefaultSubobject<UEquipmentFactory>("Equipment Factory");
 }
 
 IWeaponInterface* UEquipManagement::Equip(FWeaponKey InWeaponKey)
 {
-	ARaidBossCharacterBase*	OwnerCharacter = Cast<ARaidBossCharacterBase>(GetOwner());
+    ARaidBossCharacterBase* OwnerCharacter = Cast<ARaidBossCharacterBase>(GetOwner());
 
-	if (OwnerCharacter)
-	{
-		IWeaponInterface*	NewWeapon = EquipmentFactory->CreateProduct(InWeaponKey, OwnerCharacter);
-		
-		return NewWeapon;
-	}
+    if (OwnerCharacter)
+    {
+        IWeaponInterface* NewWeapon = EquipmentFactory->CreateProduct(InWeaponKey, OwnerCharacter);
 
-	return nullptr;
+        return NewWeapon;
+    }
+
+    return nullptr;
 }
 
 void UEquipManagement::UnEquip(IWeaponInterface* Weapon)
 {
-	AWeapon*	WeaponInstance = Weapon ? Weapon->GetCurrentObject() : nullptr;
-	
-	if (WeaponInstance)
-	{
-		WeaponInstance->ClearWeaponData();
-		WeaponInstance->Destroy();
-	}
+    AWeapon* WeaponInstance = Weapon ? Weapon->GetCurrentObject() : nullptr;
+
+    if (WeaponInstance)
+    {
+        WeaponInstance->ClearWeaponData();
+        WeaponInstance->Destroy();
+    }
 }

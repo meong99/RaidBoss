@@ -11,29 +11,28 @@
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class RAIDBOSS_API UEquipManagement : public UActorComponent
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	UEquipManagement();
+    UEquipManagement();
 
 public:
-	//템플릿으로 빼면 될듯? 만약... 로직이 동일하다면...?
-	IWeaponInterface*	Equip(FWeaponKey InWeaponKey);
-	
-	void				UnEquip(IWeaponInterface* Weapon);
+    IWeaponInterface*   Equip(FWeaponKey InWeaponKey);
+
+    void                UnEquip(IWeaponInterface* Weapon);
 
 private:
-	/*
-	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	
-	//
-	UPROPERTY()
-	UEquipmentFactory*	EquipmentFactory;
+    /*
+     *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
 
-	/*
-	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	
-	//
+    //
+    UPROPERTY()
+    UEquipmentFactory*  EquipmentFactory;
+
+    /*
+     *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+
+    //
 };

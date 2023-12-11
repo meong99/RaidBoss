@@ -5,90 +5,92 @@
 #include "Management/RaidBossGameplayTags.h"
 
 bool URaidBossConsumableItem::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
-                                                 const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
-                                                 const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
+                                                 const FGameplayAbilityActorInfo* ActorInfo,
+                                                 const FGameplayTagContainer* SourceTags,
+                                                 const FGameplayTagContainer* TargetTags,
+                                                 FGameplayTagContainer* OptionalRelevantTags) const
 {
-	bool bCanActivate = Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
-	bool bHasItem = OwnerCharacter ? OwnerCharacter->GetItemAmount(GetAbilityTriggerTag()) > 0 : false;
-	
-	return (bCanActivate && bHasItem);
+    bool    bCanActivate = Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
+    bool    bHasItem = OwnerCharacter ? OwnerCharacter->GetItemAmount(GetAbilityTriggerTag()) > 0 : false;
+
+    return bCanActivate && bHasItem;
 }
 
 void URaidBossConsumableItem::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-	const FGameplayEventData* TriggerEventData)
+                                              const FGameplayAbilityActorInfo* ActorInfo,
+                                              const FGameplayAbilityActivationInfo ActivationInfo,
+                                              const FGameplayEventData* TriggerEventData)
 {
-	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+    Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	if (CanApplyEffectToOwner())
-	{
-		ApplyEffectToOwner();
-	}
-	
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
+    if (CanApplyEffectToOwner())
+    {
+        ApplyEffectToOwner();
+    }
+
+    EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
 }
 
 void URaidBossConsumableItem::ApplyEffectToOwner() const
 {
-	FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(ItemEffect);
+    FGameplayEffectSpecHandle   EffectSpecHandle = MakeOutgoingGameplayEffectSpec(ItemEffect);
+    bool                        bIsItOverHealth = Health + OwnerCharacter->GetCharacterStatusAttributeSet()->GetHealth() >
+                                                  OwnerCharacter->GetCharacterStatusAttributeSet()->GetMaxHealth();
+    bool                        bIsItOverMana = Mana + OwnerCharacter->GetCharacterStatusAttributeSet()->GetMana() >
+                                                OwnerCharacter->GetCharacterStatusAttributeSet()->GetMaxMana();
+    float                       AdjustedHealth = Health;
+    float                       AdjustedMana = Mana;
 
-	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_AttackPower, AttackPower);
-	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_DefensePower, DefensePower);
-	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_MaxHealth, MaxHealth);
-	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_MaxMana, MaxMana);
-	
-	bool	IsItOverHealth = Health + OwnerCharacter->GetCharacterStatusAttributeSet()->GetHealth()
-							 > OwnerCharacter->GetCharacterStatusAttributeSet()->GetMaxHealth();
-	float	AdjustedHealth = Health;
-	
-	if (IsItOverHealth)
-	{
-		AdjustedHealth = OwnerCharacter->GetCharacterStatusAttributeSet()->GetMaxHealth()
-						 - OwnerCharacter->GetCharacterStatusAttributeSet()->GetHealth();
-	}
-	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_Health, AdjustedHealth);
+    if (bIsItOverHealth)
+    {
+        AdjustedHealth = OwnerCharacter->GetCharacterStatusAttributeSet()->GetMaxHealth() -
+                         OwnerCharacter->GetCharacterStatusAttributeSet()->GetHealth();
+    }
 
-	bool	IsItOverMana = Mana + OwnerCharacter->GetCharacterStatusAttributeSet()->GetMana()
-						   > OwnerCharacter->GetCharacterStatusAttributeSet()->GetMaxMana();
-	float	AdjustedMana = Mana;
-	
-	if (IsItOverMana)
-	{
-		AdjustedMana = OwnerCharacter->GetCharacterStatusAttributeSet()->GetMaxMana()
-					   - OwnerCharacter->GetCharacterStatusAttributeSet()->GetMana();
-	}
-	EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_Mana, AdjustedMana);
-	
-	FGameplayAbilitySpec* AbilitySpec = GetCurrentAbilitySpec();
-	
-	if (AbilitySpec)
-	{
-		AbilitySpec->GameplayEffectHandle = ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle);
-	
-		if (OwnerCharacter)
-		{
-			OwnerCharacter->DecreaseOrRemoveInventoryData(GetAbilityTriggerTag());
-		}
-	}
+    if (bIsItOverMana)
+    {
+        AdjustedMana = OwnerCharacter->GetCharacterStatusAttributeSet()->GetMaxMana() -
+                       OwnerCharacter->GetCharacterStatusAttributeSet()->GetMana();
+    }
+    
+    EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_Health, AdjustedHealth);
+    EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_Mana, AdjustedMana);
+    EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_AttackPower, AttackPower);
+    EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_DefensePower,DefensePower);
+    EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_MaxHealth, MaxHealth);
+    EffectSpecHandle.Data->SetSetByCallerMagnitude(RaidBossGameplayTags::Get().Character_Stat_MaxMana, MaxMana);
+
+    FGameplayAbilitySpec*   AbilitySpec = GetCurrentAbilitySpec();
+
+    if (AbilitySpec)
+    {
+        AbilitySpec->GameplayEffectHandle = ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo,
+                                                                           CurrentActivationInfo, EffectSpecHandle);
+
+        if (OwnerCharacter)
+        {
+            OwnerCharacter->DecreaseOrRemoveInventoryData(GetAbilityTriggerTag());
+        }
+    }
 }
 
 bool URaidBossConsumableItem::CanApplyEffectToOwner() const
 {
-	if (OwnerCharacter == nullptr)
-	{
-		return false;
-	}
+    if (OwnerCharacter == nullptr)
+    {
+        return false;
+    }
 
-	bool	IsItFullHP = OwnerCharacter->GetCharacterStatusAttributeSet()->GetHealth()
-						 == OwnerCharacter->GetCharacterStatusAttributeSet()->GetMaxHealth();
+    bool bIsItFullHP = OwnerCharacter->GetCharacterStatusAttributeSet()->GetHealth() ==
+                       OwnerCharacter->GetCharacterStatusAttributeSet()->GetMaxHealth();
 
-	bool	IsItFullMana = OwnerCharacter->GetCharacterStatusAttributeSet()->GetMana()
-						 == OwnerCharacter->GetCharacterStatusAttributeSet()->GetMaxMana();
-	
-	if ((IsItFullHP && Health > 0) || (IsItFullMana && Mana > 0))
-	{
-		return false;
-	}
+    bool bIsItFullMana = OwnerCharacter->GetCharacterStatusAttributeSet()->GetMana() ==
+                         OwnerCharacter->GetCharacterStatusAttributeSet()->GetMaxMana();
 
-	return true;
+    if ((bIsItFullHP && Health > 0) || (bIsItFullMana && Mana > 0))
+    {
+        return false;
+    }
+
+    return true;
 }

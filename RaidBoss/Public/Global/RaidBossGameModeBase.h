@@ -7,6 +7,5 @@
 UCLASS()
 class RAIDBOSS_API ARaidBossGameModeBase : public AGameModeBase
 {
-	GENERATED_BODY()
-
+    GENERATED_BODY()
 };

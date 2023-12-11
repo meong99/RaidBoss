@@ -5,20 +5,24 @@
 
 ABoxIndicator::ABoxIndicator()
 {
-	PrimaryActorTick.bCanEverTick = true;
-	SetActorTickEnabled(false);
+    PrimaryActorTick.bCanEverTick = true;
+    
+    SetActorTickEnabled(false);
 }
 
 void ABoxIndicator::Tick(float DeltaSeconds)
 {
-	Super::Tick(DeltaSeconds);
-	IndicatorInstance->SetScalarParameterValue(FName("LineThickness"), LineThickness);
-	IndicatorInstance->SetVectorParameterValue(FName("IndicatorColor"), IndicatorColor);
+    Super::Tick(DeltaSeconds);
+    
+    IndicatorInstance->SetScalarParameterValue(FName("LineThickness"), LineThickness);
+    IndicatorInstance->SetVectorParameterValue(FName("IndicatorColor"), IndicatorColor);
 }
 
 void ABoxIndicator::BeginPlay()
 {
-	Super::BeginPlay();
-	SetActorTickEnabled(true);
-	IndicatorInstance = IndicatorDecal->CreateDynamicMaterialInstance();
+    Super::BeginPlay();
+    
+    SetActorTickEnabled(true);
+    
+    IndicatorInstance = IndicatorDecal->CreateDynamicMaterialInstance();
 }

@@ -15,8 +15,8 @@ class ARaidBossCharacterBase;
 UCLASS()
 class RAIDBOSS_API URaidBossAttributeBase : public UAttributeSet
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 protected:
-	ARaidBossCharacterBase*	GetOwnerCharacter() const;
+    ARaidBossCharacterBase* GetOwnerCharacter() const;
 };

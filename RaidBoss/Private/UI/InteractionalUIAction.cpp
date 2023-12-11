@@ -9,7 +9,7 @@ UInteractionalUIAction::UInteractionalUIAction(const FObjectInitializer& ObjectI
 
 int32 UInteractionalUIAction::ActivateUIAction(FUIActionData ActionData) const
 {
-	OnActionActivated(ActionData);
-	
-	return 0;
+    OnActionActivated(ActionData);
+
+    return 0;
 }

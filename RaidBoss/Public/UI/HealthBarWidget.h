@@ -14,58 +14,58 @@ class ARaidBossCharacterBase;
 UCLASS()
 class RAIDBOSS_API UHealthBarWidget : public UUserWidget
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 protected:
-	virtual void	NativeConstruct() override;
-	virtual void	NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+    virtual void    NativeConstruct() override;
+    virtual void    NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 public:
-	void	SetWidgetOwner(ARaidBossCharacterBase* InWidgetOwner) { WidgetOwner = InWidgetOwner; };
-	
+    void    SetWidgetOwner(ARaidBossCharacterBase* InWidgetOwner) { WidgetOwner = InWidgetOwner; };
+
 protected:
-	UFUNCTION(BlueprintImplementableEvent, Category="Raid Boss | Widget")
-	void	CallToNotifyNewDamage(float NewDamage);
+    UFUNCTION(BlueprintImplementableEvent, Category="Raid Boss | Widget")
+    void    CallToNotifyNewDamage(float NewDamage);
 
-	UFUNCTION(BlueprintImplementableEvent, Category="Raid Boss | Widget")
-	void	OnDamageBarChanged();
-	
+    UFUNCTION(BlueprintImplementableEvent, Category="Raid Boss | Widget")
+    void    OnDamageBarChanged();
+
 protected:
-	/*
-	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	
-	//
-	
-	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Widget")
-	TObjectPtr<ARaidBossCharacterBase>	WidgetOwner;
+    /*
+     *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Widget", meta=(BindWidget))
-	TObjectPtr<UProgressBar>			HealthBar;
+    //
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Widget", meta=(BindWidget))
-	TObjectPtr<UProgressBar>			DamageBar;
+    UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Widget")
+    TObjectPtr<ARaidBossCharacterBase>  WidgetOwner;
 
-	// 데미지 바 감소 딜레이
-	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Widget")
-	float								DamageBarDelayTime = 1;
-	
-	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Widget")
-	float								DamageBarInterSpeed = 5;
-	
-	/*
-	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Widget")
-	float	CurrentHealth = 0;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Widget", meta=(BindWidget))
+    TObjectPtr<UProgressBar>            HealthBar;
 
-	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Widget")
-	float	CurrentMaxHealth = 0;
-	
-	// 마지막 타격으로부터의 시간
-	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Widget")
-	float	TimeSinceLastDamage = 0;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Widget", meta=(BindWidget))
+    TObjectPtr<UProgressBar>            DamageBar;
 
-	UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Widget")
-	float	HealthBeforeDamaged = 0;
+    // 데미지 바 감소 딜레이
+    UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Widget")
+    float                               DamageBarDelayTime = 1;
+
+    UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Widget")
+    float                               DamageBarInterSpeed = 5;
+
+    /*
+     *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+    UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Widget")
+    float   CurrentHealth = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Widget")
+    float   CurrentMaxHealth = 0;
+
+    // 마지막 타격으로부터의 시간
+    UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Widget")
+    float   TimeSinceLastDamage = 0;
+
+    UPROPERTY(BlueprintReadOnly, Category="Raid Boss | Widget")
+    float   HealthBeforeDamaged = 0;
 };
