@@ -14,69 +14,69 @@ class URaidBossSkillBase;
 UCLASS()
 class RAIDBOSS_API AWeapon : public AActor, public IWeaponInterface
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	AWeapon();
-	
+    AWeapon();
+
 public:
-	virtual bool	Attack() override;
+    virtual bool    Attack() override;
 
-	void	LoadWeaponData(FWeaponKey InWeaponKey);
-	
-	void	AddWidgetToViewport();
-	
-	void	RemoveWidgetFromViewport();
-	
-	void	NotifyNewWeaponEquipped();
-	
-	void	ClearWeaponData();
+    void    LoadWeaponData(FWeaponKey InWeaponKey);
 
-	URaidBossAbilitySystemComponent*	GetRaidBossAbilitySystemComponent() const;
-	
-	/*
-	 *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	virtual AWeapon*					GetCurrentObject() override { return this; }
-	virtual FWeaponKey					GetWeaponKey() const override { return WeaponData.WeaponKey; }
-	virtual const FWeaponData&			GetWeaponData() const override { return WeaponData; }
-	USkeletalMeshComponent*				GetSkeletalMesh() const { return SkeletalMeshComponent; }
-	TArray<FGameplayAbilitySpecHandle>	GetAbilitySpecHandles() const { return AbilitySpecHandles; }
-	
+    void    AddWidgetToViewport();
+
+    void    RemoveWidgetFromViewport();
+
+    void    NotifyNewWeaponEquipped();
+
+    void    ClearWeaponData();
+
+
+    /*
+     *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+    URaidBossAbilitySystemComponent*    GetRaidBossAbilitySystemComponent() const;
+    virtual AWeapon*                    GetCurrentObject() override { return this; }
+    virtual FWeaponKey                  GetWeaponKey() const override { return WeaponData.WeaponKey; }
+    virtual const FWeaponData&          GetWeaponData() const override { return WeaponData; }
+    USkeletalMeshComponent*             GetSkeletalMesh() const { return SkeletalMeshComponent; }
+    TArray<FGameplayAbilitySpecHandle>  GetAbilitySpecHandles() const { return AbilitySpecHandles; }
+
 protected:
-	const TCHAR*	GetDataTableLink(FWeaponKey InWeaponKey) const;
-	
-	void			GiveAbilityToAsc();
-	
-	void			AttachToOwner();
-	
-	void			DetachToOwner();
+    const TCHAR*    GetDataTableLink(FWeaponKey InWeaponKey) const;
 
-	void			ApplyWeaponStatToOwner();
-	
+    void            GiveAbilityToAsc();
+
+    void            AttachToOwner();
+
+    void            DetachToOwner();
+
+    void            ApplyWeaponStatToOwner();
+
 protected:
-	/*
-	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	
-	//
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Raid Boss | Item")
-	USkeletalMeshComponent*		SkeletalMeshComponent;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Raid Boss | Item")
-	FWeaponData					WeaponData;
+    /*
+     *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
 
-	UPROPERTY()
-	TArray<URaidBossSkillBase*>	CurrentSkills;
+    //
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Raid Boss | Item")
+    USkeletalMeshComponent*     SkeletalMeshComponent;
 
-	UPROPERTY()
-	TArray<UUserWidget*>		WidgetInstances;
-	/*
-	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	
-	//
-	TArray<FGameplayAbilitySpecHandle>	AbilitySpecHandles;
-	
-	FActiveGameplayEffectHandle			AppliedEffectHandle;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Raid Boss | Item")
+    FWeaponData                 WeaponData;
+
+    UPROPERTY()
+    TArray<URaidBossSkillBase*> CurrentSkills;
+
+    UPROPERTY()
+    TArray<UUserWidget*>        WidgetInstances;
+    /*
+     *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+
+    //
+    TArray<FGameplayAbilitySpecHandle>  AbilitySpecHandles;
+
+    FActiveGameplayEffectHandle         AppliedEffectHandle;
 };

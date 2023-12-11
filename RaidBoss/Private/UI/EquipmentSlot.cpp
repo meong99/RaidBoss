@@ -11,110 +11,116 @@
 
 void UEquipmentSlot::NativeOnInitialized()
 {
-	Super::NativeOnInitialized();
-	
-	BackgroundImage->SetBrushFromTexture(DefaultTexture);
+    Super::NativeOnInitialized();
 
-	ARaidBossCharacterBase*	CharacterBase = Cast<ARaidBossCharacterBase>(GetOwningPlayerPawn());
+    BackgroundImage->SetBrushFromTexture(DefaultTexture);
 
-	if (CharacterBase && !AbilityTriggerTag.IsValid())
-	{
-		CharacterBase->NotifyEquipmentChanged.AddDynamic(this, &UEquipmentSlot::NotifyEquipmentChangedCallback);
-	}
+    ARaidBossCharacterBase* CharacterBase = Cast<ARaidBossCharacterBase>(GetOwningPlayerPawn());
+
+    if (CharacterBase && !AbilityTriggerTag.IsValid())
+    {
+        CharacterBase->NotifyEquipmentChanged.AddDynamic(this, &UEquipmentSlot::NotifyEquipmentChangedCallback);
+    }
 }
 
 bool UEquipmentSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
-	UDragDropOperation* InOperation)
+                                  UDragDropOperation* InOperation)
 {
-	Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
-	
-	if (InOperation == nullptr)
-	{
-		return false;
-	}
-	
-	if (UInventorySlot* OtherInventorySlot = Cast<UInventorySlot>(InOperation->Payload))
-	{
-		OtherInventorySlot->ActivateThisSlot();
-	}
-	
-	return true;
+    Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
+
+    if (InOperation == nullptr)
+    {
+        return false;
+    }
+
+    if (UInventorySlot* OtherInventorySlot = Cast<UInventorySlot>(InOperation->Payload))
+    {
+        OtherInventorySlot->ActivateThisSlot();
+    }
+
+    return true;
 }
 
 void UEquipmentSlot::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent,
-	UDragDropOperation*& OutOperation)
+                                          UDragDropOperation*& OutOperation)
 {
-	Super::NativeOnDragDetected(InGeometry, InMouseEvent, OutOperation);
-	
-	if (AbilityTriggerTag.IsValid())
-	{
-		BindImage->SetDesiredSizeOverride(FVector2d(BindImage->Brush.ImageSize.X, BindImage->Brush.ImageSize.Y));
-		OutOperation = UWidgetBlueprintLibrary::CreateDragDropOperation(UDragDropOperation::StaticClass());
-		OutOperation->Payload = this;
-		OutOperation->DefaultDragVisual = BindImage;
-		OutOperation->Pivot = DragPivot;
-		OutOperation->Offset = DragOffset;
-	}
+    Super::NativeOnDragDetected(InGeometry, InMouseEvent, OutOperation);
+
+    if (AbilityTriggerTag.IsValid())
+    {
+        BindImage->SetDesiredSizeOverride(FVector2d(BindImage->Brush.ImageSize.X, BindImage->Brush.ImageSize.Y));
+        
+        OutOperation = UWidgetBlueprintLibrary::CreateDragDropOperation(UDragDropOperation::StaticClass());
+        
+        OutOperation->Payload = this;
+        OutOperation->DefaultDragVisual = BindImage;
+        OutOperation->Pivot = DragPivot;
+        OutOperation->Offset = DragOffset;
+    }
 }
 
 FReply UEquipmentSlot::NativeOnMouseButtonDoubleClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	Super::NativeOnMouseButtonDoubleClick(InGeometry, InMouseEvent);
-	
-	if (AbilityTriggerTag.IsValid())
-	{
-		UnEquipItem();
-	}
-	
-	return UWidgetBlueprintLibrary::Handled().NativeReply;
+    Super::NativeOnMouseButtonDoubleClick(InGeometry, InMouseEvent);
+
+    if (AbilityTriggerTag.IsValid())
+    {
+        UnEquipItem();
+    }
+
+    return UWidgetBlueprintLibrary::Handled().NativeReply;
 }
 
-void UEquipmentSlot::NotifyEquipmentChangedCallback(FGameplayTag InAbilityTriggerTag, int32 InEquipmentType, UTexture2D* NewItemImage)
+void UEquipmentSlot::NotifyEquipmentChangedCallback(FGameplayTag InAbilityTriggerTag, int32 InEquipmentType,
+                                                    UTexture2D* NewItemImage)
 {
-	if (static_cast<int32>(EquipmentType) != InEquipmentType)
-	{
-		return;
-	}
-	
-	if (InAbilityTriggerTag.IsValid() && NewItemImage)
-	{
-		if (AbilityTriggerTag.IsValid() && InAbilityTriggerTag != AbilityTriggerTag)
-		{
-			UnEquipItem();
-		}
-		
-		EquipItem(InAbilityTriggerTag, NewItemImage);
-	}
-	else
-	{
-		UnEquipItem();
-	}
+    if (static_cast<int32>(EquipmentType) != InEquipmentType)
+    {
+        return;
+    }
+
+    if (InAbilityTriggerTag.IsValid() && NewItemImage)
+    {
+        if (AbilityTriggerTag.IsValid() && InAbilityTriggerTag != AbilityTriggerTag)
+        {
+            UnEquipItem();
+        }
+
+        EquipItem(InAbilityTriggerTag, NewItemImage);
+    }
+    else
+    {
+        UnEquipItem();
+    }
 }
 
 void UEquipmentSlot::EquipItem(FGameplayTag InAbilityTriggerTag, UTexture2D* NewItemImage)
 {
-	AbilityTriggerTag = InAbilityTriggerTag;
-	BindImage->SetBrushFromTexture(NewItemImage);
-	BindImage->SetVisibility(ESlateVisibility::Visible);
+    AbilityTriggerTag = InAbilityTriggerTag;
+    
+    BindImage->SetBrushFromTexture(NewItemImage);
+    BindImage->SetVisibility(ESlateVisibility::Visible);
 }
 
 void UEquipmentSlot::UnEquipItem()
 {
-	RetriggerAbilityForUnEquipItem();
-	AbilityTriggerTag = FGameplayTag{};
-	BindImage->SetVisibility(ESlateVisibility::Hidden);
+    RetriggerAbilityForUnEquipItem();
+    
+    AbilityTriggerTag = FGameplayTag{};
+    
+    BindImage->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UEquipmentSlot::RetriggerAbilityForUnEquipItem() const
 {
-	ARaidBossCharacterBase*	CharacterBase = Cast<ARaidBossCharacterBase>(GetOwningPlayerPawn());
+    ARaidBossCharacterBase* CharacterBase = Cast<ARaidBossCharacterBase>(GetOwningPlayerPawn());
 
-	if (CharacterBase && AbilityTriggerTag.IsValid())
-	{
-		FGameplayEventData	EventData;
+    if (CharacterBase && AbilityTriggerTag.IsValid())
+    {
+        FGameplayEventData EventData;
 
-		EventData.InstigatorTags.AddTag(RaidBossGameplayTags::Get().Event_Equipment_ToRemove);
-		
-		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(CharacterBase, AbilityTriggerTag, EventData);
-	}
+        EventData.InstigatorTags.AddTag(RaidBossGameplayTags::Get().Event_Equipment_ToRemove);
+
+        UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(CharacterBase, AbilityTriggerTag, EventData);
+    }
 }

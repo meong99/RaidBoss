@@ -12,42 +12,41 @@
 UCLASS()
 class RAIDBOSS_API AFanShapeIndicator : public ASkillIndicator
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	AFanShapeIndicator();
-	
-	virtual void	Tick(float DeltaSeconds) override;
-	
+    AFanShapeIndicator();
+
+    virtual void    Tick(float DeltaSeconds) override;
+
 protected:
-	virtual void	BeginPlay() override;
-	
+    virtual void    BeginPlay() override;
+
 public:
+    /*
+     *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+    float   GetAngle() const { return Angle; }
 
-	/*
-	 *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	float	GetAngle() const { return Angle; }
-	
-	void	SetIndicatorValue(float InAngle) { Angle = InAngle; }
-	void	SetAngle(float InAngle) { Angle = InAngle; }
-	
-protected:
-	
-protected:
-	/*
-	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	
-	//
-	UPROPERTY(BlueprintReadWrite, Category="Indicator")
-	TObjectPtr<UMaterialInstanceDynamic>	IndicatorInstance;
-	
-	/*
-	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
+    void    SetIndicatorValue(float InAngle) { Angle = InAngle; }
+    void    SetAngle(float InAngle) { Angle = InAngle; }
 
-	//
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Indicator | Value")
-	float	Angle = 0;
+protected:
+
+protected:
+    /*
+     *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+
+    //
+    UPROPERTY(BlueprintReadWrite, Category="Indicator")
+    TObjectPtr<UMaterialInstanceDynamic>    IndicatorInstance;
+
+    /*
+     *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+
+    //
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Indicator | Value")
+    float   Angle = 0;
 };

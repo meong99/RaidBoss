@@ -16,8 +16,8 @@ class IWeaponInterface;
 UCLASS()
 class RAIDBOSS_API UEquipmentFactory : public UObject
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	IWeaponInterface*	CreateProduct(FWeaponKey InWeaponKey, ARaidBossCharacterBase* CharacterBase);
+    IWeaponInterface*   CreateProduct(FWeaponKey InWeaponKey, ARaidBossCharacterBase* CharacterBase);
 };

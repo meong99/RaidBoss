@@ -5,7 +5,7 @@
 
 ASkillIndicator::ASkillIndicator()
 {
-	IndicatorDecal = CreateDefaultSubobject<UDecalComponent>("IndicatorDecal");
+    IndicatorDecal = CreateDefaultSubobject<UDecalComponent>("IndicatorDecal");
 
-	IndicatorDecal->SetRelativeRotation(FRotator(-90, 0, 0));
+    IndicatorDecal->SetRelativeRotation(FRotator(-90, 0, 0));
 }

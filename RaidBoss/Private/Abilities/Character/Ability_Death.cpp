@@ -9,36 +9,38 @@
 #include "Components/CapsuleComponent.h"
 
 void UAbility_Death::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-                                     const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+                                     const FGameplayAbilityActorInfo* ActorInfo,
+                                     const FGameplayAbilityActivationInfo ActivationInfo,
                                      const FGameplayEventData* TriggerEventData)
 {
-	OwnerCharacter->GetCapsuleComponent()->SetCollisionObjectType(ECC_GameTraceChannel1);
-	OwnerCharacter->SetCurrentPlayerState(ECharacterState::None);
-	OwnerCharacter->SetIsMovementBlocked(true);
-	
-	UAbilityTask_PlayMontageAndWait* PlayMontageAndWait = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-		this, FName(GetName()), OwnerCharacter->GetCharacterAnimations().DeathMontage);
+    OwnerCharacter->GetCapsuleComponent()->SetCollisionObjectType(ECC_GameTraceChannel1);
+    OwnerCharacter->SetCurrentPlayerState(ECharacterState::None);
+    OwnerCharacter->SetIsMovementBlocked(true);
 
-	if (PlayMontageAndWait)
-	{
-		PlayMontageAndWait->OnCompleted.AddDynamic(this,	&UAbility_Death::EndAbilityCallBak);
-		PlayMontageAndWait->OnBlendOut.AddDynamic(this,		&UAbility_Death::EndAbilityCallBak);
-		PlayMontageAndWait->OnInterrupted.AddDynamic(this,	&UAbility_Death::EndAbilityCallBak);
-		PlayMontageAndWait->OnCancelled.AddDynamic(this,	&UAbility_Death::EndAbilityCallBak);
+    UAbilityTask_PlayMontageAndWait* PlayMontageAndWait =
+        UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, FName(GetName()),
+                                                                       OwnerCharacter->GetCharacterAnimations().DeathMontage);
 
-		PlayMontageAndWait->ReadyForActivation();
-	}
-	
-	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+    if (PlayMontageAndWait)
+    {
+        PlayMontageAndWait->OnCompleted.AddDynamic(this, &UAbility_Death::EndAbilityCallBak);
+        PlayMontageAndWait->OnBlendOut.AddDynamic(this, &UAbility_Death::EndAbilityCallBak);
+        PlayMontageAndWait->OnInterrupted.AddDynamic(this, &UAbility_Death::EndAbilityCallBak);
+        PlayMontageAndWait->OnCancelled.AddDynamic(this, &UAbility_Death::EndAbilityCallBak);
+
+        PlayMontageAndWait->ReadyForActivation();
+    }
+
+    Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
 void UAbility_Death::EndAbilityCallBak()
 {
-	if (OwnerCharacter)
-	{
-		OwnerCharacter->UnEquipWeapon();
-		OwnerCharacter->SetCurrentPlayerState(ECharacterState::Dead);
-	}
-	
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+    if (OwnerCharacter)
+    {
+        OwnerCharacter->UnEquipWeapon();
+        OwnerCharacter->SetCurrentPlayerState(ECharacterState::Dead);
+    }
+
+    EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

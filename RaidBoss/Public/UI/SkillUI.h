@@ -15,39 +15,42 @@ class URaidBossSkillBase;
 UCLASS()
 class RAIDBOSS_API USkillUI : public UInteractionalUI
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 protected:
-	virtual void NativeOnInitialized() override;
-	virtual void NativeConstruct() override;
-	virtual void NativeDestruct() override;
+    virtual void    NativeOnInitialized() override;
+    virtual void    NativeConstruct() override;
+    virtual void    NativeDestruct() override;
 
 public:
-	// 플레이어의 모든 스킬을 UI에 등록
-	void	RegisterAllSkillsToUI();
-	
+    // 플레이어의 모든 스킬을 UI에 등록
+    void    RegisterAllSkillsToUI();
+    
+    /*
+     *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+    
+    const TArray<TSubclassOf<URaidBossSkillBase>>* GetPlayerSkills() const;
+
 protected:
-	void	CreateAndInitSlots(const TArray<TSubclassOf<URaidBossSkillBase>>* PlayerSkills) const;
+    void    CreateAndInitSlots(const TArray<TSubclassOf<URaidBossSkillBase>>* PlayerSkills) const;
 
-	bool	InitSlotBySkill(URaidBossSkillBase* SkillCDO, USkillSlot* NewSlot) const;
-
-	const TArray<TSubclassOf<URaidBossSkillBase>>* GetPlayerSkills() const;
+    bool    InitSlotBySkill(URaidBossSkillBase* SkillCDO, USkillSlot* NewSlot) const;
 
 protected:
-	/*
-	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	
-	//
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Slot Widget")
-	TSubclassOf<USkillSlot>		SkillSlotClass;
-	
-	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Slot Widget", meta=(BindWidget))
-	TObjectPtr<UVerticalBox>	SkillVerticalBox;
-	/*
-	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	
-	//
+    /*
+     *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
 
+    //
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Slot Widget")
+    TSubclassOf<USkillSlot>     SkillSlotClass;
+
+    UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Slot Widget", meta=(BindWidget))
+    TObjectPtr<UVerticalBox>    SkillVerticalBox;
+    /*
+     *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+
+    //
 };

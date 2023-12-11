@@ -10,49 +10,50 @@
 
 ARaidBossPlayerBase::ARaidBossPlayerBase()
 {
-	PrimaryActorTick.bCanEverTick = true;
+    PrimaryActorTick.bCanEverTick = true;
 
-	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
-	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -98.f));
+    GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
+    GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -98.f));
 
-	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = false;
-	bUseControllerRotationRoll = false;
+    bUseControllerRotationPitch = false;
+    bUseControllerRotationYaw = false;
+    bUseControllerRotationRoll = false;
 
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
-	GetCharacterMovement()->JumpZVelocity = 400.f;
-	GetCharacterMovement()->AirControl = 0.5f;
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
-	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
-	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
+    GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
+    
+    GetCharacterMovement()->JumpZVelocity = 400.f;
+    GetCharacterMovement()->AirControl = 0.5f;
+    GetCharacterMovement()->MaxWalkSpeed = 500.f;
+    GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
+    GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 
-	Tags.Add("Player");
+    Tags.Add("Player");
 }
 
 void ARaidBossPlayerBase::BeginPlay()
 {
-	Super::BeginPlay();
-	
-	SetGenericTeamId({PLAYER_TEAM_ID});
+    Super::BeginPlay();
 
-	const TCHAR* AnimDataLink =
-		TEXT("/Script/Engine.DataTable'/Game/Data/DataTables/DT_Player_AnimationByWeaponType.DT_Player_AnimationByWeaponType'");
-	const UDataTable*	AnimDataTable = LoadObject<UDataTable>(nullptr, AnimDataLink);
+    SetGenericTeamId({PLAYER_TEAM_ID});
 
-	InitAnimationData(AnimDataTable);
+    const TCHAR*        AnimDataLink = TEXT(
+            "/Script/Engine.DataTable'/Game/Data/DataTables/DT_Player_AnimationByWeaponType.DT_Player_AnimationByWeaponType'");
+    const UDataTable*   AnimDataTable = LoadObject<UDataTable>(nullptr, AnimDataLink);
+
+    InitAnimationData(AnimDataTable);
 }
 
 void ARaidBossPlayerBase::JumpCharacter()
 {
-	Super::Jump();
+    Super::Jump();
 }
 
 void ARaidBossPlayerBase::StopJumpCharacter()
 {
-	Super::StopJumping();
+    Super::StopJumping();
 }
 
 ARaidBossPlayerControllerBase* ARaidBossPlayerBase::GetRaidBossPlayerController() const
 {
-	return Cast<ARaidBossPlayerControllerBase>(GetController());
+    return Cast<ARaidBossPlayerControllerBase>(GetController());
 }

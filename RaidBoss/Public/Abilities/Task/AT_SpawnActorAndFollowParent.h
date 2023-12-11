@@ -12,56 +12,62 @@
 UCLASS()
 class RAIDBOSS_API UAT_SpawnActorAndFollowParent : public UAbilityTask
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	UAT_SpawnActorAndFollowParent();
-	
-	UFUNCTION(BlueprintCallable, Category="Ability|Tasks", meta = (DisplayName="SpawnActorAndFollowParent",
-			HidePin = "OwningAbility", DefaultToSelf = "OwningAbility", BlueprintInternalUseOnly = "true"))
-	static UAT_SpawnActorAndFollowParent*	SpawnActorAndFollowParent(UGameplayAbility* OwningAbility, TSubclassOf<AActor> InSpawnClass,
-		const ACharacter* InParentActor, float InToMoveForward = 0, FVector InScale = FVector(1, 1, 1), bool bInAttachLocation = true, bool bInFollowRotation = true);
+    UAT_SpawnActorAndFollowParent();
 
-	virtual void	ExternalCancel() override;
-	
+    UFUNCTION(BlueprintCallable, Category="Ability|Tasks", meta = (DisplayName="SpawnActorAndFollowParent",
+        HidePin = "OwningAbility", DefaultToSelf = "OwningAbility", BlueprintInternalUseOnly = "true"))
+    static UAT_SpawnActorAndFollowParent* SpawnActorAndFollowParent(UGameplayAbility* OwningAbility,
+                                                                    TSubclassOf<AActor> InSpawnClass,
+                                                                    const ACharacter* InParentActor,
+                                                                    float InToMoveForward = 0,
+                                                                    FVector InScale = FVector(1, 1, 1),
+                                                                    bool bInAttachLocation = true,
+                                                                    bool bInFollowRotation = true);
+
+    virtual void ExternalCancel() override;
+
 protected:
-	virtual void	TickTask(float DeltaTime) override;
+    virtual void TickTask(float DeltaTime) override;
 
-	virtual void	Activate() override;
+    virtual void Activate() override;
 
-	virtual void	OnDestroy(bool bInOwnerFinished) override;
+    virtual void OnDestroy(bool bInOwnerFinished) override;
+
 public:
-/*
- *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
- */
-	AActor*	GetSpawnedActor() const { return SpawnedActor; }
+    /*
+     *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+    AActor* GetSpawnedActor() const { return SpawnedActor; }
 
 protected:
-/*
- *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
- */
-	
-	//
-	UPROPERTY(BlueprintReadOnly, Category="Ability")
-	TObjectPtr<AActor>	SpawnedActor;
-	
-	TSubclassOf<AActor> SpawnClass;
-	
-	TWeakObjectPtr<const ACharacter> ParentActor;
-	
-	FVector		Scale = {1, 1, 1};
+    /*
+     *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
 
-	FRotator	OriginRotator;
+    //
+    UPROPERTY(BlueprintReadOnly, Category="Ability")
+    TObjectPtr<AActor>  SpawnedActor;
 
-	float		ToMoveForward = 0;
-	
-	bool		bAttachLocation = true;
-	
-	bool		bFollowRotation = true;
+    TWeakObjectPtr<const ACharacter> ParentActor;
 
-/*
- *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
- */
-	
-	//
+    TSubclassOf<AActor> SpawnClass;
+
+    FRotator            OriginRotator;
+
+    FVector             Scale = {1, 1, 1};
+
+    float               ToMoveForward = 0;
+
+    bool                bAttachLocation = true;
+
+    bool                bFollowRotation = true;
+
+    /*
+     *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+
+    //
 };

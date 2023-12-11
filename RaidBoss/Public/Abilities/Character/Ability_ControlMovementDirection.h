@@ -13,52 +13,54 @@ class UAbilityTask_PlayMontageAndWait;
 UCLASS()
 class RAIDBOSS_API UAbility_ControlMovementDirection : public URaidBossAbilityBase
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
+
 public:
-	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const override;
+    virtual bool    CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+                                       const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags,
+                                       FGameplayTagContainer* OptionalRelevantTags) const override;
 
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
-
-protected:
-	void		RotateToForward();
-	
-	void		RotateByMovementInput(FRotator NewRotator);
-
-	void		RotateToForwardWithThreshold();
-
-	FRotator	GetRotationByMovementInput() const;
-	
-	FRotator	GetAlignedRotationByForwardVector();
-	
-	void		GetMovementInput(OUT float& OutMoveForward, OUT float& OutMoveRight) const;
+    virtual void    ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+                                    const FGameplayAbilityActivationInfo ActivationInfo,
+                                    const FGameplayEventData* TriggerEventData) override;
 
 protected:
-	
-	/*
-	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
+    void        RotateToForward();
 
-	//
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid boss")
-	float	InterpSpeedAtAttack = 15;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid boss")
-	float	InterpSpeed = 8;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid boss")
-	float	AlignSpeed = 100;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid boss")
-	float	AlignThreshold = 0.5f;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid boss")
-	float	PlayLate = 1.0f;
+    void        RotateByMovementInput(FRotator NewRotator);
 
-	/*
-	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
+    void        RotateToForwardWithThreshold();
 
-	bool	bIsDuringAlign = false;
+    FRotator    GetRotationByMovementInput() const;
+
+    FRotator    GetAlignedRotationByForwardVector();
+
+    void        GetMovementInput(OUT float& OutMoveForward, OUT float& OutMoveRight) const;
+
+protected:
+    /*
+     *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+
+    //
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid boss")
+    float   InterpSpeedAtAttack = 15;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid boss")
+    float   InterpSpeed = 8;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid boss")
+    float   AlignSpeed = 100;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid boss")
+    float   AlignThreshold = 0.5f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid boss")
+    float   PlayLate = 1.0f;
+
+    /*
+     *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+
+    bool    bIsDuringAlign = false;
 };

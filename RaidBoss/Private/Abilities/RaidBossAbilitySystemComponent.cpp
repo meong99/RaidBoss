@@ -3,101 +3,104 @@
 
 void URaidBossAbilitySystemComponent::OnGiveAbility(FGameplayAbilitySpec& AbilitySpec)
 {
-	Super::OnGiveAbility(AbilitySpec);
+    Super::OnGiveAbility(AbilitySpec);
 
-	URaidBossAbilityBase*	AbilityBase = Cast<URaidBossAbilityBase>(AbilitySpec.GetPrimaryInstance());
-	
-	if (AbilityBase && AbilityBase->GetAbilityTriggerTag().IsValid())
-	{
-		InstanceAbilitiesByTag.Add(AbilityBase->GetAbilityTriggerTag(), AbilityBase);
-	}
+    URaidBossAbilityBase* AbilityBase = Cast<URaidBossAbilityBase>(AbilitySpec.GetPrimaryInstance());
+
+    if (AbilityBase && AbilityBase->GetAbilityTriggerTag().IsValid())
+    {
+        InstanceAbilitiesByTag.Add(AbilityBase->GetAbilityTriggerTag(), AbilityBase);
+    }
 }
 
 void URaidBossAbilitySystemComponent::OnRemoveAbility(FGameplayAbilitySpec& AbilitySpec)
 {
-	URaidBossAbilityBase*	AbilityBase = Cast<URaidBossAbilityBase>(AbilitySpec.GetPrimaryInstance());
-	
-	if (AbilityBase && AbilityBase->GetAbilityTriggerTag().IsValid())
-	{
-		InstanceAbilitiesByTag.Remove(AbilityBase->GetAbilityTriggerTag());
-	}
-	
-	Super::OnRemoveAbility(AbilitySpec);
+    URaidBossAbilityBase* AbilityBase = Cast<URaidBossAbilityBase>(AbilitySpec.GetPrimaryInstance());
+
+    if (AbilityBase && AbilityBase->GetAbilityTriggerTag().IsValid())
+    {
+        InstanceAbilitiesByTag.Remove(AbilityBase->GetAbilityTriggerTag());
+    }
+
+    Super::OnRemoveAbility(AbilitySpec);
 }
 
 bool URaidBossAbilitySystemComponent::CanActivateAbility(FGameplayTag TriggerTag) const
 {
-	URaidBossAbilityBase*	AbilityBase = InstanceAbilitiesByTag.FindRef(TriggerTag);
+    URaidBossAbilityBase* AbilityBase = InstanceAbilitiesByTag.FindRef(TriggerTag);
 
-	if (AbilityBase)
-	{
-		return AbilityBase->CanActivateAbility(AbilityBase->GetCurrentAbilitySpecHandle(), AbilityBase->GetCurrentActorInfo());
-	}
+    if (AbilityBase)
+    {
+        return AbilityBase->CanActivateAbility(AbilityBase->GetCurrentAbilitySpecHandle(),
+                                               AbilityBase->GetCurrentActorInfo());
+    }
 
-	return false;
+    return false;
 }
 
 bool URaidBossAbilitySystemComponent::CanActivateAbility(int32 InputID)
 {
-	URaidBossAbilityBase* AbilityBase = GetAbilityByInputID(InputID);
+    URaidBossAbilityBase* AbilityBase = GetAbilityByInputID(InputID);
 
-	if (AbilityBase)
-	{
-		return AbilityBase->CanActivateAbility(AbilityBase->GetCurrentAbilitySpecHandle(), AbilityBase->GetCurrentActorInfo());
-	}
-	
-	return false;
+    if (AbilityBase)
+    {
+        return AbilityBase->CanActivateAbility(AbilityBase->GetCurrentAbilitySpecHandle(),
+                                               AbilityBase->GetCurrentActorInfo());
+    }
+
+    return false;
 }
 
 bool URaidBossAbilitySystemComponent::TryActivateAbilityByInputID(int32 InputID)
 {
-	FGameplayAbilitySpec* Spec = FindAbilitySpecFromInputID(InputID);
-	
-	if (Spec)
-	{
-		return TryActivateAbility(Spec->Handle);
-	}
+    FGameplayAbilitySpec* Spec = FindAbilitySpecFromInputID(InputID);
 
-	return false;
+    if (Spec)
+    {
+        return TryActivateAbility(Spec->Handle);
+    }
+
+    return false;
 }
 
 URaidBossAbilityBase* URaidBossAbilitySystemComponent::GetAbilityByClass(TSubclassOf<URaidBossAbilityBase> AbilityClass)
 {
-	URaidBossAbilityBase*	Ret = nullptr;
-	
-	FGameplayAbilitySpec* Spec = FindAbilitySpecFromClass(AbilityClass);
-	if (Spec)
-	{
-		Ret = Cast<URaidBossAbilityBase>(Spec->GetPrimaryInstance());
-	}
+    URaidBossAbilityBase* Ret = nullptr;
+    FGameplayAbilitySpec* Spec = FindAbilitySpecFromClass(AbilityClass);
+    
+    if (Spec)
+    {
+        Ret = Cast<URaidBossAbilityBase>(Spec->GetPrimaryInstance());
+    }
 
-	return Ret;
+    return Ret;
 }
 
 URaidBossAbilityBase* URaidBossAbilitySystemComponent::GetAbilityByInputID(int32 InputID)
 {
-	URaidBossAbilityBase*	Ret = nullptr;
-	
-	FGameplayAbilitySpec* Spec = FindAbilitySpecFromInputID(InputID);
-	if (Spec)
-	{
-		Ret = Cast<URaidBossAbilityBase>(Spec->GetPrimaryInstance());
-	}
+    URaidBossAbilityBase* Ret = nullptr;
+    FGameplayAbilitySpec* Spec = FindAbilitySpecFromInputID(InputID);
+    
+    if (Spec)
+    {
+        Ret = Cast<URaidBossAbilityBase>(Spec->GetPrimaryInstance());
+    }
 
-	return Ret;
+    return Ret;
 }
 
 bool URaidBossAbilitySystemComponent::GiveAbilityWithoutDuplication(TSubclassOf<URaidBossAbilityBase> AbilityClass,
-                                                                    FGameplayAbilitySpecHandle& OutSpecHandle, int32 InputID)
+                                                                    FGameplayAbilitySpecHandle& OutSpecHandle,
+                                                                    int32 InputID)
 {
-	if (FindAbilitySpecFromClass(AbilityClass) == nullptr)
-	{
-		FGameplayAbilitySpec Spec {AbilityClass, 1, InputID};
+    if (FindAbilitySpecFromClass(AbilityClass) == nullptr)
+    {
+        FGameplayAbilitySpec Spec{AbilityClass, 1, InputID};
 
-		OutSpecHandle = GiveAbility(Spec);
+        OutSpecHandle = GiveAbility(Spec);
 
-		return true;
-	}
-	
-	return false;
+        return true;
+    }
+
+    return false;
 }

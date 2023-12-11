@@ -10,15 +10,15 @@ FRaidBossTickableGameObject::~FRaidBossTickableGameObject()
 
 void FRaidBossTickableGameObject::SetIsTickable(bool Tickable)
 {
-	bIsTickable = Tickable;
+    bIsTickable = Tickable;
 }
 
 bool FRaidBossTickableGameObject::IsTickable() const
 {
-	return bIsTickable;
+    return bIsTickable;
 }
 
 TStatId FRaidBossTickableGameObject::GetStatId() const
 {
-	return TStatId();
+    return TStatId();
 }

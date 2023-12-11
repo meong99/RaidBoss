@@ -15,16 +15,16 @@ class URaidBossAbilityBase;
 UINTERFACE()
 class UWeaponInterface : public UInterface
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 };
 
 class RAIDBOSS_API IWeaponInterface
 {
-	GENERATED_BODY()
-	
+    GENERATED_BODY()
+
 public:
-	virtual bool				Attack() = 0;
-	virtual	AWeapon*			GetCurrentObject() = 0;
-	virtual	FWeaponKey			GetWeaponKey() const = 0;
-	virtual const FWeaponData&	GetWeaponData() const = 0;
+    virtual bool                Attack() = 0;
+    virtual AWeapon*            GetCurrentObject() = 0;
+    virtual FWeaponKey          GetWeaponKey() const = 0;
+    virtual const FWeaponData&  GetWeaponData() const = 0;
 };

@@ -12,49 +12,50 @@
 UCLASS()
 class RAIDBOSS_API UAbility_Aurora_E : public URaidBossSkillBase
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	UAbility_Aurora_E();
-	
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+    UAbility_Aurora_E();
 
-	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
-	
+    virtual void    ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+                                    const FGameplayAbilityActivationInfo ActivationInfo,
+                                    const FGameplayEventData* TriggerEventData) override;
+    
+    virtual void    CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+                                  const FGameplayAbilityActivationInfo ActivationInfo,
+                                  bool bReplicateCancelAbility) override;   
 protected:
-	
-	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
-	
-	UFUNCTION()
-	void	AttackPointEventCallback(FGameplayEventData EventData);
-	
-	UFUNCTION()
-	void	ToEndAbilityCallback();
-	
-	virtual void	SetIndicator() override;
-	
-	void			SpawnParticles() const;
+    virtual void    EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+                               const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility,
+                               bool bWasCancelled) override;
 
-	void			AttackTargetsInRadius() const;
+    virtual void    SetIndicator() override;
+
+    UFUNCTION()
+    void    AttackPointEventCallback(FGameplayEventData EventData);
+
+    UFUNCTION()
+    void    ToEndAbilityCallback();
+
+    void    SpawnParticles() const;
+
+    void    AttackTargetsInRadius() const;
 
 protected:
-	/*
-	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	
-	//
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Aurora E")
-	TObjectPtr<UParticleSystem>	Particle;
+    /*
+     *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Aurora E")
-	float	ParticleCount = 30;
-	/*
-	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	
-	//
-	bool	bIsFirstTrigger = true;
+    //
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Aurora E")
+    TObjectPtr<UParticleSystem> Particle;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Aurora E")
+    float                       ParticleCount = 30;
+    /*
+     *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+
+    //
+    bool    bIsFirstTrigger = true;
 };

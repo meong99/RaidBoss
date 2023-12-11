@@ -7,10 +7,10 @@
 UCLASS(Abstract)
 class RAIDBOSS_API URaidBossGameInstance : public UGameInstance
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	URaidBossGameInstance();
+    URaidBossGameInstance();
 
-	virtual void Init() override;
+    virtual void Init() override;
 };

@@ -12,57 +12,61 @@
 UCLASS()
 class RAIDBOSS_API UAbility_Sevarog_E : public URaidBossSkillBase
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	UAbility_Sevarog_E();
+    UAbility_Sevarog_E();
 
-	virtual void	ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+    virtual void    ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+                                    const FGameplayAbilityActivationInfo ActivationInfo,
+                                    const FGameplayEventData* TriggerEventData) override;
 
-	virtual void	CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
-	
+    virtual void    CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+                                  const FGameplayAbilityActivationInfo ActivationInfo,
+                                  bool bReplicateCancelAbility) override;
+
 protected:
-	virtual void	EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
-	
-	virtual void	SetIndicator() override;
-	
-	UFUNCTION()
-	void	AttackPointCallback(FGameplayEventData Payload);
-	
-	UFUNCTION()
-	void	EndAbilityCallback();
-	
-	FVector	GetFloorUnderTheTarget(const AActor* Target) const;
+    virtual void    EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+                               const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility,
+                               bool bWasCancelled) override;
 
-	FVector	GetFloorAtCameraTracingLocation() const;
+    virtual void    SetIndicator() override;
 
-	void	AttackTargetsInAttackLocation() const;
+    UFUNCTION()
+    void    AttackPointCallback(FGameplayEventData Payload);
+
+    UFUNCTION()
+    void    EndAbilityCallback();
+
+    FVector GetFloorUnderTheTarget(const AActor* Target) const;
+
+    FVector GetFloorAtCameraTracingLocation() const;
+
+    void    AttackTargetsInAttackLocation() const;
+
 protected:
-	/*
-	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	
-	//
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Sevarog E")
-	TObjectPtr<UParticleSystem>	Particle;
+    /*
+     *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
 
-	/*
-	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	
-	//
-	UPROPERTY()
-	TArray<UAbilityTask*>	SpawnedIndicatorTasks;
-	
-	UPROPERTY()
-	const ACharacter*		AimedTarget;
-	
-	bool	bIsFirstTrigger = true;
+    //
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Sevarog E")
+    TObjectPtr<UParticleSystem> Particle;
 
-	int		AttackPointCount = 0;
+    /*
+     *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
 
-	FVector AttackLocation;
+    //
+    UPROPERTY()
+    TArray<UAbilityTask*>   SpawnedIndicatorTasks;
+
+    UPROPERTY()
+    const ACharacter*       AimedTarget;
+
+    bool    bIsFirstTrigger = true;
+
+    int     AttackPointCount = 0;
+
+    FVector AttackLocation;
 };

@@ -9,120 +9,121 @@ class URaidBossAbilityBase;
 UENUM(BlueprintType)
 enum class EWeaponAttachSocket : uint8
 {
-	WeaponSocket_R UMETA(DisplayName = "WeaponSocket_R"),
-	WeaponSocket_L UMETA(DisplayName = "WeaponSocket_L"),
-	WeaponSocket_R2 UMETA(DisplayName = "WeaponSocket_R2"),
+    WeaponSocket_R UMETA(DisplayName = "WeaponSocket_R"),
+    WeaponSocket_L UMETA(DisplayName = "WeaponSocket_L"),
+    WeaponSocket_R2 UMETA(DisplayName = "WeaponSocket_R2"),
 };
 
 UENUM(BlueprintType)
 enum class EWeaponType : uint8
 {
-	None UMETA(DisplayName = "None"),
-	
-	TwoHandSword UMETA(DisplayName = "TwoHandSword"),
-	Bow UMETA(DisplayName = "Bow"),
-	NoWeapon UMETA(DisplayName = "NoWeapon"),
+    None UMETA(DisplayName = "None"),
 
-	Monster UMETA(DisplayName = "Monster"),
-	Player UMETA(DisplayName = "Player"),
-	
-	LastIndex UMETA(DisplayName = "LastIndex"),
+    TwoHandSword UMETA(DisplayName = "TwoHandSword"),
+    Bow UMETA(DisplayName = "Bow"),
+    NoWeapon UMETA(DisplayName = "NoWeapon"),
+
+    Monster UMETA(DisplayName = "Monster"),
+    Player UMETA(DisplayName = "Player"),
+
+    LastIndex UMETA(DisplayName = "LastIndex"),
 };
 
 UENUM(BlueprintType)
 enum class EArmorType : uint8
 {
-	None UMETA(DisplayName = "None"),
+    None UMETA(DisplayName = "None"),
 };
 
 USTRUCT(BlueprintType)
 struct FWeaponKey
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	EWeaponType	WeaponType;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int32		WeaponNumber;
-	
-	bool operator==(const FWeaponKey& Other) const
-	{
-		if (Other.WeaponType == WeaponType &&
-			Other.WeaponNumber == WeaponNumber)
-		{
-			return true;
-		}
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+    EWeaponType WeaponType;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+    int32 WeaponNumber;
 
-		return false;
-	}
+    bool operator==(const FWeaponKey& Other) const
+    {
+        if (Other.WeaponType == WeaponType &&
+            Other.WeaponNumber == WeaponNumber)
+        {
+            return true;
+        }
 
-	bool operator!=(const FWeaponKey& Other) const
-	{
-		return !(Other == *this);
-	}
+        return false;
+    }
+
+    bool operator!=(const FWeaponKey& Other) const
+    {
+        return !(Other == *this);
+    }
 };
 
 USTRUCT()
 struct FArmorKey
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
-	EArmorType	ArmorType;
-	int32		ArmorNumber;
+    EArmorType ArmorType;
+    int32 ArmorNumber;
 };
 
 USTRUCT(BlueprintType)
 struct FItemAnimations
 {
-	GENERATED_BODY()
-public:
-	UAnimMontage* GetEquipAnims() { return EquipAnim; }
-	UAnimMontage* GetUnEquipAnims() { return UnEquipAnim; }
-	TArray<UAnimMontage*> GetUseAnims() { return UseAnims; }
+    GENERATED_BODY()
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	UAnimMontage*	EquipAnim;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	UAnimMontage*	UnEquipAnim;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TArray<UAnimMontage*>	UseAnims;
+public:
+    UAnimMontage* GetEquipAnims() { return EquipAnim; }
+    UAnimMontage* GetUnEquipAnims() { return UnEquipAnim; }
+    TArray<UAnimMontage*> GetUseAnims() { return UseAnims; }
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    UAnimMontage* EquipAnim;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    UAnimMontage* UnEquipAnim;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    TArray<UAnimMontage*> UseAnims;
 };
 
 USTRUCT(BlueprintType)
 struct FAnimationsByWeapon : public FTableRowBase
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	EWeaponType		WeaponType;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FItemAnimations	AnimationsByWeaponType;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    EWeaponType WeaponType;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    FItemAnimations AnimationsByWeaponType;
 };
 
 USTRUCT(BlueprintType)
 struct FWeaponData : public FTableRowBase
 {
-	GENERATED_BODY()
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FWeaponKey									WeaponKey;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FString										WeaponName;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	float										AttackPower;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	float										AttackRange;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TObjectPtr<USkeletalMesh>					SkeletalMesh;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TArray<TSubclassOf<URaidBossAbilityBase>>	Abilities;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FItemAnimations								WeaponAnimations;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	EWeaponAttachSocket							AttachSocket;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TSubclassOf<UGameplayEffect>				AdditiveEffectToCharacter;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TArray<TSubclassOf<UUserWidget>>			WidgetsToApply;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TObjectPtr<UParticleSystem>					BasicAttackParticle;
+    GENERATED_BODY()
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+    FWeaponKey WeaponKey;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+    FString WeaponName;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+    float AttackPower;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+    float AttackRange;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+    TObjectPtr<USkeletalMesh> SkeletalMesh;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+    TArray<TSubclassOf<URaidBossAbilityBase>> Abilities;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+    FItemAnimations WeaponAnimations;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+    EWeaponAttachSocket AttachSocket;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+    TSubclassOf<UGameplayEffect> AdditiveEffectToCharacter;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+    TArray<TSubclassOf<UUserWidget>> WidgetsToApply;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+    TObjectPtr<UParticleSystem> BasicAttackParticle;
 };

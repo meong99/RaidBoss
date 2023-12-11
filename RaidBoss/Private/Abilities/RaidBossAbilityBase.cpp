@@ -8,44 +8,44 @@
 
 URaidBossAbilityBase::URaidBossAbilityBase()
 {
-	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+    InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
 
 void URaidBossAbilityBase::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
 {
-	Super::OnGiveAbility(ActorInfo, Spec);
+    Super::OnGiveAbility(ActorInfo, Spec);
 
-	OwnerCharacter = Cast<ARaidBossCharacterBase>(ActorInfo->OwnerActor);
+    OwnerCharacter = Cast<ARaidBossCharacterBase>(ActorInfo->OwnerActor);
 }
 
 FGameplayTag URaidBossAbilityBase::GetAbilityTriggerTag() const
 {
-	if (AbilityTriggers.IsEmpty())
-	{
-		return FGameplayTag{};
-	}
-	
-	FAbilityTriggerData TriggerData = *AbilityTriggers.begin();
+    if (AbilityTriggers.IsEmpty())
+    {
+        return FGameplayTag{};
+    }
 
-	return TriggerData.TriggerTag;
+    FAbilityTriggerData TriggerData = *AbilityTriggers.begin();
+
+    return TriggerData.TriggerTag;
 }
 
 void URaidBossAbilityBase::SendGameplayEventToActor(AActor* Target, FGameplayTag EventTag, FGameplayEventData Payload)
 {
-	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Target, EventTag, Payload);
+    UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Target, EventTag, Payload);
 }
 
 URaidBossAbilitySystemComponent* URaidBossAbilityBase::GetOwnerAbilityComponent() const
 {
-	return Cast<URaidBossAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
+    return Cast<URaidBossAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
 }
 
 const URaidBossCharacterStatusAttributeSet* URaidBossAbilityBase::GetOwnerCharacterState() const
 {
-	if (IsValid(OwnerCharacter) == true)
-	{
-		return OwnerCharacter->GetCharacterStatusAttributeSet();
-	}
+    if (IsValid(OwnerCharacter) == true)
+    {
+        return OwnerCharacter->GetCharacterStatusAttributeSet();
+    }
 
-	return nullptr;
+    return nullptr;
 }

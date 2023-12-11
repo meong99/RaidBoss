@@ -3,5 +3,5 @@
 
 ARaidBossCharacterBase* URaidBossAttributeBase::GetOwnerCharacter() const
 {
-	return  Cast<ARaidBossCharacterBase>(GetOwningActor());
+    return Cast<ARaidBossCharacterBase>(GetOwningActor());
 }

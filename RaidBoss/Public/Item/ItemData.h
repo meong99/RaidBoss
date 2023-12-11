@@ -13,8 +13,8 @@
 USTRUCT(BlueprintType)
 struct FItemDataTable : public FTableRowBase
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TSubclassOf<URaidBossItemBase>	ItemClass;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    TSubclassOf<URaidBossItemBase> ItemClass;
 };

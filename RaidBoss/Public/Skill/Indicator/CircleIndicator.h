@@ -12,42 +12,41 @@
 UCLASS()
 class RAIDBOSS_API ACircleIndicator : public ASkillIndicator
 {
-	GENERATED_BODY()
-	
-public:
-	ACircleIndicator();
-	
-	virtual void	Tick(float DeltaSeconds) override;
-	
-protected:
-	virtual void	BeginPlay() override;
+    GENERATED_BODY()
 
 public:
+    ACircleIndicator();
 
-	/*
-	 *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	float	GetRadius() const { return Radius; }
-	
-	void	SetIndicatorValue(float InRadius) { Radius = InRadius; }
-	void	SetRadius(float InRadius) { Radius = InRadius; }
-	
+    virtual void    Tick(float DeltaSeconds) override;
+
+protected:
+    virtual void    BeginPlay() override;
+
+public:
+    /*
+     *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+    float   GetRadius() const { return Radius; }
+
+    void    SetIndicatorValue(float InRadius) { Radius = InRadius; }
+    void    SetRadius(float InRadius) { Radius = InRadius; }
+
 protected:
 
 protected:
-	/*
-	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	
-	//
-	UPROPERTY(BlueprintReadWrite, Category="Indicator")
-	TObjectPtr<UMaterialInstanceDynamic>	IndicatorInstance;
-	
-	/*
-	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
+    /*
+     *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
 
-	//
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Indicator | Value")
-	float	Radius = 0;
+    //
+    UPROPERTY(BlueprintReadWrite, Category="Indicator")
+    TObjectPtr<UMaterialInstanceDynamic>    IndicatorInstance;
+
+    /*
+     *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+
+    //
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Indicator | Value")
+    float   Radius = 0;
 };

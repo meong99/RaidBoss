@@ -10,10 +10,10 @@
 USTRUCT(BlueprintType)
 struct FUIActionData
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Action Data")
-	UObject*	Object1;
+    UPROPERTY(BlueprintReadWrite, Category="Raid Boss | Action Data")
+    UObject* Object1;
 };
 
 /**
@@ -22,33 +22,33 @@ struct FUIActionData
 UCLASS(BlueprintType, Blueprintable, EditInlineNew)
 class RAIDBOSS_API UInteractionalUIAction : public UObject
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	UInteractionalUIAction(const FObjectInitializer & ObjectInitializer);
-	
-	virtual int32	ActivateUIAction(FUIActionData ActionData) const;
+    UInteractionalUIAction(const FObjectInitializer& ObjectInitializer);
 
-	UFUNCTION(BlueprintImplementableEvent, Category="Raid Boss | UI Action")
-	void	OnActionActivated(FUIActionData ActionData) const;
+    virtual int32   ActivateUIAction(FUIActionData ActionData) const;
 
-	/*
-	 *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	FGameplayTag	GetActionTriggerTag() const { return ActionTriggerTag; }
-	
+    UFUNCTION(BlueprintImplementableEvent, Category="Raid Boss | UI Action")
+    void    OnActionActivated(FUIActionData ActionData) const;
+
+    /*
+     *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+    FGameplayTag    GetActionTriggerTag() const { return ActionTriggerTag; }
+
 protected:
-	/*
-	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	
-	//
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Raid Boss | UI Action")
-	FGameplayTag	ActionTriggerTag;
+    /*
+     *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
 
-	/*
-	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
-	
-	//
+    //
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Raid Boss | UI Action")
+    FGameplayTag    ActionTriggerTag;
+
+    /*
+     *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+
+    //
 };

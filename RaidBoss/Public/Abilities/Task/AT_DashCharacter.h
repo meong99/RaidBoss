@@ -12,42 +12,41 @@
 UCLASS()
 class RAIDBOSS_API UAT_DashCharacter : public UAbilityTask
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	
-	UFUNCTION(BlueprintCallable, Category="Ability|Tasks", meta = (DisplayName="CreateDashCharacterTask",
-		HidePin = "OwningAbility", DefaultToSelf = "OwningAbility", BlueprintInternalUseOnly = "TRUE"))
-	static UAT_DashCharacter*	CreateDashCharacterTask(UGameplayAbility* OwningAbility, FVector InDirection, float InDashSpeed,
-		float InDashDistance);
+    UFUNCTION(BlueprintCallable, Category="Ability|Tasks", meta = (DisplayName="CreateDashCharacterTask",
+        HidePin = "OwningAbility", DefaultToSelf = "OwningAbility", BlueprintInternalUseOnly = "TRUE"))
+    static UAT_DashCharacter* CreateDashCharacterTask(UGameplayAbility* OwningAbility, FVector InDirection,
+                                                      float InDashSpeed,
+                                                      float InDashDistance);
 
 protected:
-	virtual void	TickTask(float DeltaTime) override;
-	
-	virtual void	Activate() override;
+    virtual void TickTask(float DeltaTime) override;
 
-	virtual void	OnDestroy(bool bInOwnerFinished) override;
-	
+    virtual void Activate() override;
+
+    virtual void OnDestroy(bool bInOwnerFinished) override;
+
 protected:
-/*
-*	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-*/
-	
-	//
-	float	DashDistance = 1;
-	
-	float	DashSpeed = 1;
-	
-	float	OriginMovementSpeed;
-	
-	FVector	OriginLocation;
+    /*
+    *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+    */
 
-	FVector	Direction = {1, 0, 0};
-	
-/*
- *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
- */
-	
-	//
+    //
+    float   DashDistance = 1;
 
+    float   DashSpeed = 1;
+
+    float   OriginMovementSpeed;
+
+    FVector OriginLocation;
+
+    FVector Direction = {1, 0, 0};
+
+    /*
+     *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+
+    //
 };

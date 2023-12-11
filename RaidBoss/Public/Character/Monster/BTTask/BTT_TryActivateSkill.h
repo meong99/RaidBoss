@@ -14,43 +14,45 @@ struct FAbilityEndedData;
 UCLASS()
 class RAIDBOSS_API UBTT_TryActivateSkill : public UBTTask_BlackboardBase
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
+
 public:
-	UBTT_TryActivateSkill(const FObjectInitializer& ObjectInitializer);
-	
-protected:
-	virtual void				TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
-	
-	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+    UBTT_TryActivateSkill(const FObjectInitializer& ObjectInitializer);
 
-	virtual EBTNodeResult::Type AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
-	
-	virtual void				OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult) override;
-	
 protected:
-/*
- *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
- */
-	
-	//
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Raid Boss | BTT")
-	FGameplayTag	TriggerTag;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Raid Boss | BTT")
-	float			MaximumWaitingTime = 10;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Raid Boss | BTT")
-	float			RotateSpeedForFaceTarget = 5;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Raid Boss | BTT")
-	bool			bWaitAbilityEnded = true;
+    virtual void                TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
-/*
- *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
- */
-	
-	//
-	float			ElapsedTime = 0;
-	
-	FDelegateHandle DelegateHandle;
+    virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+
+    virtual EBTNodeResult::Type AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+
+    virtual void                OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory,
+                                               EBTNodeResult::Type TaskResult) override;
+
+protected:
+    /*
+     *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+
+    //
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Raid Boss | BTT")
+    FGameplayTag    TriggerTag;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Raid Boss | BTT")
+    float           MaximumWaitingTime = 10;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Raid Boss | BTT")
+    float           RotateSpeedForFaceTarget = 5;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Raid Boss | BTT")
+    bool            bWaitAbilityEnded = true;
+
+    /*
+     *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
+
+    //
+    float           ElapsedTime = 0;
+
+    FDelegateHandle DelegateHandle;
 };

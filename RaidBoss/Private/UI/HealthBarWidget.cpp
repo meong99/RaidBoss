@@ -6,51 +6,53 @@
 
 void UHealthBarWidget::NativeConstruct()
 {
-	Super::NativeConstruct();
+    Super::NativeConstruct();
 
-	if (WidgetOwner)
-	{
-		HealthBeforeDamaged = WidgetOwner->GetCharacterStatusAttributeSet()->GetHealth();
-	}
-	else
-	{
-		WidgetOwner = Cast<ARaidBossCharacterBase>(GetOwningPlayerPawn());
-	}
+    if (WidgetOwner)
+    {
+        HealthBeforeDamaged = WidgetOwner->GetCharacterStatusAttributeSet()->GetHealth();
+    }
+    else
+    {
+        WidgetOwner = Cast<ARaidBossCharacterBase>(GetOwningPlayerPawn());
+    }
 }
 
 void UHealthBarWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
-	Super::NativeTick(MyGeometry, InDeltaTime);
-	
-	const URaidBossCharacterStatusAttributeSet*	AttributeSet = WidgetOwner ? WidgetOwner->GetCharacterStatusAttributeSet() : nullptr;
-		
-	if (AttributeSet == nullptr)
-	{
-		return;
-	}
+    Super::NativeTick(MyGeometry, InDeltaTime);
 
-	CurrentHealth = AttributeSet->GetHealth();
-	CurrentMaxHealth = AttributeSet->GetMaxHealth();
+    const URaidBossCharacterStatusAttributeSet* AttributeSet = WidgetOwner
+                                                                   ? WidgetOwner->GetCharacterStatusAttributeSet()
+                                                                   : nullptr;
 
-	TimeSinceLastDamage += InDeltaTime;
-	
-	if (bool bHaveToSetDamageBar = TimeSinceLastDamage >= DamageBarDelayTime)
-	{
-		DamageBar->SetPercent(FMath::FInterpTo(DamageBar->GetPercent(), HealthBar->GetPercent(), InDeltaTime, DamageBarInterSpeed));
+    if (AttributeSet == nullptr)
+    {
+        return;
+    }
 
-		OnDamageBarChanged();
-	}
+    CurrentHealth = AttributeSet->GetHealth();
+    CurrentMaxHealth = AttributeSet->GetMaxHealth();
 
-	HealthBar->SetPercent(CurrentHealth / CurrentMaxHealth);
+    TimeSinceLastDamage += InDeltaTime;
 
-	if (bool bTakenNewDamage = CurrentHealth < HealthBeforeDamaged)
-	{
-		float NewDamage = HealthBeforeDamaged - CurrentHealth;
-		
-		HealthBeforeDamaged = CurrentHealth;
+    if (bool bHaveToSetDamageBar = TimeSinceLastDamage >= DamageBarDelayTime)
+    {
+        DamageBar->SetPercent(FMath::FInterpTo(DamageBar->GetPercent(), HealthBar->GetPercent(), InDeltaTime,
+                                               DamageBarInterSpeed));
 
-		TimeSinceLastDamage = 0;
+        OnDamageBarChanged();
+    }
 
-		CallToNotifyNewDamage(NewDamage);
-	}
+    HealthBar->SetPercent(CurrentHealth / CurrentMaxHealth);
+
+    if (bool bTakenNewDamage = CurrentHealth < HealthBeforeDamaged)
+    {
+        float NewDamage = HealthBeforeDamaged - CurrentHealth;
+
+        HealthBeforeDamaged = CurrentHealth;
+        TimeSinceLastDamage = 0;
+
+        CallToNotifyNewDamage(NewDamage);
+    }
 }

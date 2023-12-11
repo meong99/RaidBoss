@@ -16,63 +16,66 @@ class AWeapon;
 UCLASS()
 class RAIDBOSS_API UAbility_Aurora_Q : public URaidBossSkillBase
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	UAbility_Aurora_Q();
+    UAbility_Aurora_Q();
 
-	virtual bool	CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags,
-		FGameplayTagContainer* OptionalRelevantTags) const override;
-	
+    virtual bool    CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+                                       const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags,
+                                       FGameplayTagContainer* OptionalRelevantTags) const override;
+
 protected:
-	virtual void	OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
+    virtual void    OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
 
-	virtual void	ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+    virtual void    ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+                                 const FGameplayAbilityActivationInfo ActivationInfo,
+                                 const FGameplayEventData* TriggerEventData) override;
 
-	virtual void	EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+    virtual void    EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+                               const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility,
+                               bool bWasCancelled) override;
 
-	UFUNCTION()
-	void	NotifyMontageEndedCallBack();
+    UFUNCTION()
+    void    NotifyMontageEndedCallBack();
 
-	UFUNCTION()
-	void	NotifyAttackPointEventCallBack(FGameplayEventData Payload);
+    UFUNCTION()
+    void    NotifyAttackPointEventCallBack(FGameplayEventData Payload);
 
-	UFUNCTION()
-	void	NotifyBeginOverlappedCallBack(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
-	
-	UDataPassingObject*	GetKnockBackData(AActor* TargetActor);
-	
+    UFUNCTION()
+    void    NotifyBeginOverlappedCallBack(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                       UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+                                       const FHitResult& SweepResult);
+
+    UDataPassingObject* GetKnockBackData(AActor* TargetActor);
+
 protected:
-	/*
-	 *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
+    /*
+     *	Changed on Initialization * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Skill")
-	float	DashSpeed = 1000;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Skill")
+    float DashSpeed = 1000;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Skill")
-	float	DashDistance = 1000;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Skill")
+    float DashDistance = 1000;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Skill")
-	float	KnockBackPower = 1000;
-	
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Raid Boss | Skill")
+    float KnockBackPower = 1000;
 
-	/*
-	 *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-	 */
 
-	//
-	UPROPERTY()
-	UAT_DashCharacter*		DashCharacterTask = nullptr;
+    /*
+     *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+     */
 
-	UPROPERTY()
-	TArray<AActor*>			TargetActors;
-	
-	TWeakObjectPtr<AWeapon> CurrentWeapon;
-	
-	bool	bIsFirstActivation = true;
+    //
+    UPROPERTY()
+    UAT_DashCharacter*  DashCharacterTask = nullptr;
+
+    UPROPERTY()
+    TArray<AActor*>     TargetActors;
+
+    TWeakObjectPtr<AWeapon> CurrentWeapon;
+
+    bool                    bIsFirstActivation = true;
 };

@@ -14,104 +14,105 @@ UInventoryUI::UInventoryUI()
 
 void UInventoryUI::NativeOnInitialized()
 {
-	Super::NativeOnInitialized();
-	
-	ARaidBossCharacterBase*	CharacterBase = Cast<ARaidBossCharacterBase>(GetOwningPlayerPawn());
+    Super::NativeOnInitialized();
 
-	if (CharacterBase)
-	{
-		CharacterBase->NotifyNewItemAdded.AddDynamic(this, &UInventoryUI::NotifyNewItemAddedCallBack);
-	}
+    ARaidBossCharacterBase* CharacterBase = Cast<ARaidBossCharacterBase>(GetOwningPlayerPawn());
+
+    if (CharacterBase)
+    {
+        CharacterBase->NotifyNewItemAdded.AddDynamic(this, &UInventoryUI::NotifyNewItemAddedCallBack);
+    }
 }
 
 void UInventoryUI::NativeConstruct()
 {
-	Super::NativeConstruct();
-	
-	ARaidBossPlayerControllerBase*	ControllerBase = Cast<ARaidBossPlayerControllerBase>(GetOwningPlayer());
+    Super::NativeConstruct();
 
-	if (ControllerBase)
-	{
-		ControllerBase->SetInputMode(FInputModeGameAndUI{});
-		ControllerBase->SetShowMouseCursor(true);
-	}
+    ARaidBossPlayerControllerBase* ControllerBase = Cast<ARaidBossPlayerControllerBase>(GetOwningPlayer());
+
+    if (ControllerBase)
+    {
+        ControllerBase->SetInputMode(FInputModeGameAndUI{});
+        ControllerBase->SetShowMouseCursor(true);
+    }
 }
 
 void UInventoryUI::NativeDestruct()
 {
-	ARaidBossPlayerControllerBase*	ControllerBase = Cast<ARaidBossPlayerControllerBase>(GetOwningPlayer());
+    ARaidBossPlayerControllerBase* ControllerBase = Cast<ARaidBossPlayerControllerBase>(GetOwningPlayer());
 
-	if (ControllerBase)
-	{
-		ControllerBase->SetInputMode(FInputModeGameOnly{});
-		ControllerBase->SetShowMouseCursor(false);
-	}
-	
-	Super::NativeDestruct();
+    if (ControllerBase)
+    {
+        ControllerBase->SetInputMode(FInputModeGameOnly{});
+        ControllerBase->SetShowMouseCursor(false);
+    }
+
+    Super::NativeDestruct();
 }
 
 void UInventoryUI::NotifyNewItemAddedCallBack(URaidBossItemBase* NewItemCDO, int32 Amount)
 {
-	if (NewItemCDO)
-	{
-		switch (NewItemCDO->GetItemCategory())
-		{
-		case EITemCategory::Equip :
-			AddNewItemToSlot(EquipmentWrapBox->GetAllChildren(), NewItemCDO, Amount);
-			break;
-		case EITemCategory::Consumable :
-			AddNewItemToSlot(ConsumableWrapBox->GetAllChildren(), NewItemCDO, Amount);
-			break;
-		default:
-			break;
-		}
-	}
+    if (NewItemCDO)
+    {
+        switch (NewItemCDO->GetItemCategory())
+        {
+        case EITemCategory::Equip:
+            AddNewItemToSlot(EquipmentWrapBox->GetAllChildren(), NewItemCDO, Amount);
+            break;
+        case EITemCategory::Consumable:
+            AddNewItemToSlot(ConsumableWrapBox->GetAllChildren(), NewItemCDO, Amount);
+            break;
+        default:
+            break;
+        }
+    }
 }
 
 void UInventoryUI::CreateItemSlots(TArray<UWidget*> InventoryWrapBox, ESlotType SlotType)
 {
-	for (int i = 0; i < SlotCount; i++)
-	{
-		UInventorySlot* NewSlot = CreateWidget<UInventorySlot>(this, InventorySlotClass);
-		
-		if (NewSlot)
-		{
-			NewSlot->SetSlotType(SlotType);
-			InventoryWrapBox.Add(NewSlot);
-		}
-	}
+    for (int i = 0; i < SlotCount; i++)
+    {
+        UInventorySlot* NewSlot = CreateWidget<UInventorySlot>(this, InventorySlotClass);
+
+        if (NewSlot)
+        {
+            NewSlot->SetSlotType(SlotType);
+            InventoryWrapBox.Add(NewSlot);
+        }
+    }
 }
 
-void UInventoryUI::AddNewItemToSlot(TArray<UWidget*> InventoryWrapBox, URaidBossItemBase* NewItemCDO, int32 Amount) const
+void UInventoryUI::AddNewItemToSlot(TArray<UWidget*> InventoryWrapBox, URaidBossItemBase* NewItemCDO,
+                                    int32 Amount) const
 {
-	if (InventoryWrapBox.IsEmpty() || NewItemCDO == nullptr || Amount <= 0)
-	{
-		return;
-	}
-	
-	for (int  i = 0; i < InventoryWrapBox.Num(); i++)
-	{
-		UInventorySlot*	InventorySlot = Cast<UInventorySlot>(InventoryWrapBox[i]);
+    if (InventoryWrapBox.IsEmpty() || NewItemCDO == nullptr || Amount <= 0)
+    {
+        return;
+    }
 
-		if (InventorySlot == nullptr)
-		{
-			continue;
-		}
-		if (InventorySlot->GetItemAmount() > 0)
-		{
-			continue;
-		}
+    for (int i = 0; i < InventoryWrapBox.Num(); i++)
+    {
+        UInventorySlot* InventorySlot = Cast<UInventorySlot>(InventoryWrapBox[i]);
 
-		if (NewItemCDO->GetItemCategory() == EITemCategory::Equip)
-		{
-			InventorySlot->SetSlotType(ESlotType::EquipmentSlot);
-		}
-		else if (NewItemCDO->GetItemCategory() == EITemCategory::Consumable)
-		{
-			InventorySlot->SetSlotType(ESlotType::ConsumableSlot);
-		}
-		
-		InventorySlot->RegisterNewItem(NewItemCDO, Amount);
-		break;
-	}
+        if (InventorySlot == nullptr)
+        {
+            continue;
+        }
+        if (InventorySlot->GetItemAmount() > 0)
+        {
+            continue;
+        }
+
+        if (NewItemCDO->GetItemCategory() == EITemCategory::Equip)
+        {
+            InventorySlot->SetSlotType(ESlotType::EquipmentSlot);
+        }
+        else if (NewItemCDO->GetItemCategory() == EITemCategory::Consumable)
+        {
+            InventorySlot->SetSlotType(ESlotType::ConsumableSlot);
+        }
+
+        InventorySlot->RegisterNewItem(NewItemCDO, Amount);
+        break;
+    }
 }
