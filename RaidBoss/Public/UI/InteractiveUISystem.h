@@ -4,29 +4,29 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
-#include "InteractionalUIAction.h"
+#include "InteractiveUIAction.h"
 #include "Components/ActorComponent.h"
-#include "InteractionalUISystem.generated.h"
+#include "InteractiveUISystem.generated.h"
 
-class UInteractionalUIAction;
-class UInteractionalUI;
+class UInteractiveUIAction;
+class UInteractiveUI;
 
 USTRUCT(BlueprintType)
-struct FInteractionalUIHandle
+struct FInteractiveUIHandle
 {
     GENERATED_BODY()
 
     UPROPERTY(BlueprintReadOnly)
-    TArray<UInteractionalUI*> InteractionalUI;
+    TArray<UInteractiveUI*> InteractiveUI;
 };
 
 USTRUCT(BlueprintType)
-struct FInteractionalUIActionHandle
+struct FInteractiveUIActionHandle
 {
     GENERATED_BODY()
 
     UPROPERTY(BlueprintReadOnly)
-    TArray<UInteractionalUIAction*> InteractionalUIActions;
+    TArray<UInteractiveUIAction*> InteractiveUIActions;
 };
 
 USTRUCT(BlueprintType)
@@ -35,16 +35,16 @@ struct FRemoveUIHandle
     GENERATED_BODY()
 
     UPROPERTY(BlueprintReadOnly)
-    TArray<UInteractionalUI*> InteractionalUI;
+    TArray<UInteractiveUI*> InteractiveUI;
 };
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class RAIDBOSS_API UInteractionalUISystem : public UActorComponent
+class RAIDBOSS_API UInteractiveUISystem : public UActorComponent
 {
     GENERATED_BODY()
 
 public:
-    UInteractionalUISystem();
+    UInteractiveUISystem();
 
 public:
     UFUNCTION(BlueprintCallable, BlueprintPure = false, Category="Raid Boss | UI System")
@@ -53,21 +53,21 @@ public:
     UFUNCTION(BlueprintCallable, BlueprintPure = false, Category="Raid Boss | UI System")
     int32   HandleUIActionTriggerEvent(FGameplayTag TriggerTag, FUIActionData ActionData) const;
 
-    void    InteractionalUIParsing(const TArray<TSubclassOf<UInteractionalUI>>& InteractionalUIArray);
+    void    InteractiveUIParsing(const TArray<TSubclassOf<UInteractiveUI>>& InteractionalUIArray);
 
     /*
      *	Access Method * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
      */
     UFUNCTION(BlueprintCallable, BlueprintPure = false, Category="Raid Boss | UI System")
-    FInteractionalUIHandle  GetInteractionalUIHandle(FGameplayTag TriggerTag) const
+    FInteractiveUIHandle  GetInteractiveUIHandle(FGameplayTag TriggerTag) const
     {
-        return InteractionalUIMap.FindRef(TriggerTag);
+        return InteractiveUIMap.FindRef(TriggerTag);
     }
 
 protected:
-    void    AddRemovalTagKey(UInteractionalUI* InteractionalUI);
+    void    AddRemovalTagKey(UInteractiveUI* InteractionalUI);
 
-    void    InteractionalUIActionParsing(const TArray<UInteractionalUIAction*>& InteractionalUIActionArray);
+    void    InteractiveUIActionParsing(const TArray<UInteractiveUIAction*>& InteractionalUIActionArray);
 
     void    FindAndAddRemovalUI();
 
@@ -80,13 +80,13 @@ protected:
 
     //
     UPROPERTY()
-    TMap<FGameplayTag, FInteractionalUIHandle>          InteractionalUIMap;
+    TMap<FGameplayTag, FInteractiveUIHandle>        InteractiveUIMap;
 
     UPROPERTY()
-    TMap<FGameplayTag, FInteractionalUIActionHandle>    InteractionalUIActionMap;
+    TMap<FGameplayTag, FInteractiveUIActionHandle>  InteractiveUIActionMap;
 
     UPROPERTY()
-    TMap<FGameplayTag, FRemoveUIHandle>                 RemovalUIByTagMap;
+    TMap<FGameplayTag, FRemoveUIHandle>             RemoveUIByTagMap;
 
     /*
      *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "InteractionalUI.h"
+#include "InteractiveUI.h"
 #include "RaidBossSlotWidget.h"
 #include "InventoryUI.generated.h"
 
@@ -13,7 +13,7 @@ class URaidBossItemBase;
 class UInventorySlot;
 
 UCLASS()
-class RAIDBOSS_API UInventoryUI : public UInteractionalUI
+class RAIDBOSS_API UInventoryUI : public UInteractiveUI
 {
     GENERATED_BODY()
 

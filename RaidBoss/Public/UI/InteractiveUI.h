@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
-#include "InteractionalUIAction.h"
+#include "InteractiveUIAction.h"
 #include "Blueprint/UserWidget.h"
-#include "InteractionalUI.generated.h"
+#include "InteractiveUI.generated.h"
 
-class UInteractionalUIAction;
+class UInteractiveUIAction;
 /**
  * 
  */
 UCLASS()
-class RAIDBOSS_API UInteractionalUI : public UUserWidget
+class RAIDBOSS_API UInteractiveUI : public UUserWidget
 {
     GENERATED_BODY()
 
@@ -29,7 +29,7 @@ public:
      */
     FGameplayTag                            GetUITriggerTag() const { return UITriggerTag; }
     FGameplayTagContainer                   GetUIRemoveTags() const { return UIRemoveTags; }
-    const TArray<UInteractionalUIAction*>&  GetInteractionalUIActionArray() const { return InteractionalUIActionArray; }
+    const TArray<UInteractiveUIAction*>&    GetInteractiveUIActionArray() const { return InteractiveUIActionArray; }
 
 protected:
     /*
@@ -45,7 +45,7 @@ protected:
     FGameplayTagContainer           UIRemoveTags;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Instanced, Category="Raid Boss | UI")
-    TArray<UInteractionalUIAction*> InteractionalUIActionArray;
+    TArray<UInteractiveUIAction*>   InteractiveUIActionArray;
 
     /*
      *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 

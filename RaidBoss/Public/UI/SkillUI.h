@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "InteractionalUI.h"
+#include "InteractiveUI.h"
 #include "Components/VerticalBox.h"
 #include "SkillUI.generated.h"
 
@@ -13,7 +13,7 @@ class URaidBossSkillBase;
  * 
  */
 UCLASS()
-class RAIDBOSS_API USkillUI : public UInteractionalUI
+class RAIDBOSS_API USkillUI : public UInteractiveUI
 {
     GENERATED_BODY()
 

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "InteractionalUI.h"
+#include "InteractiveUI.h"
 #include "QuickSlotUI.generated.h"
 
 class URaidBossSkillBase;
@@ -12,7 +12,7 @@ class UQuickSlot;
  * 
  */
 UCLASS()
-class RAIDBOSS_API UQuickSlotUI : public UInteractionalUI
+class RAIDBOSS_API UQuickSlotUI : public UInteractiveUI
 {
     GENERATED_BODY()
 

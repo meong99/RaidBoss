@@ -5,8 +5,8 @@
 #include "GameFramework/PlayerController.h"
 #include "RaidBossPlayerControllerBase.generated.h"
 
-class UInteractionalUISystem;
-class UInteractionalUI;
+class UInteractiveUISystem;
+class UInteractiveUI;
 class URaidBossRewardSystem;
 class ARaidBossPlayerBase;
 class URaidBossInventorySystem;
@@ -49,8 +49,8 @@ public:
     UFUNCTION(BlueprintCallable, Category="Raid Boss | Player Controller")
     ARaidBossPlayerBase*                            GetRaidBossPlayerBase() const;
     UFUNCTION(BlueprintCallable, Category="Raid Boss | UI")
-    UInteractionalUISystem*                         GetInteractionalUISystem() const { return InteractionalUISystem; }
-    const TArray<TSubclassOf<UInteractionalUI>>&    GetInteractionalUIArray() const { return InteractionalUIArray; }
+    UInteractiveUISystem*                         GetInteractionalUISystem() const { return InteractionalUISystem; }
+    const TArray<TSubclassOf<UInteractiveUI>>&    GetInteractionalUIArray() const { return InteractionalUIArray; }
 
 protected:
     /*
@@ -59,10 +59,10 @@ protected:
 
     //
     UPROPERTY(EditDefaultsOnly, Category="Raid Boss | UI")
-    TObjectPtr<UInteractionalUISystem>      InteractionalUISystem;
+    TObjectPtr<UInteractiveUISystem>      InteractionalUISystem;
 
     UPROPERTY(EditDefaultsOnly, Category="Raid Boss | UI")
-    TArray<TSubclassOf<UInteractionalUI>>   InteractionalUIArray;
+    TArray<TSubclassOf<UInteractiveUI>>   InteractionalUIArray;
 
     /*
      *	Changed in cycle * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 

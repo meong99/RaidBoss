@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "UObject/Object.h"
-#include "InteractionalUIAction.generated.h"
+#include "InteractiveUIAction.generated.h"
 
 USTRUCT(BlueprintType)
 struct FUIActionData
@@ -20,12 +20,12 @@ struct FUIActionData
  * 
  */
 UCLASS(BlueprintType, Blueprintable, EditInlineNew)
-class RAIDBOSS_API UInteractionalUIAction : public UObject
+class RAIDBOSS_API UInteractiveUIAction : public UObject
 {
     GENERATED_BODY()
 
 public:
-    UInteractionalUIAction(const FObjectInitializer& ObjectInitializer);
+    UInteractiveUIAction(const FObjectInitializer& ObjectInitializer);
 
     virtual int32   ActivateUIAction(FUIActionData ActionData) const;
 

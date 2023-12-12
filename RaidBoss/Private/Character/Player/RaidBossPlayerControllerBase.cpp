@@ -1,10 +1,10 @@
 #include "Character/Player/RaidBossPlayerControllerBase.h"
 #include "Character/Player/RaidBossPlayerBase.h"
-#include "UI/InteractionalUISystem.h"
+#include "UI/InteractiveUISystem.h"
 
 ARaidBossPlayerControllerBase::ARaidBossPlayerControllerBase()
 {
-    InteractionalUISystem = CreateDefaultSubobject<UInteractionalUISystem>(TEXT("Interactional UI System"));
+    InteractionalUISystem = CreateDefaultSubobject<UInteractiveUISystem>(TEXT("Interactional UI System"));
 }
 
 void ARaidBossPlayerControllerBase::OnPossess(APawn* InPawn)

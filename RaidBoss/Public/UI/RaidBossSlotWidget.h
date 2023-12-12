@@ -6,7 +6,7 @@
 #include "Blueprint/DragDropOperation.h"
 #include "RaidBossSlotWidget.generated.h"
 
-class UInteractionalUIAction;
+class UInteractiveUIAction;
 class UImage;
 
 UENUM(BlueprintType)
